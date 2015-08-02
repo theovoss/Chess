@@ -1,9 +1,18 @@
-from .board import initial_board
+from .board import ChessBoard
 
 
-def set_board():
-    pass
+class Chess:
 
+    def __init__(self):
+        self._board = ChessBoard()
 
-def get_board():
-    return initial_board
+    @property
+    def board(self):
+        return self._get_board()
+
+    def _get_board(self):
+        return self._board._board
+
+    def move(self, start_location, end_location):
+        self._board.move(start_location, end_location)
+        return True

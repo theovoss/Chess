@@ -1,1 +1,1 @@
-initial_board = {}
+from .chess_board import ChessBoard

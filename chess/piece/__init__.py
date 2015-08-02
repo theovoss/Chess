@@ -13,13 +13,25 @@ class Piece:
         self.color = piece_color
 
     def __str__(self):
-        return "{} {}".format(self.piece_color, self.piece_name)
+        return "{} {}".format(self.color, self.kind)
+
+    def get_valid_moves(self):
+        return None
+
+    def get_attack_moves(self):
+        return None
 
 
 class Pawn(Piece):
 
     def __init__(self, piece_color):
         Piece.__init__(self, _pawn, piece_color)
+
+    def get_valid_moves(self):
+        return [(1, 0)]
+
+    def get_attack_moves(self):
+        return [(1, 1)]
 
 
 class Knight(Piece):
@@ -50,4 +62,3 @@ class King(Piece):
 
     def __init__(self, piece_color):
         Piece.__init__(self, _king, piece_color)
-

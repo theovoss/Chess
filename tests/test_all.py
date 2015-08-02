@@ -3,21 +3,20 @@
 
 import unittest
 
-from chess import chess
+from chess.chess import Chess
 from chess.piece import _pawn
-from chess.board import initial_board
+# from chess.board import initial_board
 
 
 class TestChess(unittest.TestCase):
 
     """Sample integration test class."""
 
-    def test_set_board_sets_the_initial_board(self):
-        chess.set_board()
-        assert chess.get_board() == initial_board
+    def setUp(self):
+        self.chess = Chess()
 
     def test_opening_move_updates_board(self):
-        chess.set_board()
-        assert chess.board["d2"].kind == _pawn
-        chess.move("d2", "d3")
-        assert chess.board["d3"].kind == _pawn
+        assert self.chess.board[(6, 4)].kind == _pawn
+        self.chess.move((6, 4), (5, 4))
+        assert self.chess.board[(5, 4)].kind == _pawn
+        assert self.chess.board[(6, 4)] is None
