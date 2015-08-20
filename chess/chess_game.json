@@ -1,0 +1,72 @@
+{
+    pieces: {
+        pawn: {
+            moves: [{
+                direction: [(0, 1)],
+                conditions: [distance_of_one, doesnt_land_on_piece, distance_of_two_if_first_move, away_from_start],
+            },
+            {
+                direction: [(1, 1), (-1, 1)],
+                conditions: [ends_on_enemy, distance_of_one, away_from_start, en_passant]
+            }]
+        },
+        rook: {
+            moves: [{
+                direction: [(1, 0), (0, 1), (-1, 0), (0, -1)],
+                conditions: [doesnt_land_on_own_piece, cant_jump_pieces]
+            },
+            {
+                direction: [(2, 0), (-3, 0)],
+                conditions: [castling]
+            }]
+        },
+        knight: {
+            moves: [{
+                direction: [(1, 0), (0, 1), (0, -1), (-1, 0)],
+                conditions: [doesnt_land_on_own_piece]
+            }]
+        },
+        bishop: {
+            moves: [{
+                direction: [(-1, -1), (1, 1), (-1, 1), (1, -1)],
+                conditions: [doesnt_land_on_own_piece, cant_jump_pieces]
+            }]
+        },
+        queen: {
+            moves: [{
+                direction: [(-1, -1), (1, 1), (-1, 1), (1, -1), (1, 0), (0, 1), (0, -1), (-1, 0)],
+                conditions: [doesnt_land_on_own_piece, cant_jump_pieces]
+            }]
+        },
+        king: {
+            moves: [{
+                direction: [(-1, -1), (1, 1), (-1, 1), (1, -1), (1, 0), (0, 1), (0, -1), (-1, 0)],
+                conditions: [doesnt_land_on_own_piece, distance_of_one]
+            },
+            {
+                directions: [(-2, 0), (2, 0)],
+                conditions: [castling]
+            }]
+        }
+    },
+    end_game: {
+        lose: {
+            conditions: [king_cant_move, enemy_can_take_king, own_piece_cant_block_enemy_piece],
+        },
+        draw: {
+            conditions: [no_piece_of_current_player_can_move]
+        }
+    },
+    players: {
+        1: {
+            direction: (0, 1),
+            color: white,
+            starts: True
+        },
+        2: {
+            direction: (0, -1),
+            color: white,
+            starts: False
+        }
+    }
+}
