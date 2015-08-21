@@ -4,7 +4,8 @@ import unittest
 from unittest.mock import Mock
 from chess.movement import (distance_of_one,
                             doesnt_land_on_own_piece,
-                            cant_jump_pieces)
+                            cant_jump_pieces,
+                            get_all_potential_end_locations)
 from chess.board.chess_board import ChessBoard
 
 
@@ -71,3 +72,35 @@ class TestMovements(unittest.TestCase):
         new_end_locations = cant_jump_pieces(self.board, start, starting_end_locations)
 
         assert new_end_locations == starting_end_locations
+
+    def test_get_potential_end_squares_vertical(self):
+        start = (0, 0)
+        directions = [(0, 1)]
+        ends = get_all_potential_end_locations(start, directions, self.board)
+
+        expected_ends = [(0, 1), (0, 2), (0, 3), (0, 4), (0, 5), (0, 6), (0, 7)]
+        assert ends == expected_ends
+
+    def test_get_potential_end_squares_horizontal(self):
+        start = (0, 0)
+        directions = [(1, 0)]
+        ends = get_all_potential_end_locations(start, directions, self.board)
+
+        expected_ends = [(1, 0), (2, 0), (3, 0), (4, 0), (5, 0), (6, 0), (7, 0)]
+        assert ends == expected_ends
+
+    def test_get_potential_end_squares_diagonal(self):
+        start = (0, 0)
+        directions = [(1, 1)]
+        ends = get_all_potential_end_locations(start, directions, self.board)
+
+        expected_ends = [(1, 1), (2, 2), (3, 3), (4, 4), (5, 5), (6, 6), (7, 7)]
+        assert ends == expected_ends
+
+    def test_get_potential_end_squares_rook(self):
+        start = (0, 0)
+        directions = [(2, 1)]
+        ends = get_all_potential_end_locations(start, directions, self.board)
+
+        expected_ends = [(2, 1), (4, 2), (6, 3)]
+        assert ends == expected_ends

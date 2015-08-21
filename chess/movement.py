@@ -4,7 +4,14 @@ moves = [(1, 1), (1, 0), (1, -1), (-1, 1), (-1, 0), (-1, -1), (0, 1), (0, -1)]
 
 
 def get_all_potential_end_locations(start, directions, board):
-    return [location for direction in directions for location in tuple(map(operator.add, start, direction)) if location in board]
+    ends = []
+    for direction in directions:
+        location = tuple(map(operator.add, start, direction))
+        while location in board:
+            ends.append(location)
+            start = location
+            location = tuple(map(operator.add, start, direction))
+    return ends
 
 
 def distance_of_one(start, potential_end_locations=None):

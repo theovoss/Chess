@@ -23,7 +23,7 @@
         knight: {
             moves: [{
                 direction: [(1, 0), (0, 1), (0, -1), (-1, 0)],
-                conditions: [doesnt_land_on_own_piece]
+                conditions: [doesnt_land_on_own_piece, distance_of_one]
             }]
         },
         bishop: {
