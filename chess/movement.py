@@ -14,11 +14,8 @@ def get_all_potential_end_locations(start, directions, board):
     return ends
 
 
-def distance_of_one(start, potential_end_locations=None):
-    if potential_end_locations:
-        return [x for x in get_adjacent_squares(start) if x in potential_end_locations]
-    else:
-        return get_adjacent_squares(start)
+def distance_of_one(board, start, potential_end_locations):
+    return [x for x in get_adjacent_squares(start) if x in potential_end_locations]
 
 
 def get_adjacent_squares(start):
@@ -45,9 +42,22 @@ def cant_jump_pieces(board, start, potential_end_locations):
     return potential_end_locations
 
 
-# Boolean methods for final verification
-def doesnt_land_on_own_piece(board, end_square, start_square):  # make this return potential end locations
-    if board[end_square] and board[start_square]:
-        return board[end_square].owner != board[start_square].owner
-    else:
-        return True
+def doesnt_land_on_own_piece(board, start, potential_end_locations):
+    ends = []
+    for end in potential_end_locations:
+        if board[end]:
+            if board[start].color != board[end].color:
+                ends.append(end)
+    return ends
+
+
+def ends_on_enemy(board, start, potential_end_locations):
+    ends = []
+    for end in potential_end_locations:
+        if board[end] is not None and board[end].color != board[start].color:
+            print("board of end is:")
+            print(board[end])
+            ends.append(end)
+    print("Ends on these enemies:")
+    print(ends)
+    return ends
