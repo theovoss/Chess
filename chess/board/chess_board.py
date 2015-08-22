@@ -26,15 +26,18 @@ class ChessBoard(Board):
     def initialize_board(self):
         json_data = self.load_json()
         json_board = json_data['board']
-        for piece in json_board:
-            name = piece
-            color = "white"
-            moves = self.get_piece_moves(name, json_data)
-            a_piece = Piece(name, color, moves)
-            print(json_board[piece])
-            for location in json_board[piece]:
-                print(location)
-                self.board[tuple(location)] = a_piece
+        for player in json_board:
+            players_data = json_data['players']
+            color = players_data[player]['color']
+            player_pieces = json_board[player]
+            for piece in player_pieces:
+                name = piece
+                moves = self.get_piece_moves(name, json_data)
+                a_piece = Piece(name, color, moves)
+                print(player_pieces[piece])
+                for location in player_pieces[piece]:
+                    print(location)
+                    self.board[tuple(location)] = a_piece
 
     def get_piece_moves(self, name, json_data):
         return json_data['pieces'][name]['moves']
@@ -52,8 +55,6 @@ class ChessBoard(Board):
         all_end_points = []
         for move in piece.moves:
             directions = move['directions']
-            print("For directions:")
-            print(directions)
             conditions = [condition_mapping[condition] for condition in move['conditions'] if condition in condition_mapping]
             ends = get_all_potential_end_locations(start_location, directions, self.board)
             for condition in conditions:

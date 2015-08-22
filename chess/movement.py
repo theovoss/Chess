@@ -55,9 +55,5 @@ def ends_on_enemy(board, start, potential_end_locations):
     ends = []
     for end in potential_end_locations:
         if board[end] is not None and board[end].color != board[start].color:
-            print("board of end is:")
-            print(board[end])
             ends.append(end)
-    print("Ends on these enemies:")
-    print(ends)
     return ends
