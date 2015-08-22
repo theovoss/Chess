@@ -19,7 +19,7 @@ A python library for playing chess.
 Chess can be installed with pip:
 
 ```
-$ pip install Chess
+$ Coming soon
 ```
 
 or directly from the source code:
