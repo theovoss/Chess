@@ -25,12 +25,16 @@ class ChessBoard(Board):
 
     def initialize_board(self):
         json_data = self.load_json()
-        name = "pawn"
-        color = "white"
-        moves = self.get_piece_moves(name, json_data)
-        piece = Piece(name, color, moves)
-        location = (3, 1)
-        self.board[location] = piece
+        json_board = json_data['board']
+        for piece in json_board:
+            name = piece
+            color = "white"
+            moves = self.get_piece_moves(name, json_data)
+            a_piece = Piece(name, color, moves)
+            print(json_board[piece])
+            for location in json_board[piece]:
+                print(location)
+                self.board[tuple(location)] = a_piece
 
     def get_piece_moves(self, name, json_data):
         return json_data['pieces'][name]['moves']

@@ -23,6 +23,11 @@ class TestBoard(unittest.TestCase):
         ends = self.chess_board.end_locations_for_piece_at_location((3, 1))
         assert ends == [(3, 2)]
 
+    def test_initial_pawn_positions(self):
+        expected_pawn_positions = [(0, 1), (1, 1), (2, 1), (3, 1), (4, 1), (5, 1), (6, 1), (7, 1)]
+        for location in expected_pawn_positions:
+            assert self.chess_board.board[location].kind == "pawn"
+
 
 class TestValidatePawnMoves(unittest.TestCase):
 

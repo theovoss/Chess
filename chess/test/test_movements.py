@@ -45,14 +45,14 @@ class TestMovements(unittest.TestCase):
         assert ret_val == [(1, 0)]
 
     def test_cant_jump_pieces(self):
-        start = (1, 1)
-        middle = (3, 1)
+        start = (2, 2)
+        middle = (4, 2)
 
         self.board[start] = Mock()
         self.board[middle] = Mock()
 
-        starting_end_locations = [(2, 1), (3, 1), (4, 1), (5, 1)]
-        expected_positions = [(2, 1), (3, 1)]
+        starting_end_locations = [(3, 2), (4, 2), (5, 2), (6, 2)]
+        expected_positions = [(3, 2), (4, 2)]
         new_end_locations = cant_jump_pieces(self.board, start, starting_end_locations)
 
         assert new_end_locations == expected_positions
