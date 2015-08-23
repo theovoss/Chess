@@ -18,9 +18,10 @@ class TestMovements(unittest.TestCase):
         self.board = ChessBoard().board
 
     def test_distance_of_one_filtering_given_positions(self):
+        directions = [(1, 0), (0, 1), (0, -1)]
         start_square = (1, 1)
         already_acceptable_possitions = [(1, 2), (1, 0), (2, 1), (3, 3), (5, 5), (2, 3), (9, 1)]
-        positions = distance_of_one(self.board, start_square, potential_end_locations=already_acceptable_possitions)
+        positions = distance_of_one(self.board, start_square, directions, potential_end_locations=already_acceptable_possitions)
         expected_positions = [(1, 2), (1, 0), (2, 1)]
         assert len(positions) == len(expected_positions)
         for pos in positions:
@@ -32,7 +33,7 @@ class TestMovements(unittest.TestCase):
         self.board[start] = Mock(color=1)
         self.board[end] = Mock(color=1)
         potential_end_locations = [end]
-        ret_val = doesnt_land_on_own_piece(self.board, start, potential_end_locations)
+        ret_val = doesnt_land_on_own_piece(self.board, start, None, potential_end_locations)
         assert ret_val == []
 
     def test_doesnt_end_on_own_piece(self):
@@ -41,7 +42,7 @@ class TestMovements(unittest.TestCase):
         self.board[start] = Mock(color=1)
         self.board[end] = Mock(color=2)
         potential_end_locations = [end]
-        ret_val = doesnt_land_on_own_piece(self.board, start, potential_end_locations)
+        ret_val = doesnt_land_on_own_piece(self.board, start, None, potential_end_locations)
         assert ret_val == [(1, 0)]
 
     def test_cant_jump_pieces(self):
@@ -53,7 +54,7 @@ class TestMovements(unittest.TestCase):
 
         starting_end_locations = [(3, 2), (4, 2), (5, 2), (6, 2)]
         expected_positions = [(3, 2), (4, 2)]
-        new_end_locations = cant_jump_pieces(self.board, start, starting_end_locations)
+        new_end_locations = cant_jump_pieces(self.board, start, None, starting_end_locations)
 
         assert new_end_locations == expected_positions
 
@@ -64,7 +65,7 @@ class TestMovements(unittest.TestCase):
 
         starting_end_locations = [(2, 1), (3, 1), (4, 1), (5, 1), (6, 1), (7, 1), (8, 1), (9, 1)]
 
-        new_end_locations = cant_jump_pieces(self.board, start, starting_end_locations)
+        new_end_locations = cant_jump_pieces(self.board, start, None, starting_end_locations)
 
         assert new_end_locations == starting_end_locations
 
@@ -103,7 +104,7 @@ class TestMovements(unittest.TestCase):
     def test_ends_on_enemy_no_enemy(self):
         start = (0, 0)
         potential_end_locations = [(1, 0), (2, 0), (2, 2)]
-        ends = ends_on_enemy(self.board, start, potential_end_locations)
+        ends = ends_on_enemy(self.board, start, None, potential_end_locations)
         assert ends == []
 
     def test_ends_on_same_players_piece(self):
@@ -112,7 +113,7 @@ class TestMovements(unittest.TestCase):
         potential_end_locations = [(1, 0), (2, 0), (2, 2)]
         for end in potential_end_locations:
             self.board[end] = Mock(color=1)
-        ends = ends_on_enemy(self.board, start, potential_end_locations)
+        ends = ends_on_enemy(self.board, start, None, potential_end_locations)
         assert ends == []
 
     def test_ends_on_enemy_players_piece(self):
@@ -122,5 +123,5 @@ class TestMovements(unittest.TestCase):
         for end in potential_end_locations:
             self.board[end] = Mock(color=1)
         self.board[end] = Mock(color=2)
-        ends = ends_on_enemy(self.board, start, potential_end_locations)
+        ends = ends_on_enemy(self.board, start, None, potential_end_locations)
         assert ends == [(2, 2)]

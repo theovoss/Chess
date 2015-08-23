@@ -1,7 +1,5 @@
 import operator
 
-moves = [(1, 1), (1, 0), (1, -1), (-1, 1), (-1, 0), (-1, -1), (0, 1), (0, -1)]
-
 
 def get_all_potential_end_locations(start, directions, board):
     ends = []
@@ -14,16 +12,16 @@ def get_all_potential_end_locations(start, directions, board):
     return ends
 
 
-def distance_of_one(board, start, potential_end_locations):
-    return [x for x in get_adjacent_squares(start) if x in potential_end_locations]
+def distance_of_one(board, start, directions, potential_end_locations):
+    return [x for x in get_one_move_away(start, directions) if x in potential_end_locations]
 
 
-def get_adjacent_squares(start):
-    ret_val = [tuple(map(operator.add, move, start)) for move in moves]
+def get_one_move_away(start, directions):
+    ret_val = [tuple(map(operator.add, move, start)) for move in directions]
     return ret_val
 
 
-def cant_jump_pieces(board, start, potential_end_locations):
+def cant_jump_pieces(board, start, directions, potential_end_locations):
     locations_with_pieces = [location for location in potential_end_locations if location in board and board[location]]
     for location in locations_with_pieces:
         # get a direction from start
@@ -42,16 +40,18 @@ def cant_jump_pieces(board, start, potential_end_locations):
     return potential_end_locations
 
 
-def doesnt_land_on_own_piece(board, start, potential_end_locations):
+def doesnt_land_on_own_piece(board, start, directions, potential_end_locations):
     ends = []
     for end in potential_end_locations:
         if board[end]:
             if board[start].color != board[end].color:
                 ends.append(end)
+        else:
+            ends.append(end)
     return ends
 
 
-def ends_on_enemy(board, start, potential_end_locations):
+def ends_on_enemy(board, start, directions, potential_end_locations):
     ends = []
     for end in potential_end_locations:
         if board[end] is not None and board[end].color != board[start].color:
