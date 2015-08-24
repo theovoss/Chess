@@ -4,16 +4,13 @@ from pprint import pprint
 from .base import Board
 from ..piece import Piece
 
-from ..movement import (distance_of_one,
-                        doesnt_land_on_own_piece,
-                        cant_jump_pieces,
-                        ends_on_enemy,
-                        get_all_potential_end_locations)
+from ..movement import get_all_potential_end_locations
+from .. import movement
 
-condition_mapping = dict(distance_of_one=distance_of_one,
-                         doesnt_land_on_own_piece=doesnt_land_on_own_piece,
-                         cant_jump_pieces=cant_jump_pieces,
-                         ends_on_enemy=ends_on_enemy)
+# condition_mapping = dict(distance_of_one=distance_of_one,
+#                          doesnt_land_on_own_piece=doesnt_land_on_own_piece,
+#                          cant_jump_pieces=cant_jump_pieces,
+#                          ends_on_enemy=ends_on_enemy)
 
 
 class ChessBoard(Board):
@@ -53,7 +50,7 @@ class ChessBoard(Board):
         all_end_points = []
         for move in piece.moves:
             directions = move['directions']
-            conditions = [condition_mapping[condition] for condition in move['conditions'] if condition in condition_mapping]
+            conditions = [getattr(movement, condition) for condition in move['conditions'] if hasattr(movement, condition)]
             ends = get_all_potential_end_locations(start_location, directions, self.board)
             for condition in conditions:
                 print("ends before condition: {} are: {}".format(condition, ends))
