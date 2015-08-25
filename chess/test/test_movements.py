@@ -17,7 +17,7 @@ class TestMovements(unittest.TestCase):
         self.cant_jump_pieces = getattr(movement, "cant_jump_pieces")
         self.get_all_potential_end_locations = getattr(movement, "get_all_potential_end_locations")
         self.ends_on_enemy = getattr(movement, "ends_on_enemy")
-        # self.doesnt_land_on_piece = getattr(movement, "doesnt_land_on_piece")
+        self.doesnt_land_on_piece = getattr(movement, "doesnt_land_on_piece")
 
     def test_distance_of_one_filtering_given_positions(self):
         directions = [(1, 0), (0, 1), (0, -1)]
@@ -128,12 +128,11 @@ class TestMovements(unittest.TestCase):
         ends = self.ends_on_enemy(self.board, start, None, potential_end_locations)
         assert ends == [(2, 2)]
 
-    # def test_doesnt_land_on_piece(self):
-    #     start = (1, 1)
-    #     self.board[start] = Mock()
-    #     potential_end_locations = [(1, 2), (1, 3), (2, 4), (1, 4), (0, 2)]
-    #     for end in potential_end_locations:
-    #         self.board[end] = Mock()
-    #     potential_end_locations.append((2, 3))
-    #     ends = self.doesnt_land_on_piece(self.board, start, None, potential_end_locations)
-    #     assert ends == [(2, 3)]
+    def test_doesnt_land_on_piece(self):
+        start = (1, 1)
+        potential_end_locations = [(1, 2), (1, 3), (2, 4), (1, 4), (0, 2)]
+        for end in potential_end_locations:
+            self.board[end] = Mock(color=2)
+        potential_end_locations.append((2, 3))
+        ends = self.doesnt_land_on_piece(self.board, start, None, potential_end_locations)
+        assert ends == [(2, 3)]

@@ -22,7 +22,7 @@ class TestBoard(unittest.TestCase):
         assert len(piece.moves) > 0
 
     def test_pawn_can_move_forward(self):
-        # piece = self.chess_board.board[(3, 1)]
+        assert self.chess_board.board[(3, 2)] is None
         ends = self.chess_board.end_locations_for_piece_at_location((3, 1))
         assert ends == [(3, 2)]
 
