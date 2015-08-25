@@ -51,6 +51,10 @@ def doesnt_land_on_own_piece(board, start, directions, potential_end_locations):
     return ends
 
 
+# def doesnt_land_on_piece(board, start, directions, potential_end_locations):
+#     return [end for end in potential_end_locations if board[end]]
+
+
 def ends_on_enemy(board, start, directions, potential_end_locations):
     ends = []
     for end in potential_end_locations:
