@@ -7,11 +7,6 @@ from ..piece import Piece
 from ..movement import get_all_potential_end_locations
 from .. import movement
 
-# condition_mapping = dict(distance_of_one=distance_of_one,
-#                          doesnt_land_on_own_piece=doesnt_land_on_own_piece,
-#                          cant_jump_pieces=cant_jump_pieces,
-#                          ends_on_enemy=ends_on_enemy)
-
 
 class ChessBoard(Board):
 

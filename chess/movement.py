@@ -35,8 +35,6 @@ def cant_jump_pieces(board, start, directions, potential_end_locations):
                 break
             else:
                 potential_end_locations.remove(location_to_remove)
-                # if not potential_end_locations:
-                #     break
     return potential_end_locations
 
 
