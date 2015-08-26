@@ -59,6 +59,7 @@ class ChessBoard(Board):
         if end_location in possible_moves:
             self.board[end_location] = self.board[start_location]
             self.board[start_location] = None
+            self.board[end_location].num_moves += 1
             return True
         return False
 
