@@ -12,6 +12,13 @@ def get_all_potential_end_locations(start, directions, board):
     return ends
 
 
+def distance_of_two_if_first_move(board, start, directions, potential_end_locations):
+    if board[start].num_moves == 0:
+        two_away = [tuple(map(operator.add, tuple(map(operator.add, move, move)), start)) for move in directions]
+        return [x for x in two_away if x in potential_end_locations]
+    return []
+
+
 def distance_of_one(board, start, directions, potential_end_locations):
     return [x for x in get_one_move_away(start, directions) if x in potential_end_locations]
 
