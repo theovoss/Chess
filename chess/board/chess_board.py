@@ -56,10 +56,6 @@ class ChessBoard(Board):
 
     def move(self, start_location, end_location):
         possible_moves = self.end_locations_for_piece_at_location(start_location)
-        print("Possible moves are:")
-        print(possible_moves)
-        print("end_location")
-        print(end_location)
         if end_location in possible_moves:
             self.board[end_location] = self.board[start_location]
             self.board[start_location] = None

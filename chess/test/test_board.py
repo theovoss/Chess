@@ -14,6 +14,16 @@ class TestBoard(unittest.TestCase):
     def convert_default_white_spaces_to_black(self, white_positions):
         return [(x, 7 - y) for x, y in white_positions]
 
+    def verify_pieces_at_locations_are_correct_piece_and_color(self, white_positions, piece):
+        for location in white_positions:
+            assert self.chess_board.board[location].kind == piece
+            assert self.chess_board.board[location].color == "white"
+
+        black_positions = self.convert_default_white_spaces_to_black(white_positions)
+        for location in black_positions:
+            assert self.chess_board.board[location].kind == piece
+            assert self.chess_board.board[location].color == "black"
+
     def test_init(self):
         assert len(self.chess_board.board) == 64
 
@@ -28,54 +38,22 @@ class TestBoard(unittest.TestCase):
 
     def test_initial_pawn_positions(self):
         expected_white_pawn_positions = [(0, 1), (1, 1), (2, 1), (3, 1), (4, 1), (5, 1), (6, 1), (7, 1)]
-        piece = "pawn"
-        for location in expected_white_pawn_positions:
-            assert self.chess_board.board[location].kind == piece
-            assert self.chess_board.board[location].color == "white"
-
-        expected_black_pawn_positions = self.convert_default_white_spaces_to_black(expected_white_pawn_positions)
-        for location in expected_black_pawn_positions:
-            assert self.chess_board.board[location].kind == piece
-            assert self.chess_board.board[location].color == "black"
+        self.verify_pieces_at_locations_are_correct_piece_and_color(expected_white_pawn_positions, "pawn")
 
     def test_initial_knight_positions(self):
-        expected_knight_positions = [(1, 0), (6, 0)]
-        piece = "knight"
-        for location in expected_knight_positions:
-            assert self.chess_board.board[location].kind == piece
-            assert self.chess_board.board[location].color == "white"
-
-        expected_black_knight_positions = self.convert_default_white_spaces_to_black(expected_knight_positions)
-        for location in expected_black_knight_positions:
-            assert self.chess_board.board[location].kind == piece
-            assert self.chess_board.board[location].color == "black"
+        self.verify_pieces_at_locations_are_correct_piece_and_color([(1, 0), (6, 0)], "knight")
 
     def test_initial_rook_positions(self):
-        expected_rook_positions = [(0, 0), (7, 0)]
-        piece = "rook"
-        for location in expected_rook_positions:
-            assert self.chess_board.board[location].kind == piece
-            assert self.chess_board.board[location].color == "white"
-
-        expected_black_rook_positions = self.convert_default_white_spaces_to_black(expected_rook_positions)
-        for location in expected_black_rook_positions:
-            assert self.chess_board.board[location].kind == piece
-            assert self.chess_board.board[location].color == "black"
+        self.verify_pieces_at_locations_are_correct_piece_and_color([(0, 0), (7, 0)], "rook")
 
     def test_initial_bishop_positions(self):
-        expected_bishop_positions = [(2, 0), (5, 0)]
-        for location in expected_bishop_positions:
-            assert self.chess_board.board[location].kind == "bishop"
+        self.verify_pieces_at_locations_are_correct_piece_and_color([(2, 0), (5, 0)], 'bishop')
 
     def test_initial_queen_positions(self):
-        expected_queen_positions = [(3, 0)]
-        for location in expected_queen_positions:
-            assert self.chess_board.board[location].kind == "queen"
+        self.verify_pieces_at_locations_are_correct_piece_and_color([(3, 0)], "queen")
 
     def test_initial_king_positions(self):
-        expected_king_positions = [(4, 0)]
-        for location in expected_king_positions:
-            assert self.chess_board.board[location].kind == "king"
+        self.verify_pieces_at_locations_are_correct_piece_and_color([(4, 0)], "king")
 
 
 class TestValidateKnightMoves(unittest.TestCase):
