@@ -18,13 +18,11 @@ class TestBoard(unittest.TestCase):
 
     def verify_pieces_at_locations_are_correct_piece_and_color(self, white_positions, piece):
         for location in white_positions:
-            print(location)
             assert self.chess_board.board[location].kind == piece
             assert self.chess_board.board[location].color == "white"
 
         black_positions = self.convert_default_white_spaces_to_black(white_positions)
         for location in black_positions:
-            print(location)
             assert self.chess_board.board[location].kind == piece
             assert self.chess_board.board[location].color == "black"
 
@@ -86,8 +84,6 @@ class TestValidateKnightMoves(unittest.TestCase):
         self.chess_board = ChessBoard()
 
     def test_move_knight(self):
-        print(self.chess_board.board)
-        print(self.chess_board.board[(0, 1)].moves)
         result = self.chess_board.move((0, 1), (2, 0))
 
         assert result is True
