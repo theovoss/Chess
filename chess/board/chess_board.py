@@ -7,6 +7,15 @@ from ..piece import Piece
 from ..movement import get_all_potential_end_locations
 from .. import movement
 
+map_fen_to_piece_name = {
+    'k': "king",
+    'q': "queen",
+    'n': "knight",
+    'b': "bishop",
+    'r': "rook",
+    'p': "pawn"
+}
+
 
 class ChessBoard(Board):
 
@@ -20,13 +29,18 @@ class ChessBoard(Board):
         self.half_move_clock = 0
         self.full_move_number = 1
 
-    def __str__(self):
+    def __repr__(self):
+        """Generates the same json that the game was created from."""
+        # TODO: implement this
+        pass
+
+    def generate_fen(self):
         """Generates a FEN representation of the board."""
         board = ""
         # FEN notation starts in the top left
-        for column in range(self.columns - 1, -1, -1):
+        for row in range(self.rows - 1, -1, -1):
             num_missing = 0
-            for row in range(0, self.rows):
+            for column in range(0, self.columns):
                 key = (row, column)
                 piece = self.board[key]
 
@@ -49,6 +63,28 @@ class ChessBoard(Board):
         fen = board[0:-1] + other_info
         return fen
 
+    def import_fen_board(self, fen_board):
+        json_data = self.load_json()
+        board_data, self.current_players_turn, self.castling_opportunities,\
+            self.en_passant_target_square, self.half_move_clock,\
+            self.full_move_number = fen_board.split(' ')
+        rows = board_data.split('/')
+        for row in range(self.rows - 1, -1, -1):
+            fen_row = rows[7 - row]
+            actual_column = 0
+            for column in range(0, len(fen_row)):
+                try:
+                    num_missing = int(fen_row[actual_column])
+                    for column in range(0, num_missing):
+                        self.board[(row, actual_column)] = None
+                        actual_column += 1
+                except ValueError:
+                    name = map_fen_to_piece_name[fen_row[actual_column].lower()]
+                    color = "black" if fen_row[actual_column].islower() else "white"
+                    moves = self.get_piece_moves(name, json_data)
+                    self.board[(row, column)] = Piece(name, color, moves)
+                    actual_column += 1
+
     def initialize_board(self):
         json_data = self.load_json()
         json_board = json_data['board']
@@ -62,6 +98,10 @@ class ChessBoard(Board):
                 a_piece = Piece(name, color, moves)
                 for location in player_pieces[piece]:
                     self.board[tuple(location)] = a_piece
+
+    def clear_board(self):
+        for location in self.board:
+            self.board[location] = None
 
     def get_piece_moves(self, name, json_data):
         return json_data['pieces'][name]['moves']
@@ -91,8 +131,18 @@ class ChessBoard(Board):
     def move(self, start_location, end_location):
         possible_moves = self.end_locations_for_piece_at_location(start_location)
         if end_location in possible_moves:
+            is_capture = self.board[end_location] is not None
             self.board[end_location] = self.board[start_location]
             self.board[start_location] = None
+            if self.current_players_turn == 'w':
+                self.current_players_turn = 'b'
+            else:
+                self.full_move_number += 1
+                self.current_players_turn = 'w'
+            if self.board[end_location].kind != "pawn" and not is_capture:
+                self.half_move_clock += 1
+            else:
+                self.half_move_clock = 0
             return True
         return False
 
