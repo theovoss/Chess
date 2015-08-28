@@ -12,11 +12,12 @@ class TestChess(unittest.TestCase):
         self.chess = Chess()
 
     def test_init(self):
-        assert type(self.chess.board) == dict
+        assert isinstance(self.chess.board, dict)
 
     def test_move_pawn_forward_once(self):
-        start = (6, 4)
-        end = (5, 4)
+        pass
+        # start = (6, 4)
+        # end = (5, 4)
         # assert self.chess.board[start]
         # self.chess.move(start, end)
         # assert self.chess.board[end]

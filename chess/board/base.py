@@ -8,3 +8,7 @@ class Board:
 
         self.rows = num_rows
         self.columns = num_columns
+
+    @property
+    def board(self):
+        return self._board

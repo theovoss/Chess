@@ -1,5 +1,4 @@
 import json
-from pprint import pprint
 
 from .base import Board
 from ..piece import Piece
@@ -103,7 +102,8 @@ class ChessBoard(Board):
         for location in self.board:
             self.board[location] = None
 
-    def get_piece_moves(self, name, json_data):
+    @staticmethod
+    def get_piece_moves(name, json_data):
         return json_data['pieces'][name]['moves']
 
     def load_json(self):

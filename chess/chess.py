@@ -11,7 +11,7 @@ class Chess:
         return self._get_board()
 
     def _get_board(self):
-        return self._board._board
+        return self._board.board
 
     def move(self, start_location, end_location):
         self._board.move(start_location, end_location)

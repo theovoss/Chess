@@ -13,7 +13,8 @@ class TestBoard(unittest.TestCase):
     def setUp(self):
         self.chess_board = ChessBoard()
 
-    def convert_default_white_spaces_to_black(self, white_positions):
+    @staticmethod
+    def convert_default_white_spaces_to_black(white_positions):
         return [(7 - row, column) for row, column in white_positions]
 
     def verify_pieces_at_locations_are_correct_piece_and_color(self, white_positions, piece):

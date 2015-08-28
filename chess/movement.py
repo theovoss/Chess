@@ -1,3 +1,5 @@
+# pylint: disable=W0613
+# allow unused variables so all movement functions can have same parameter definition
 import operator
 
 
