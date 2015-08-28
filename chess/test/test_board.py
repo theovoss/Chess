@@ -3,7 +3,7 @@
 import unittest
 from chess.board import ChessBoard
 
-starting_fen_board = "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR"
+starting_fen_board = "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1"
 
 
 class TestBoard(unittest.TestCase):

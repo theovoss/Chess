@@ -14,6 +14,11 @@ class ChessBoard(Board):
         super().__init__(8, 8)
         self.json_file = "chess/chess_game.json"
         self.initialize_board()
+        self.current_players_turn = "w"
+        self.castling_opportunities = "KQkq"
+        self.en_passant_target_square = "-"
+        self.half_move_clock = 0
+        self.full_move_number = 1
 
     def __str__(self):
         """Generates a FEN representation of the board."""
@@ -35,7 +40,14 @@ class ChessBoard(Board):
             if num_missing:
                 board += str(num_missing)
             board += "/"
-        return board[0:-1]
+
+        other_info = " {cpt} {co} {epts} {hmc} {fmn}".format(cpt=self.current_players_turn,
+                                                             co=self.castling_opportunities,
+                                                             epts=self.en_passant_target_square,
+                                                             hmc=self.half_move_clock,
+                                                             fmn=self.full_move_number)
+        fen = board[0:-1] + other_info
+        return fen
 
     def initialize_board(self):
         json_data = self.load_json()
