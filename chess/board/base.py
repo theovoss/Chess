@@ -5,3 +5,6 @@ class Board:
         for row in range(num_rows):
             for column in range(num_columns):
                 self._board[(row, column)] = None
+
+        self.rows = num_rows
+        self.columns = num_columns

@@ -3,6 +3,8 @@
 import unittest
 from chess.board import ChessBoard
 
+starting_fen_board = "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR"
+
 
 class TestBoard(unittest.TestCase):
 
@@ -54,6 +56,9 @@ class TestBoard(unittest.TestCase):
 
     def test_initial_king_positions(self):
         self.verify_pieces_at_locations_are_correct_piece_and_color([(4, 0)], "king")
+
+    def test_starting_board_export(self):
+        assert str(self.chess_board) == starting_fen_board
 
 
 class TestValidateKnightMoves(unittest.TestCase):

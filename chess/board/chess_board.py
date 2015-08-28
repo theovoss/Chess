@@ -15,6 +15,28 @@ class ChessBoard(Board):
         self.json_file = "chess/chess_game.json"
         self.initialize_board()
 
+    def __str__(self):
+        """Generates a FEN representation of the board."""
+        board = ""
+        # FEN notation starts in the top left
+        for column in range(self.columns - 1, -1, -1):
+            num_missing = 0
+            for row in range(0, self.rows):
+                key = (row, column)
+                piece = self.board[key]
+
+                if piece:
+                    prepend = ''
+                    if num_missing:
+                        prepend = str(num_missing)
+                    board += prepend + repr(piece)
+                else:
+                    num_missing += 1
+            if num_missing:
+                board += str(num_missing)
+            board += "/"
+        return board[0:-1]
+
     def initialize_board(self):
         json_data = self.load_json()
         json_board = json_data['board']
