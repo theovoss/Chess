@@ -1,6 +1,8 @@
 """Chess Board unit test module."""
 
 import unittest
+import json
+
 from chess.board import ChessBoard
 
 starting_fen_board = "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1"
@@ -58,7 +60,7 @@ class TestBoard(unittest.TestCase):
     def test_initial_king_positions(self):
         self.verify_pieces_at_locations_are_correct_piece_and_color([(0, 4)], "king")
 
-    def test_starting_board_export(self):
+    def test_starting_board_fen_export(self):
         assert self.chess_board.generate_fen() == starting_fen_board
 
     def test_clear_board_removes_all_pieces(self):
@@ -66,7 +68,7 @@ class TestBoard(unittest.TestCase):
         for location in self.chess_board.board:
             assert self.chess_board.board[location] is None
 
-    def test_starting_board_import(self):
+    def test_starting_board_fen_import(self):
         self.chess_board.clear_board()
         self.chess_board.import_fen_board(starting_fen_board)
 
@@ -77,6 +79,27 @@ class TestBoard(unittest.TestCase):
         self.verify_pieces_at_locations_are_correct_piece_and_color([(0, 2), (0, 5)], 'bishop')
         self.verify_pieces_at_locations_are_correct_piece_and_color([(0, 3)], "queen")
         self.verify_pieces_at_locations_are_correct_piece_and_color([(0, 4)], "king")
+
+    def test_starting_board_custom_export(self):
+        expected_json = self.chess_board.load_json()
+        exported_json = self.chess_board.export()
+        self.compare_boards(exported_json['board'], expected_json['board'])
+        exported_json.pop('board')
+        for key, value in exported_json.items():
+            assert expected_json[key] == value
+        assert len(expected_json) == len(exported_json) + 1
+
+    @staticmethod
+    def compare_boards(board1, board2):
+        for player in board1:
+            assert player in board2
+            for piece in board1[player]:
+                assert piece in board2[player]
+                piece_locations1 = board1[player][piece]
+                piece_locations2 = board2[player][piece]
+                assert len(piece_locations1) == len(piece_locations2)
+                for location in piece_locations1:
+                    assert location in piece_locations2
 
 
 class TestValidateKnightMoves(unittest.TestCase):

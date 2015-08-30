@@ -20,8 +20,14 @@ class ChessBoard(Board):
 
     def __init__(self):
         super().__init__(8, 8)
-        self.json_file = "chess/chess_game.json"
+        self.pieces = []
+        self.players = {}
+        self.end_game = {}
+
+        self.standard_chess = "chess/chess_game.json"
         self.initialize_board()
+
+        # FEN data I should take into account
         self.current_players_turn = "w"
         self.castling_opportunities = "KQkq"
         self.en_passant_target_square = "-"
@@ -84,17 +90,55 @@ class ChessBoard(Board):
                     self.board[(row, column)] = Piece(name, color, moves)
                     actual_column += 1
 
+    def export(self):
+        json_data = {}
+        json_data['pieces'] = {}
+        for piece in self.pieces:
+            json_data['pieces'][piece.kind] = {'moves': piece.moves}
+
+        json_data['players'] = self.players
+        map_color_to_name = {}
+        json_board = {}
+        for player in self.players:
+            map_color_to_name[self.players[player]['color']] = player
+            json_board[player] = {}
+
+        for location in self.board:
+            piece = self.board[location]
+            if piece:
+                player = map_color_to_name[piece.color]
+                if piece.kind in json_board[player]:
+                    json_board[player][piece.kind].append(list(location))
+                else:
+                    json_board[player][piece.kind] = [list(location)]
+
+        json_data['board'] = json_board
+
+        json_data['end_game'] = self.end_game
+
+        print("export data is:")
+        print(json_data)
+        return json_data
+
     def initialize_board(self):
         json_data = self.load_json()
         json_board = json_data['board']
+
+        self.end_game = json_data['end_game']
         for player in json_board:
             players_data = json_data['players']
             color = players_data[player]['color']
+
+            self.players[player] = players_data[player]
+
             player_pieces = json_board[player]
             for piece in player_pieces:
                 name = piece
                 moves = self.get_piece_moves(name, json_data)
                 a_piece = Piece(name, color, moves)
+
+                self.pieces.append(a_piece)
+
                 for location in player_pieces[piece]:
                     self.board[tuple(location)] = a_piece
 
@@ -107,7 +151,7 @@ class ChessBoard(Board):
         return json_data['pieces'][name]['moves']
 
     def load_json(self):
-        filename = self.json_file
+        filename = self.standard_chess
         data = None
         with open(filename) as data_file:
             data = json.load(data_file)
