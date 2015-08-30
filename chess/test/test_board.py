@@ -1,7 +1,6 @@
 """Chess Board unit test module."""
 
 import unittest
-import json
 
 from chess.board import ChessBoard
 

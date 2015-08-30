@@ -1,3 +1,7 @@
+# pylint: disable=R0902
+# disabling too many instance attributes for now.
+# once I implement enpassant and castling,
+# I shouldn't need some of the FEN attributes.
 import json
 
 from .base import Board
