@@ -2,6 +2,7 @@
 # disabling too many instance attributes for now.
 # once I implement enpassant and castling,
 # I shouldn't need some of the FEN attributes.
+import os
 import json
 
 from .base import Board
@@ -28,7 +29,9 @@ class ChessBoard(Board):
         self.players = {}
         self.end_game = {}
 
-        self.standard_chess = "chess/chess_game.json"
+        script_dir = os.path.dirname(__file__)
+        self.standard_chess = os.path.join(script_dir, '..', 'chess_game.json')
+
         self.initialize_board()
 
         # FEN data I should take into account
@@ -37,11 +40,6 @@ class ChessBoard(Board):
         self.en_passant_target_square = "-"
         self.half_move_clock = 0
         self.full_move_number = 1
-
-    def __repr__(self):
-        """Generates the same json that the game was created from."""
-        # TODO: implement this
-        pass
 
     def generate_fen(self):
         """Generates a FEN representation of the board."""
