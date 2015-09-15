@@ -13,6 +13,9 @@ class Chess:
     def _get_board(self):
         return self._board.board
 
+    def generate_fen(self):
+        return self._board.generate_fen()
+
     def move(self, start_location, end_location):
         start = self._convert_location_to_board_indices(start_location)
         end = self._convert_location_to_board_indices(end_location)
