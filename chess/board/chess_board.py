@@ -23,7 +23,7 @@ map_fen_to_piece_name = {
 
 class ChessBoard(Board):
 
-    def __init__(self):
+    def __init__(self, existing_board=None):
         super().__init__(8, 8)
         self.pieces = []
         self.players = {}
@@ -32,7 +32,10 @@ class ChessBoard(Board):
         script_dir = os.path.dirname(__file__)
         self.standard_chess = os.path.join(script_dir, '..', 'chess_game.json')
 
-        self.initialize_board()
+        if not existing_board:
+            existing_board = self.load_json()
+
+        self.initialize_board(existing_board)
 
         # FEN data I should take into account
         self.current_players_turn = "w"
@@ -122,8 +125,7 @@ class ChessBoard(Board):
         print(json_data)
         return json_data
 
-    def initialize_board(self):
-        json_data = self.load_json()
+    def initialize_board(self, json_data):
         json_board = json_data['board']
 
         self.end_game = json_data['end_game']
@@ -176,6 +178,7 @@ class ChessBoard(Board):
 
     def move(self, start_location, end_location):
         possible_moves = self.end_locations_for_piece_at_location(start_location)
+
         if end_location in possible_moves:
             is_capture = self.board[end_location] is not None
             self.board[end_location] = self.board[start_location]

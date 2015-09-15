@@ -3,8 +3,8 @@ from .board import ChessBoard
 
 class Chess:
 
-    def __init__(self):
-        self._board = ChessBoard()
+    def __init__(self, existing_board=None):
+        self._board = ChessBoard(existing_board)
 
     @property
     def board(self):
@@ -14,5 +14,14 @@ class Chess:
         return self._board.board
 
     def move(self, start_location, end_location):
-        self._board.move(start_location, end_location)
-        return True
+        start = self._convert_location_to_board_indices(start_location)
+        end = self._convert_location_to_board_indices(end_location)
+        return self._board.move(start, end)
+
+    def _convert_location_to_board_indices(self, location):
+        assert len(location) == 2
+        alphabet = "abcdefghijklmnopqrstuvwxyz"
+        col = alphabet.index(location[0].lower())
+        row = int(location[1]) - 1
+        key = (row, col)
+        return key
