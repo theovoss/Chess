@@ -21,7 +21,8 @@ class Chess:
         end = self._convert_location_to_board_indices(end_location)
         return self._board.move(start, end)
 
-    def _convert_location_to_board_indices(self, location):
+    @staticmethod
+    def _convert_location_to_board_indices(location):
         assert len(location) == 2
         alphabet = "abcdefghijklmnopqrstuvwxyz"
         col = alphabet.index(location[0].lower())

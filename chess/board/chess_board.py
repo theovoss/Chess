@@ -59,6 +59,7 @@ class ChessBoard(Board):
                     if num_missing:
                         prepend = str(num_missing)
                     board += prepend + repr(piece)
+                    num_missing = 0
                 else:
                     num_missing += 1
             if num_missing:

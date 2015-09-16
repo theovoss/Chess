@@ -62,6 +62,11 @@ class TestBoard(unittest.TestCase):
     def test_starting_board_fen_export(self):
         assert self.chess_board.generate_fen() == starting_fen_board
 
+    def test_one_move_fen_export(self):
+        self.chess_board.board[(6, 0)] = None
+        expected_fen = "rnbqkbnr/1ppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1"
+        assert expected_fen == self.chess_board.generate_fen()
+
     def test_clear_board_removes_all_pieces(self):
         self.chess_board.clear_board()
         for location in self.chess_board.board:
