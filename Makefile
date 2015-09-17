@@ -11,7 +11,7 @@ PYTHON_MINOR ?= 4
 # Test settings
 UNIT_TEST_COVERAGE := 88
 INTEGRATION_TEST_COVERAGE := 47
-COMBINED_TEST_COVERAGE := 100
+COMBINED_TEST_COVERAGE := 80
 
 # System paths
 PLATFORM := $(shell python -c 'import sys; print(sys.platform)')
@@ -57,7 +57,7 @@ RST2HTML := $(PYTHON) $(BIN)/rst2html.py
 PDOC := $(PYTHON) $(BIN)/pdoc
 PEP8 := $(BIN)/pep8
 PEP8RADIUS := $(BIN)/pep8radius
-PEP257 := $(BIN)/pep257
+# PEP257 := $(BIN)/pep257
 PYLINT := $(BIN)/pylint
 PYREVERSE := $(BIN)/pyreverse
 NOSE := $(BIN)/nosetests
@@ -107,7 +107,7 @@ depends: depends-ci depends-dev
 .PHONY: depends-ci
 depends-ci: env Makefile $(DEPENDS_CI_FLAG)
 $(DEPENDS_CI_FLAG): Makefile
-	$(PIP) install --upgrade pep8 pep257 pylint coverage pytest pytest-cov pytest-random pytest-runfailed
+	$(PIP) install --upgrade pep8 pylint coverage pytest pytest-cov pytest-random pytest-runfailed
 	@ touch $(DEPENDS_CI_FLAG)  # flag to indicate dependencies are installed
 
 .PHONY: depends-dev
@@ -164,18 +164,18 @@ read: doc
 # Static Analysis ##############################################################
 
 .PHONY: check
-check: pep8 pep257 pylint
+check: pep8 pylint
 
 .PHONY: pep8
 pep8: depends-ci
 	$(PEP8) $(PACKAGE) tests --config=.pep8rc
 
-.PHONY: pep257
-pep257: depends-ci
-# D102: docstring missing (checked by PyLint)
-# D202: No blank lines allowed *after* function docstring (personal preference)
-# D203: 1 blank line required before class (deprecated warning)
-	$(PEP257) $(PACKAGE) tests --ignore=D102,D202,D203
+# .PHONY: pep257
+# pep257: depends-ci
+# # D102: docstring missing (checked by PyLint)
+# # D202: No blank lines allowed *after* function docstring (personal preference)
+# # D203: 1 blank line required before class (deprecated warning)
+# 	$(PEP257) $(PACKAGE) tests --ignore=D102,D202,D203
 
 .PHONY: pylint
 pylint: depends-ci
@@ -183,7 +183,9 @@ pylint: depends-ci
 # C0111: Line too long
 # R0913: Too many arguments
 # R0914: Too many local variables
-	$(PYLINT) $(PACKAGE) tests --rcfile=.pylintrc --disable=C0111,R0913,R0914
+# C0301: Line too long
+# W0141: bad-builtin - allowing for now because it makes tuple addition easy
+	$(PYLINT) $(PACKAGE) tests --rcfile=.pylintrc --disable=C0111,R0913,R0914,C0301,W0141
 
 .PHONY: fix
 fix: depends-dev

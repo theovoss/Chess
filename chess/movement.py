@@ -1,14 +1,17 @@
+# pylint: disable=W0613
+# allow unused variables so all movement functions can have same parameter definition
 import operator
 
 
 def get_all_potential_end_locations(start, directions, board):
     ends = []
     for direction in directions:
-        location = tuple(map(operator.add, start, direction))
+        new_start = start
+        location = tuple(map(operator.add, new_start, direction))
         while location in board:
             ends.append(location)
-            start = location
-            location = tuple(map(operator.add, start, direction))
+            new_start = location
+            location = tuple(map(operator.add, new_start, direction))
     return ends
 
 
