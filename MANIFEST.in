@@ -1,5 +1,6 @@
 include *.rst *.txt *.md *.json
-recursive-include docs *.rst *.txt *.md *.json
+recursive-include docs *.rst *.txt *.md
+recursive-include chess *.json
 graft */files
 graft */*/files
 
