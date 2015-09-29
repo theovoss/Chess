@@ -24,7 +24,7 @@ setuptools.setup(
     author_email='theo.voss973@gmail.com',
 
     packages=setuptools.find_packages(),
-    package_data={'chess': ['chess/*']},
+    package_data={'': ['chess/*']},
 
     entry_points={'console_scripts': []},
 
