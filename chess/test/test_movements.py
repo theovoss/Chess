@@ -122,6 +122,7 @@ class TestMovements(unittest.TestCase):
         start = (0, 0)
         self.board[start] = Mock(color=1)
         potential_end_locations = [(1, 0), (2, 0), (2, 2)]
+        end = None
         for end in potential_end_locations:
             self.board[end] = Mock(color=1)
         self.board[end] = Mock(color=2)

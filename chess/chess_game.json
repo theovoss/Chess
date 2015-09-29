@@ -2,11 +2,11 @@
     "pieces": {
         "pawn": {
             "moves": [{
-                "directions": [[0, 1]],
+                "directions": [[1, 0]],
                 "conditions": ["distance_of_one", "doesnt_land_on_piece", "distance_of_two_if_first_move", "away_from_start"]
             },
             {
-                "directions": [[1, 1], [-1, 1]],
+                "directions": [[1, 1], [1, -1]],
                 "conditions": ["ends_on_enemy", "distance_of_one", "away_from_start", "en_passant"]
             }]
         },
@@ -16,7 +16,7 @@
                 "conditions": ["doesnt_land_on_own_piece", "cant_jump_pieces"]
             },
             {
-                "directions": [[2, 0], [-3, 0]],
+                "directions": [[0, 2], [0, -3]],
                 "conditions": ["castling"]
             }]
         },
@@ -44,7 +44,7 @@
                 "conditions": ["doesnt_land_on_own_piece", "distance_of_one", "doesnt_end_in_check"]
             },
             {
-                "directions": [[-2, 0], [2, 0]],
+                "directions": [[0, -2], [0, 2]],
                 "conditions": ["castling"]
             }]
         }
@@ -59,32 +59,32 @@
     },
     "players": {
         "Player 1": {
-            "direction": [0, 1],
+            "direction": [1, 0],
             "color": "white",
             "starts": true
         },
         "Player 2": {
-            "direction": [0, -1],
+            "direction": [-1, 0],
             "color": "black",
             "starts": false
         }
     },
     "board": {
         "Player 1": {
-            "pawn": [[0, 1], [1, 1], [2, 1], [3, 1], [4, 1], [5, 1], [6, 1], [7, 1]],
-            "knight": [[1, 0], [6, 0]],
-            "rook": [[0, 0], [7, 0]],
-            "bishop": [[2, 0], [5, 0]],
-            "king": [[4, 0]],
-            "queen": [[3, 0]]
+            "pawn": [[1, 0], [1, 1], [1, 2], [1, 3], [1, 4], [1, 5], [1, 6], [1, 7]],
+            "knight": [[0, 1], [0, 6]],
+            "rook": [[0, 0], [0, 7]],
+            "bishop": [[0, 2], [0, 5]],
+            "king": [[0, 4]],
+            "queen": [[0, 3]]
         },
         "Player 2": {
-            "pawn": [[0, 6], [1, 6], [2, 6], [3, 6], [4, 6], [5, 6], [6, 6], [7, 6]],
-            "knight": [[1, 7], [6, 7]],
-            "rook": [[0, 7], [7, 7]],
-            "bishop": [[2, 7], [5, 7]],
-            "king": [[4, 7]],
-            "queen": [[3, 7]]
+            "pawn": [[6, 0], [6, 1], [6, 2], [6, 3], [6, 4], [6, 5], [6, 6], [6, 7]],
+            "knight": [[7, 1], [7, 6]],
+            "rook": [[7, 0], [7, 7]],
+            "bishop": [[7, 2], [7, 5]],
+            "king": [[7, 4]],
+            "queen": [[7, 3]]
         }
     }
 }
