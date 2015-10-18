@@ -1,4 +1,6 @@
-include *.rst *.txt *.md *.json chess/*.json
+include *.rst *.txt *.md *.json
+include chess/*.json
+include chess/chess_game.json
 recursive-include docs *.rst *.txt *.md
 recursive-include chess *.json
 graft */files

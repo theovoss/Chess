@@ -18,7 +18,7 @@ setuptools.setup(
     name=__project__,
     version=__version__,
 
-    description="Chess is a Python 3 package template.",
+    description="Chess is a Python 2 and 3 package template.",
     url='https://github.com/theovoss/chess',
     author='Theo Voss',
     author_email='theo.voss973@gmail.com',
@@ -34,8 +34,7 @@ setuptools.setup(
         'Development Status :: 1 - Planning',
         'Natural Language :: English',
         'Operating System :: OS Independent',
-        'Programming Language :: Python :: 3.3',
+        'Programming Language :: Python',
     ],
-
-    install_requires=open('requirements.txt').readlines(),
+    install_requires=[]
 )
