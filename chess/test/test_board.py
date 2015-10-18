@@ -20,19 +20,19 @@ class TestBoard(unittest.TestCase):
 
     def verify_pieces_at_locations_are_correct_piece_and_color(self, white_positions, piece):
         for location in white_positions:
-            assert self.chess_board.board[location].kind == piece
-            assert self.chess_board.board[location].color == "white"
+            assert self.chess_board[location].kind == piece
+            assert self.chess_board[location].color == "white"
 
         black_positions = self.convert_default_white_spaces_to_black(white_positions)
         for location in black_positions:
-            assert self.chess_board.board[location].kind == piece
-            assert self.chess_board.board[location].color == "black"
+            assert self.chess_board[location].kind == piece
+            assert self.chess_board[location].color == "black"
 
     def test_init(self):
-        assert len(self.chess_board.board) == 64
+        assert len(self.chess_board) == 64
 
     def test_has_pawn_at_1_3(self):
-        piece = self.chess_board.board[(1, 3)]
+        piece = self.chess_board[(1, 3)]
         assert len(piece.moves) > 0
 
     def test_initial_pawn_positions(self):
@@ -58,14 +58,14 @@ class TestBoard(unittest.TestCase):
         assert self.chess_board.generate_fen() == starting_fen_board
 
     def test_one_move_fen_export(self):
-        self.chess_board.board[(6, 0)] = None
+        self.chess_board[(6, 0)] = None
         expected_fen = "rnbqkbnr/1ppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1"
         assert expected_fen == self.chess_board.generate_fen()
 
     def test_clear_board_removes_all_pieces(self):
         self.chess_board.clear_board()
         for location in self.chess_board.board:
-            assert self.chess_board.board[location] is None
+            assert self.chess_board[location] is None
 
     def test_starting_board_fen_import(self):
         self.chess_board.clear_board()
@@ -110,13 +110,13 @@ class TestValidateKnightMoves(unittest.TestCase):
         result = self.chess_board.move((0, 1), (2, 0))
 
         assert result is True
-        assert self.chess_board.board[(2, 0)].kind == 'knight'
+        assert self.chess_board[(2, 0)].kind == 'knight'
 
     def test_move_knight_on_top_of_a_pawn(self):
         result = self.chess_board.move((1, 0), (3, 1))
 
         assert result is False
-        assert self.chess_board.board[(1, 3)].kind == 'pawn'
+        assert self.chess_board[(1, 3)].kind == 'pawn'
 
 
 class TestValidatePawnMoves(unittest.TestCase):
@@ -127,14 +127,14 @@ class TestValidatePawnMoves(unittest.TestCase):
         self.chess_board = ChessBoard()
 
     def test_pawn_can_move_forward(self):
-        assert self.chess_board.board[(2, 3)] is None
+        assert self.chess_board[(2, 3)] is None
         ends = self.chess_board.end_locations_for_piece_at_location((1, 3))
         assert ends == [(2, 3), (3, 3)]
 
     def test_pawn_cant_move_forward_twice_if_not_first_move(self):
-        assert self.chess_board.board[(2, 3)] is None
-        assert self.chess_board.board[(3, 3)] is None
-        self.chess_board.board[(1, 3)].move_count = 1
+        assert self.chess_board[(2, 3)] is None
+        assert self.chess_board[(3, 3)] is None
+        self.chess_board[(1, 3)].move_count = 1
         ends = self.chess_board.end_locations_for_piece_at_location((1, 3))
         assert ends == [(2, 3)]
 

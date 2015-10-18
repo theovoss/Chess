@@ -44,6 +44,19 @@ class ChessBoard(Board):
         self.half_move_clock = 0
         self.full_move_number = 1
 
+    def __getitem__(self, key):
+        return self.board[key]
+
+    def __setitem__(self, key, value):
+        self.board[key] = value
+
+    def __iter__(self):
+        for key in self.board:
+            yield key
+
+    def __len__(self):
+        return len(self.board)
+
     def generate_fen(self):
         """Generates a FEN representation of the board."""
         board = ""
@@ -52,7 +65,7 @@ class ChessBoard(Board):
             num_missing = 0
             for column in range(0, self.columns):
                 key = (row, column)
-                piece = self.board[key]
+                piece = self[key]
 
                 if piece:
                     prepend = ''
@@ -87,13 +100,13 @@ class ChessBoard(Board):
                 try:
                     num_missing = int(fen_row[actual_column])
                     for column in range(0, num_missing):
-                        self.board[(row, actual_column)] = None
+                        self[(row, actual_column)] = None
                         actual_column += 1
                 except ValueError:
                     name = map_fen_to_piece_name[fen_row[actual_column].lower()]
                     color = "black" if fen_row[actual_column].islower() else "white"
                     moves = self.get_piece_moves(name, json_data)
-                    self.board[(row, column)] = Piece(name, color, moves)
+                    self[(row, column)] = Piece(name, color, moves)
                     actual_column += 1
 
     def export(self):
@@ -109,8 +122,8 @@ class ChessBoard(Board):
             map_color_to_name[self.players[player]['color']] = player
             json_board[player] = {}
 
-        for location in self.board:
-            piece = self.board[location]
+        for location in self:
+            piece = self[location]
             if piece:
                 player = map_color_to_name[piece.color]
                 if piece.kind in json_board[player]:
@@ -145,11 +158,11 @@ class ChessBoard(Board):
                 self.pieces.append(a_piece)
 
                 for location in player_pieces[piece]:
-                    self.board[tuple(location)] = a_piece
+                    self[tuple(location)] = a_piece
 
     def clear_board(self):
-        for location in self.board:
-            self.board[location] = None
+        for location in self:
+            self[location] = None
 
     @staticmethod
     def get_piece_moves(name, json_data):
@@ -164,7 +177,7 @@ class ChessBoard(Board):
         return data
 
     def end_locations_for_piece_at_location(self, start_location):
-        piece = self.board[start_location]
+        piece = self[start_location]
         player_direction = None
         for player in self.players:
             if piece.color == self.players[player]['color']:
@@ -175,26 +188,26 @@ class ChessBoard(Board):
         for move in piece.moves:
             directions = move['directions']
             conditions = [getattr(movement, condition) for condition in move['conditions'] if hasattr(movement, condition)]
-            ends = get_all_potential_end_locations(start_location, directions, self.board)
+            ends = get_all_potential_end_locations(start_location, directions, self)
             for condition in conditions:
                 print("ends before condition: {} are: {}".format(condition, ends))
-                ends = condition(self.board, start_location, directions, ends, player_direction)
+                ends = condition(self, start_location, directions, ends, player_direction)
                 print("ends after condition: {} are: {}".format(condition, ends))
             all_end_points += ends
         return all_end_points
 
     def move(self, start_location, end_location):
         if self.is_valid_move(start_location, end_location):
-            is_capture = self.board[end_location] is not None
-            self.board[end_location] = self.board[start_location]
-            self.board[start_location] = None
-            self.board[end_location].move_count += 1
+            is_capture = self[end_location] is not None
+            self[end_location] = self[start_location]
+            self[start_location] = None
+            self[end_location].move_count += 1
             if self.current_players_turn == 'w':
                 self.current_players_turn = 'b'
             else:
                 self.full_move_number += 1
                 self.current_players_turn = 'w'
-            if self.board[end_location].kind != "pawn" and not is_capture:
+            if self[end_location].kind != "pawn" and not is_capture:
                 self.half_move_clock += 1
             else:
                 self.half_move_clock = 0
