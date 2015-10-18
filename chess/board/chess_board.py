@@ -188,6 +188,7 @@ class ChessBoard(Board):
             is_capture = self.board[end_location] is not None
             self.board[end_location] = self.board[start_location]
             self.board[start_location] = None
+            self.board[end_location].move_count += 1
             if self.current_players_turn == 'w':
                 self.current_players_turn = 'b'
             else:

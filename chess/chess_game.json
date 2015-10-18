@@ -3,11 +3,15 @@
         "pawn": {
             "moves": [{
                 "directions": [[1, 0], [-1, 0]],
-                "conditions": ["distance_of_one", "doesnt_land_on_piece", "distance_of_two_if_first_move", "away_from_start"]
+                "conditions": ["distance_of_one", "doesnt_land_on_piece", "directional"]
             },
             {
                 "directions": [[1, 1], [1, -1]],
-                "conditions": ["ends_on_enemy", "distance_of_one", "away_from_start", "en_passant"]
+                "conditions": ["ends_on_enemy", "distance_of_one", "directional", "en_passant"]
+            },
+            {
+                "directions": [[2, 0], [-2, 0]],
+                "conditions": ["doesnt_land_on_piece", "directional", "first_move", "cant_jump_pieces", "distance_of_one"]
             }]
         },
         "rook": {
