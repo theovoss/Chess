@@ -2,7 +2,7 @@
     "pieces": {
         "pawn": {
             "moves": [{
-                "directions": [[1, 0]],
+                "directions": [[1, 0], [-1, 0]],
                 "conditions": ["distance_of_one", "doesnt_land_on_piece", "distance_of_two_if_first_move", "away_from_start"]
             },
             {

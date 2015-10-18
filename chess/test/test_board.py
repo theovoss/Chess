@@ -123,6 +123,12 @@ class TestValidateKnightMoves(unittest.TestCase):
         assert result is False
         assert self.chess_board.board[(1, 3)].kind == 'pawn'
 
+    def test_move_white_pawn(self):
+        pass
+
+    def test_move_black_pawn(self):
+        pass
+
 
 class TestValidatePawnMoves(unittest.TestCase):
 

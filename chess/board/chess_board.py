@@ -165,6 +165,12 @@ class ChessBoard(Board):
 
     def end_locations_for_piece_at_location(self, start_location):
         piece = self.board[start_location]
+        player_direction = None
+        for player in self.players:
+            if piece.color == self.players[player]['color']:
+                player_direction = self.players[player]['direction']
+                break
+
         all_end_points = []
         for move in piece.moves:
             directions = move['directions']
@@ -172,15 +178,13 @@ class ChessBoard(Board):
             ends = get_all_potential_end_locations(start_location, directions, self.board)
             for condition in conditions:
                 print("ends before condition: {} are: {}".format(condition, ends))
-                ends = condition(self.board, start_location, directions, ends)
+                ends = condition(self.board, start_location, directions, ends, player_direction)
                 print("ends after condition: {} are: {}".format(condition, ends))
             all_end_points += ends
         return all_end_points
 
     def move(self, start_location, end_location):
-        possible_moves = self.end_locations_for_piece_at_location(start_location)
-
-        if end_location in possible_moves:
+        if self.is_valid_move(start_location, end_location):
             is_capture = self.board[end_location] is not None
             self.board[end_location] = self.board[start_location]
             self.board[start_location] = None
@@ -197,18 +201,13 @@ class ChessBoard(Board):
         return False
 
     def is_valid_move(self, start_location, end_location):
-        piece = self.board[start_location]
-        for move in piece.get_valid_moves():
-            valid_end_location = tuple(map(lambda x, y: x + y, start_location, move))
-
-            if valid_end_location == end_location:
-                return True
-            valid_end_location = tuple(map(lambda x, y: x - y, start_location, move))
-
-            if valid_end_location == end_location:
-                return True
-
+        possible_moves = self.valid_moves(start_location)
+        if end_location in possible_moves:
+            return True
         return False
+
+    def valid_moves(self, start_location):
+        return self.end_locations_for_piece_at_location(start_location)
 
     @property
     def board(self):
