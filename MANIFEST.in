@@ -1,4 +1,4 @@
-include *.rst *.txt *.md *.json
+include *.rst *.txt *.md *.json chess/*.json
 recursive-include docs *.rst *.txt *.md
 recursive-include chess *.json
 graft */files
