@@ -24,7 +24,7 @@ setuptools.setup(
     author_email='theo.voss973@gmail.com',
 
     packages=setuptools.find_packages(),
-    include_package_data = True,
+    include_package_data=True,
     package_data={'': ['chess/*', 'chess/chess_game.json']},
 
     entry_points={'console_scripts': []},
@@ -32,10 +32,10 @@ setuptools.setup(
     long_description=(README + '\n' + CHANGES),
     license='MIT',
     classifiers=[
-        'Development Status :: 1 - Planning',
+        'Development Status :: 3 - Alpha',
         'Natural Language :: English',
         'Operating System :: OS Independent',
-        'Programming Language :: Python',
+        'Programming Language :: Python :: 3.4',
     ],
     install_requires=[]
 )
