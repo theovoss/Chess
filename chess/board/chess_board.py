@@ -2,9 +2,9 @@
 # disabling too many instance attributes for now.
 # once I implement enpassant and castling,
 # I shouldn't need some of the FEN attributes.
-import os
 import json
 
+from .. import standard_chess_json
 from .base import Board
 from ..piece import Piece
 
@@ -29,8 +29,7 @@ class ChessBoard(Board):
         self.players = {}
         self.end_game = {}
 
-        script_dir = os.path.dirname(__file__)
-        self.standard_chess = os.path.join(script_dir, '..', 'chess_game.json')
+        self.standard_chess = standard_chess_json
 
         if not existing_board:
             existing_board = self.load_json()

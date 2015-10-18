@@ -12,14 +12,12 @@ A python library for playing chess.
 
 ## Requirements
 
-* Python 3.4+
-
 ## Installation
 
 Chess can be installed with pip:
 
 ```
-$ Coming soon
+$ pip install git+git://github.com/theovoss/Chess.git
 ```
 
 or directly from the source code:

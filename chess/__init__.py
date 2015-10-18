@@ -1,6 +1,7 @@
 """Package for Chess."""
 
 import sys
+import os
 
 __project__ = 'Chess'
 __version__ = '0.0.0'
@@ -11,3 +12,6 @@ PYTHON_VERSION = 3, 4
 
 if not sys.version_info >= PYTHON_VERSION:  # pragma: no cover (manual test)
     exit("Python {}.{}+ is required.".format(*PYTHON_VERSION))
+
+script_dir = os.path.dirname(__file__)
+standard_chess_json = os.path.join(script_dir, 'chess_game.json')
