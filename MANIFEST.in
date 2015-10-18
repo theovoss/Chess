@@ -5,4 +5,6 @@ recursive-include docs *.rst *.txt *.md
 recursive-include chess *.json
 graft */files
 graft */*/files
-
+graft */chess
+graft /chess
+graft chess
