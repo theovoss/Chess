@@ -6,7 +6,7 @@
                 "conditions": ["distance_of_one", "doesnt_land_on_piece", "directional"]
             },
             {
-                "directions": [[1, 1], [1, -1]],
+                "directions": [[1, 1], [1, -1], [-1, 1], [-1, -1]],
                 "conditions": ["ends_on_enemy", "distance_of_one", "directional", "en_passant"]
             },
             {
