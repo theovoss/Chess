@@ -129,6 +129,10 @@ class ChessBoard(Board):
                     json_board[player][piece.kind].append(list(location))
                 else:
                     json_board[player][piece.kind] = [list(location)]
+        if self.current_players_turn == 'w':
+            json_board['players']['current'] = "Player 1"
+        else:
+            json_board['players']['current'] = "Player 2"
 
         json_data['board'] = json_board
 
@@ -142,7 +146,7 @@ class ChessBoard(Board):
         json_board = json_data['board']
 
         self.end_game = json_data['end_game']
-        for player in json_board:
+        for player in ['Player 1', 'Player 2']:
             players_data = json_data['players']
             color = players_data[player]['color']
 
@@ -158,6 +162,11 @@ class ChessBoard(Board):
 
                 for location in player_pieces[piece]:
                     self[tuple(location)] = a_piece
+
+        if json_data['players']['current'] == "Player 1":
+            self.current_players_turn = 'w'
+        else:
+            self.current_players_turn = 'b'
 
     def clear_board(self):
         for location in self:
@@ -197,15 +206,19 @@ class ChessBoard(Board):
 
     def move(self, start_location, end_location):
         if self.is_valid_move(start_location, end_location):
+            if self.current_players_turn == 'w':
+                if self[start_location].color == 'black':
+                    return False
+                self.current_players_turn = 'b'
+            else:
+                if self[start_location].color == 'white':
+                    return False
+                self.full_move_number += 1
+                self.current_players_turn = 'w'
             is_capture = self[end_location] is not None
             self[end_location] = self[start_location]
             self[start_location] = None
             self[end_location].move_count += 1
-            if self.current_players_turn == 'w':
-                self.current_players_turn = 'b'
-            else:
-                self.full_move_number += 1
-                self.current_players_turn = 'w'
             if self[end_location].kind != "pawn" and not is_capture:
                 self.half_move_clock += 1
             else:
