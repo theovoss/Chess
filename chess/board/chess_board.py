@@ -115,11 +115,17 @@ class ChessBoard(Board):
             json_data['pieces'][piece.kind] = {'moves': piece.moves}
 
         json_data['players'] = self.players
+        if self.current_players_turn == 'w':
+            json_data['players']['current'] = "Player 1"
+        else:
+            json_data['players']['current'] = "Player 2"
+
         map_color_to_name = {}
         json_board = {}
         for player in self.players:
-            map_color_to_name[self.players[player]['color']] = player
-            json_board[player] = {}
+            if player != 'current':
+                map_color_to_name[self.players[player]['color']] = player
+                json_board[player] = {}
 
         for location in self:
             piece = self[location]
@@ -129,10 +135,6 @@ class ChessBoard(Board):
                     json_board[player][piece.kind].append(list(location))
                 else:
                     json_board[player][piece.kind] = [list(location)]
-        if self.current_players_turn == 'w':
-            json_board['players']['current'] = "Player 1"
-        else:
-            json_board['players']['current'] = "Player 2"
 
         json_data['board'] = json_board
 

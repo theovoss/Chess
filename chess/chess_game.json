@@ -71,7 +71,8 @@
             "direction": [-1, 0],
             "color": "black",
             "starts": false
-        }
+        },
+        "current": "Player 1"
     },
     "board": {
         "Player 1": {
@@ -89,7 +90,6 @@
             "bishop": [[7, 2], [7, 5]],
             "king": [[7, 4]],
             "queen": [[7, 3]]
-        },
-        "current": "Player 1"
+        }
     }
 }
