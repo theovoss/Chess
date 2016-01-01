@@ -71,7 +71,8 @@
             "direction": [-1, 0],
             "color": "black",
             "starts": false
-        }
+        },
+        "current": "Player 1"
     },
     "board": {
         "Player 1": {
