@@ -24,6 +24,9 @@ class Chess:
         end = self._convert_location_to_board_indices(end_location)
         return self._board.move(start, end)
 
+    def destinations(self, start_location):
+        return self._board.end_locations_for_piece_at_location(start_location)
+
     @staticmethod
     def _convert_location_to_board_indices(location):
         assert len(location) == 2
