@@ -1,6 +1,5 @@
 from .board import ChessBoard
 
-
 class Chess:
 
     def __init__(self, existing_board=None):
@@ -29,9 +28,11 @@ class Chess:
 
     @staticmethod
     def _convert_location_to_board_indices(location):
-        assert len(location) == 2
-        alphabet = "abcdefghijklmnopqrstuvwxyz"
-        col = alphabet.index(location[0].lower())
-        row = int(location[1]) - 1
-        key = (row, col)
-        return key
+        if isinstance(location, str):
+            assert len(location) == 2
+            alphabet = "abcdefghijklmnopqrstuvwxyz"
+            col = alphabet.index(location[0].lower())
+            row = int(location[1]) - 1
+            key = (row, col)
+            return key
+        return location

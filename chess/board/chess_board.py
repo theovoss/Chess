@@ -188,6 +188,8 @@ class ChessBoard(Board):
 
     def end_locations_for_piece_at_location(self, start_location):
         piece = self[start_location]
+        if not piece:
+            return []
         player_direction = None
         for player in self.players:
             if piece.color == self.players[player]['color']:
