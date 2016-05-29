@@ -61,6 +61,46 @@ class TestMovements(unittest.TestCase):
 
         assert new_end_locations == expected_positions
 
+    def test_cant_jump_own_pieces(self):
+        start = (7, 2)
+        middle = (4, 2)
+
+        self.chess_board[start] = Mock(color=1)
+        self.chess_board[middle] = Mock(color=1)
+        self.chess_board[(6, 2)] = None
+        self.chess_board[(5, 2)] = None
+
+        starting_end_locations = [(3, 2), (4, 2), (6, 2)]
+        expected_positions = [(4, 2), (6, 2)]
+        new_end_locations = cant_jump_pieces(self.chess_board, start, None, starting_end_locations, Mock())
+
+        assert new_end_locations == expected_positions
+
+    def test_cant_jump_own_pieces_diagonally(self):
+        start = (0, 2)
+        middle = (1, 1)
+
+        self.chess_board[start] = Mock(color=1)
+        self.chess_board[middle] = Mock(color=1)
+        self.chess_board[(2, 0)] = None
+
+        starting_end_locations = [(1, 1), (2, 0)]
+        expected_positions = [(1, 1)]
+        new_end_locations = cant_jump_pieces(self.chess_board, start, None, starting_end_locations, Mock())
+
+        assert new_end_locations == expected_positions
+
+    def test_cant_jump_pieces_divide_by_one_error(self):
+        start = (2, 2)
+
+        self.chess_board[start] = Mock()
+
+        starting_end_locations = [(3, 2), (1, 2)]
+        expected_positions = [(3, 2), (1, 2)]
+        new_end_locations = cant_jump_pieces(self.chess_board, start, None, starting_end_locations, Mock())
+
+        assert new_end_locations == expected_positions
+
     def test_cant_jump_pieces_doesnt_limit_if_no_pieces_are_in_the_way(self):
         start = (1, 1)
 
