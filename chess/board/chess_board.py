@@ -35,9 +35,12 @@ class ChessBoard(Board):
             existing_board = self.load_json()
 
         self.initialize_board(existing_board)
+        if existing_board and existing_board['players']['current'] == "Player 1":
+            self.current_players_turn = "w"
+        else:
+            self.current_players_turn = "b"
 
         # FEN data I should take into account
-        self.current_players_turn = "w"
         self.castling_opportunities = "KQkq"
         self.en_passant_target_square = "-"
         self.half_move_clock = 0
@@ -202,9 +205,9 @@ class ChessBoard(Board):
             conditions = [getattr(movement, condition) for condition in move['conditions'] if hasattr(movement, condition)]
             ends = get_all_potential_end_locations(start_location, directions, self)
             for condition in conditions:
-                print("ends before condition: {} are: {}".format(condition, ends))
+                # print("ends before condition: {} are: {}".format(condition, ends))
                 ends = condition(self, start_location, directions, ends, player_direction)
-                print("ends after condition: {} are: {}".format(condition, ends))
+                # print("ends after condition: {} are: {}".format(condition, ends))
             all_end_points += ends
         return all_end_points
 
@@ -212,13 +215,16 @@ class ChessBoard(Board):
         if self.is_valid_move(start_location, end_location):
             if self.current_players_turn == 'w':
                 if self[start_location].color == 'black':
+                    print('black trying to move, but whites turn')
                     return False
                 self.current_players_turn = 'b'
             else:
                 if self[start_location].color == 'white':
+                    print('white trying to move, but blacks turn')
                     return False
                 self.full_move_number += 1
                 self.current_players_turn = 'w'
+            print("is valid move")
             is_capture = self[end_location] is not None
             self[end_location] = self[start_location]
             self[start_location] = None
@@ -228,6 +234,7 @@ class ChessBoard(Board):
             else:
                 self.half_move_clock = 0
             return True
+        print('is not valid move')
         return False
 
     def is_valid_move(self, start_location, end_location):
