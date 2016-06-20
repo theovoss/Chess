@@ -73,7 +73,7 @@ def doesnt_land_on_piece(board, start, directions, potential_end_locations, play
     return [end for end in potential_end_locations if not board[end]]
 
 
-def can_end_on_enemy(board, start, directions, potential_end_locations, player_direction):
+def ends_on_enemy(board, start, directions, potential_end_locations, player_direction):
     ends = []
     for end in potential_end_locations:
         if board[end] is not None and board[end].color != board[start].color:
@@ -84,11 +84,6 @@ def can_end_on_enemy(board, start, directions, potential_end_locations, player_d
 def directional(board, start, directions, potential_end_locations, player_direction):
     return [end for end in potential_end_locations if is_directional(start, end, player_direction)]
 
-    new_list = []
-    for end in potential_end_locations:
-        if is_directional(start, end, player_direction):
-            new_list.append(end)
-    return new_list
 
 def is_directional(start, end, direction):
     direct = True
