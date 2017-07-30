@@ -1,3 +1,3 @@
-"""Integration test configuration file."""
+"""Integration tests configuration file."""
 
-from chess.test.conftest import pytest_configure  # pylint: disable=unused-import
+from chess.tests.conftest import pytest_configure  # pylint: disable=unused-import

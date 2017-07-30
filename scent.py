@@ -1,4 +1,6 @@
-import os
+"""Configuration file for sniffer."""
+# pylint: disable=superfluous-parens,bad-continuation
+
 import time
 import subprocess
 
@@ -11,76 +13,85 @@ else:
     notify = Notifier.notify
 
 
-watch_paths = ['chess/', 'tests/']
+watch_paths = ["chess", "tests"]
 
 
-@select_runnable('python')
+class Options(object):
+    group = int(time.time())  # unique per run
+    show_coverage = False
+    rerun_args = None
+
+    targets = [
+        (('make', 'test-unit', 'DISABLE_COVERAGE=true'), "Unit Tests", True),
+        (('make', 'test-all'), "Integration Tests", False),
+        (('make', 'check'), "Static Analysis", True),
+        (('make', 'doc'), None, True),
+    ]
+
+
+@select_runnable('run_targets')
 @file_validator
-def py_files(filename):
-    return all((filename.endswith('.py'),
-               not os.path.basename(filename).startswith('.')))
+def python_files(filename):
+    return filename.endswith('.py')
+
+
+@select_runnable('run_targets')
+@file_validator
+def html_files(filename):
+    return filename.split('.')[-1] in ['html', 'css', 'js']
 
 
 @runnable
-def python(*_):
+def run_targets(*args):
+    """Run targets for Python."""
+    Options.show_coverage = 'coverage' in args
 
-    for count, (command, title) in enumerate((
-        (('make', 'test'), "Unit Tests"),
-        (('make', 'tests'), "Integration Tests"),
-        (('make', 'check'), "Static Analysis"),
-        (('make', 'doc'), None),
-    ), start=1):
+    count = 0
+    for count, (command, title, retry) in enumerate(Options.targets, start=1):
 
-        if not run(command, title, count):
+        success = call(command, title, retry)
+        if not success:
+            message = "✅ " * (count - 1) + "❌"
+            show_notification(message, title)
+
             return False
+
+    message = "✅ " * count
+    title = "All Targets"
+    show_notification(message, title)
+    show_coverage()
 
     return True
 
 
-GROUP = int(time.time())  # unique per run
-
-_show_coverage = True
-_rerun_args = None
-
-
-def run(command, title, count):
-    global _rerun_args
-
-    if _rerun_args:
-        args = _rerun_args
-        _rerun_args = None
-        if not run(*args):
+def call(command, title, retry):
+    """Run a command-line program and display the result."""
+    if Options.rerun_args:
+        command, title, retry = Options.rerun_args
+        Options.rerun_args = None
+        success = call(command, title, retry)
+        if not success:
             return False
 
     print("")
     print("$ %s" % ' '.join(command))
     failure = subprocess.call(command)
 
-    if failure:
-        mark = "❌" * count
-        message = mark + " [FAIL] " + mark
-    else:
-        mark = "✅" * count
-        message = mark + " [PASS] " + mark
-    show_notification(message, title)
-
-    show_coverage()
-
-    if failure:
-        _rerun_args = command, title, count
+    if failure and retry:
+        Options.rerun_args = command, title, retry
 
     return not failure
 
 
 def show_notification(message, title):
+    """Show a user notification."""
     if notify and title:
-        notify(message, title=title, group=GROUP)
+        notify(message, title=title, group=Options.group)
 
 
 def show_coverage():
-    global _show_coverage
-
-    if _show_coverage:
+    """Launch the coverage report."""
+    if Options.show_coverage:
         subprocess.call(['make', 'read-coverage'])
 
-    _show_coverage = False
+    Options.show_coverage = False
