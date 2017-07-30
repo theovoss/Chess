@@ -101,7 +101,7 @@ class ChessBoard(Board):
             for column in range(0, len(fen_row)):
                 try:
                     num_missing = int(fen_row[actual_column])
-                    for column in range(0, num_missing):
+                    for _ in range(0, num_missing):
                         self[(row, actual_column)] = None
                         actual_column += 1
                 except ValueError:
