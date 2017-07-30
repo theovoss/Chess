@@ -1,6 +1,8 @@
-The MIT License (MIT)
+# License
 
-Copyright (c) 2015 Theo Voss <theo.voss973@gmail.com>
+**The MIT License (MIT)**
+
+Copyright &copy; 2017, Theo Voss
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal

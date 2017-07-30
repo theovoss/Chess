@@ -5,35 +5,40 @@
 ### Requirements
 
 * Make:
-    * Windows: http://cygwin.com/install.html
-    * Mac: https://developer.apple.com/xcode
-    * Linux: http://www.gnu.org/software/make (likely already installed)
-* virtualenv: https://pypi.python.org/pypi/virtualenv#installation
+    * Windows: http://mingw.org/download/installer
+    * Mac: http://developer.apple.com/xcode
+    * Linux: http://www.gnu.org/software/make
+* pipenv: http://docs.pipenv.org
 * Pandoc: http://johnmacfarlane.net/pandoc/installing.html
 * Graphviz: http://www.graphviz.org/Download.php
 
+To confirm these system dependencies are configured correctly:
+
+```sh
+$ make doctor
+```
+
 ### Installation
 
-Create a virtualenv:
+Install project dependencies into a virtual environment:
 
-```
-$ make env
+```sh
+$ make install
 ```
 
-## Development
+## Development Tasks
 
 ### Testing
 
 Manually run the tests:
 
-```
+```sh
 $ make test
-$ make tests  # includes integration tests
 ```
 
 or keep them running on change:
 
-```
+```sh
 $ make watch
 ```
 
@@ -43,7 +48,7 @@ $ make watch
 
 Build the documentation:
 
-```
+```sh
 $ make doc
 ```
 
@@ -51,18 +56,25 @@ $ make doc
 
 Run linters and static analyzers:
 
-```
-$ make pep8
-$ make pep257
+```sh
 $ make pylint
+$ make pycodestyle
+$ make pydocstyle
 $ make check  # includes all checks
 ```
 
-## Release
+## Continuous Integration
+
+The CI server will report overall build status:
+
+```sh
+$ make ci
+```
+
+## Release Tasks
 
 Release to PyPI:
 
-```
-$ make upload-test  # dry run upload to a test server
+```sh
 $ make upload
 ```

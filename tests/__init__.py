@@ -1,1 +1,1 @@
-"""Integration tests for the `chess` package."""
+"""Integration tests for the package."""
