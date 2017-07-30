@@ -1,0 +1,62 @@
+{
+    "pieces": {
+        "pawn": {
+            "moves": [{
+                "directions": [[1, 1], [1, -1], [-1, 1], [-1, -1]],
+                "conditions": ["distance_of_one", "doesnt_land_on_piece", "directional", "promotes"]
+            },
+            {
+                "directions": [[1, 1], [1, -1], [-1, 1], [-1, -1]],
+                "conditions": ["alternates_landing_on_enemy_and_empty_space", "directional", "promotes"]
+            }
+            ]
+        }
+    },
+    "players": {
+        "Player 1": {
+            "direction": [1, 0],
+            "color": "white",
+            "starts": true
+        },
+        "Player 2": {
+            "direction": [-1, 0],
+            "color": "black",
+            "starts": false
+        },
+        "current": "Player 1"
+    },
+    "board": {
+        "Player 1": {
+            "pawn": [
+                {"position": [0, 0],  "move_count": 0},
+                {"position": [1, 1],  "move_count": 0},
+                {"position": [0, 2],  "move_count": 0},
+                {"position": [2, 0],  "move_count": 0},
+                {"position": [2, 2],  "move_count": 0},
+                {"position": [3, 1],  "move_count": 0},
+                {"position": [4, 0],  "move_count": 0},
+                {"position": [4, 2],  "move_count": 0},
+                {"position": [5, 1],  "move_count": 0},
+                {"position": [6, 0],  "move_count": 0},
+                {"position": [6, 2],  "move_count": 0},
+                {"position": [7, 1],  "move_count": 0}
+            ]
+            },
+        "Player 2": {
+            "pawn": [
+                {"position": [0, 6],  "move_count": 0},
+                {"position": [1, 5],  "move_count": 0},
+                {"position": [1, 7],  "move_count": 0},
+                {"position": [2, 6],  "move_count": 0},
+                {"position": [3, 5],  "move_count": 0},
+                {"position": [3, 7],  "move_count": 0},
+                {"position": [4, 6],  "move_count": 0},
+                {"position": [5, 5],  "move_count": 0},
+                {"position": [5, 7],  "move_count": 0},
+                {"position": [6, 6],  "move_count": 0},
+                {"position": [7, 5],  "move_count": 0},
+                {"position": [7, 7],  "move_count": 0}
+            ]
+        }
+    }
+}

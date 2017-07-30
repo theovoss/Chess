@@ -162,7 +162,6 @@ class ChessBoard(Board):
                 name = piece
                 moves = self.get_piece_moves(name, json_data)
                 a_piece = Piece(name, color, moves)
-                a_piece.move_count = 0  # something... is this in json???
                 self.pieces.append(a_piece)
 
                 for position_moves_dict in player_pieces[piece]:
@@ -207,9 +206,9 @@ class ChessBoard(Board):
             conditions = [getattr(movement, condition) for condition in move['conditions'] if hasattr(movement, condition)]
             ends = get_all_potential_end_locations(start_location, directions, self)
             for condition in conditions:
-                # print("ends before condition: {} are: {}".format(condition, ends))
+                print("ends before condition: {} are: {}".format(condition, ends))
                 ends = condition(self, start_location, directions, ends, player_direction)
-                # print("ends after condition: {} are: {}".format(condition, ends))
+                print("ends after condition: {} are: {}".format(condition, ends))
             all_end_points += ends
         return all_end_points
 
