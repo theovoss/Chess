@@ -184,7 +184,7 @@ MKDOCS := pipenv run mkdocs
 MKDOCS_INDEX := site/index.html
 
 .PHONY: doc
-doc: uml mkdocs ## Generate documentation
+doc: uml ## Generate documentation
 
 .PHONY: uml
 uml: install docs/*.png
