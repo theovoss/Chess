@@ -60,7 +60,7 @@ class ChessBoard(Board):
         return len(self.board)
 
     def generate_fen(self):
-        """Generates a FEN representation of the board."""
+        """Generate a FEN representation of the board."""
         board = ""
         # FEN notation starts in the top left
         for row in range(self.rows - 1, -1, -1):
