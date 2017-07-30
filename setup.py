@@ -25,7 +25,7 @@ setuptools.setup(
 
     packages=setuptools.find_packages(),
     include_package_data=True,
-    package_data={'': ['chess/*', 'chess/chess_game.json']},
+    package_data={'': ['chess/*', 'chess/chess_game.json', 'chess/checkers_game.json']},
 
     entry_points={'console_scripts': []},
 

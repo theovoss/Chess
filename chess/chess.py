@@ -1,5 +1,6 @@
 from .board import ChessBoard
 
+
 class Chess:
 
     def __init__(self, existing_board=None):

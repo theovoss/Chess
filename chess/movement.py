@@ -34,20 +34,13 @@ def cant_jump_pieces(board, start, directions, potential_end_locations, player_d
         direction = tuple(map(operator.floordiv, direction, (dividor, dividor)))
         location_to_remove = start
         found_piece = False
-        print("start: {}".format(start))
-        print("direction: {}".format(direction))
-        print("location: {}".format(location))
         while True:
             location_to_remove = tuple(map(operator.add, location_to_remove, direction))
             if not found_piece and board[location_to_remove]:
                 found_piece = True
-                print("{} has a piece".format(location_to_remove))
             elif location_to_remove in end_locations and found_piece:
-                print("removing {} from board".format(location_to_remove))
                 end_locations.remove(location_to_remove)
             elif location_to_remove not in board:
-                # import pdb
-                # pdb.set_trace()
                 print("{} not in board".format(location_to_remove))
                 break
             else:
@@ -73,7 +66,7 @@ def doesnt_land_on_piece(board, start, directions, potential_end_locations, play
     return [end for end in potential_end_locations if not board[end]]
 
 
-def can_end_on_enemy(board, start, directions, potential_end_locations, player_direction):
+def ends_on_enemy(board, start, directions, potential_end_locations, player_direction):
     ends = []
     for end in potential_end_locations:
         if board[end] is not None and board[end].color != board[start].color:
@@ -84,11 +77,6 @@ def can_end_on_enemy(board, start, directions, potential_end_locations, player_d
 def directional(board, start, directions, potential_end_locations, player_direction):
     return [end for end in potential_end_locations if is_directional(start, end, player_direction)]
 
-    new_list = []
-    for end in potential_end_locations:
-        if is_directional(start, end, player_direction):
-            new_list.append(end)
-    return new_list
 
 def is_directional(start, end, direction):
     direct = True

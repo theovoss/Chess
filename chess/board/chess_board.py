@@ -135,9 +135,9 @@ class ChessBoard(Board):
             if piece:
                 player = map_color_to_name[piece.color]
                 if piece.kind in json_board[player]:
-                    json_board[player][piece.kind].append(list(location))
+                    json_board[player][piece.kind].append({"position": list(location), "move_count": piece.move_count})
                 else:
-                    json_board[player][piece.kind] = [list(location)]
+                    json_board[player][piece.kind] = [{"position": list(location), "move_count": piece.move_count}]
 
         json_data['board'] = json_board
 
@@ -162,10 +162,11 @@ class ChessBoard(Board):
                 name = piece
                 moves = self.get_piece_moves(name, json_data)
                 a_piece = Piece(name, color, moves)
-
                 self.pieces.append(a_piece)
 
-                for location in player_pieces[piece]:
+                for position_moves_dict in player_pieces[piece]:
+                    location = position_moves_dict['position']
+                    a_piece.move_count = position_moves_dict['move_count']
                     self[tuple(location)] = a_piece
 
         if json_data['players']['current'] == "Player 1":
@@ -205,9 +206,9 @@ class ChessBoard(Board):
             conditions = [getattr(movement, condition) for condition in move['conditions'] if hasattr(movement, condition)]
             ends = get_all_potential_end_locations(start_location, directions, self)
             for condition in conditions:
-                # print("ends before condition: {} are: {}".format(condition, ends))
+                print("ends before condition: {} are: {}".format(condition, ends))
                 ends = condition(self, start_location, directions, ends, player_direction)
-                # print("ends after condition: {} are: {}".format(condition, ends))
+                print("ends after condition: {} are: {}".format(condition, ends))
             all_end_points += ends
         return all_end_points
 
