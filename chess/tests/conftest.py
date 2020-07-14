@@ -11,8 +11,6 @@ def pytest_configure(config):
 
         def __init__(self, *args, **kwargs):
             super().__init__(*args, **kwargs)
-            self.verbosity = 0
-            self.showlongtestinfo = False
             self.showfspath = False
 
     terminal.TerminalReporter = QuietReporter

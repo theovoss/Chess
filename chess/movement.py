@@ -24,7 +24,26 @@ def get_one_move_away(start, directions):
     return ret_val
 
 
-def cant_jump_pieces(board, start, directions, potential_end_locations, player_directionv):
+def alternates_landing_on_enemy_and_empty_space(board, start, directions, potential_end_locations, player_direction):
+    ends = []
+    for direction in directions:
+        new_start = start
+        location = tuple(map(operator.add, new_start, direction))
+        while location in board:
+            initial_move = tuple(map(operator.add, direction, new_start))
+            new_start = tuple(map(operator.add, direction, initial_move))
+            if initial_move in potential_end_locations and new_start in potential_end_locations:
+                # enemy piece at first move and no pices at second move
+                if board[initial_move] and not board[new_start] and board[initial_move].color != board[start].color:
+                    ends.append(new_start)
+                else:
+                    break
+            else:
+                break
+    return ends
+
+
+def cant_jump_pieces(board, start, directions, potential_end_locations, player_direction):
     end_locations = potential_end_locations
     for location in potential_end_locations:
         # get a direction from start

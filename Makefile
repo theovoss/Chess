@@ -48,7 +48,7 @@ else
 	else
 		OPEN := open
 	endif
-	PYTHON := $(BIN)/python
+	PYTHON := $(BIN)/python$(PYTHON_MAJOR)
 	PIP := $(BIN)/pip
 endif
 

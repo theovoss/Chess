@@ -9,7 +9,8 @@ from chess.movement import (distance_of_one,
                             ends_on_enemy,
                             directional,
                             first_move,
-                            get_all_potential_end_locations)
+                            get_all_potential_end_locations,
+                            alternates_landing_on_enemy_and_empty_space)
 from chess.board.chess_board import ChessBoard
 
 
@@ -217,3 +218,23 @@ class TestMovements(unittest.TestCase):
         ends = first_move(self.chess_board, start, None, potential_end_locations, Mock())
 
         assert ends == []
+
+    def test_alternates_landing_on_enemy_and_empty_space(self):
+        start = (0, 0)
+        self.chess_board[start] = Mock(move_count=1)
+        potential_end_locations = [(1, 1), (2, 2), (3, 3)]
+        self.chess_board[(1, 1)] = Mock(color="purple")
+
+        ends = alternates_landing_on_enemy_and_empty_space(self.chess_board, start, [(1, 1)], potential_end_locations, Mock())
+
+        assert ends == [(2, 2)]
+
+    def test_alternates_landing_on_enemy_and_empty_space_and_switches_directions(self):
+        start = (0, 0)
+        self.chess_board[start] = Mock(move_count=1)
+        potential_end_locations = [(1, 1), (2, 2), (3, 3), (4, 4), (5, 5)]
+        self.chess_board[(1, 1)] = Mock(color="purple")
+        self.chess_board[(3, 3)] = Mock(color="purple")
+        ends = alternates_landing_on_enemy_and_empty_space(self.chess_board, start, [(1, 1)], potential_end_locations, Mock())
+
+        assert ends == [(2, 2), (4, 4)]

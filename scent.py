@@ -1,5 +1,6 @@
 """Configuration file for sniffer."""
-# pylint: disable=superfluous-parens,bad-continuation
+# pylint: skip-file
+
 
 import time
 import subprocess
@@ -16,7 +17,7 @@ else:
 watch_paths = ["chess", "tests"]
 
 
-class Options(object):
+class Options():
     group = int(time.time())  # unique per run
     show_coverage = False
     rerun_args = None
