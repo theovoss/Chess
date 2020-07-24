@@ -11,6 +11,8 @@ from ..piece import Piece
 from ..movement import get_all_potential_end_locations
 from .. import movement
 
+from .. import capture_actions
+
 map_fen_to_piece_name = {
     'k': "king",
     'q': "queen",
@@ -22,6 +24,7 @@ map_fen_to_piece_name = {
 
 
 class ChessBoard(Board):
+    default_capture_actions = ['replace', 'increment_move_count']
 
     def __init__(self, existing_board=None):
         super().__init__(8, 8)
@@ -108,7 +111,7 @@ class ChessBoard(Board):
                     name = map_fen_to_piece_name[fen_row[actual_column].lower()]
                     color = "black" if fen_row[actual_column].islower() else "white"
                     moves = self.get_piece_moves(name, json_data)
-                    self[(row, column)] = Piece(name, color, moves)
+                    self[(row, column)] = Piece(name, color, moves, self.default_capture_actions)
                     actual_column += 1
 
     def export(self):
@@ -161,7 +164,8 @@ class ChessBoard(Board):
             for piece in player_pieces:
                 name = piece
                 moves = self.get_piece_moves(name, json_data)
-                a_piece = Piece(name, color, moves)
+                actions = self.get_piece_capture_actions(name, json_data, self.default_capture_actions)
+                a_piece = Piece(name, color, moves, actions)
                 self.pieces.append(a_piece)
 
                 for position_moves_dict in player_pieces[piece]:
@@ -182,7 +186,17 @@ class ChessBoard(Board):
     def get_piece_moves(name, json_data):
         return json_data['pieces'][name]['moves']
 
-    def load_json(self):
+    @staticmethod
+    def get_piece_capture_actions(name, json_data, default_actions):
+        if 'capture_actions' in json_data['pieces'][name]:
+            return json_data['pieces'][name]['capture_actions']
+
+        return default_actions
+
+    def load_json(self, json_data=None):
+        if json_data:
+            return json_data
+
         filename = self.standard_chess
         data = None
         with open(filename) as data_file:
@@ -227,9 +241,9 @@ class ChessBoard(Board):
                 self.current_players_turn = 'w'
             print("is valid move")
             is_capture = self[end_location] is not None
-            self[end_location] = self[start_location]
-            self[start_location] = None
-            self[end_location].move_count += 1
+
+            self._move_piece(start_location, end_location)
+
             if self[end_location].kind != "pawn" and not is_capture:
                 self.half_move_clock += 1
             else:
@@ -237,6 +251,12 @@ class ChessBoard(Board):
             return True
         print('is not valid move')
         return False
+
+    def _move_piece(self, start_location, end_location):
+        actions = [getattr(capture_actions, action) for action in self[start_location].capture_actions if hasattr(capture_actions, action)]
+
+        for action in actions:
+            action(self.board, start_location, end_location)
 
     def is_valid_move(self, start_location, end_location):
         possible_moves = self.valid_moves(start_location)
@@ -246,6 +266,19 @@ class ChessBoard(Board):
 
     def valid_moves(self, start_location):
         return self.end_locations_for_piece_at_location(start_location)
+
+    @staticmethod
+    def get_surrounding_locations(location):
+        return [
+            (location[0] + 1, location[1]),
+            (location[0] - 1, location[1]),
+            (location[0] + 1, location[1] + 1),
+            (location[0] - 1, location[1] + 1),
+            (location[0] + 1, location[1] - 1),
+            (location[0] - 1, location[1] - 1),
+            (location[0], location[1] + 1),
+            (location[0], location[1] - 1),
+        ]
 
     @property
     def board(self):

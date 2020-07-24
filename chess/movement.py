@@ -63,10 +63,11 @@ def cant_jump_pieces(board, start, directions, potential_end_locations, player_d
                 print("{} not in board".format(location_to_remove))
                 break
             else:
-                print("floating somehwere {}".format(location_to_remove))
-                print("had found piece: {}".format(found_piece))
-                print("in potential_end_locations: {}".format(location_to_remove in potential_end_locations))
-                print("in else: {}".format(potential_end_locations))
+                # print("floating somehwere {}".format(location_to_remove))
+                # print("had found piece: {}".format(found_piece))
+                # print("in potential_end_locations: {}".format(location_to_remove in potential_end_locations))
+                # print("in else: {}".format(potential_end_locations))
+                pass
     return end_locations
 
 

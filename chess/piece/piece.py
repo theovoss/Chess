@@ -2,10 +2,11 @@
 
 class Piece:
 
-    def __init__(self, piece_name, piece_color, moves):
+    def __init__(self, piece_name, piece_color, moves, capture_actions):
         self.kind = piece_name
         self.color = piece_color
         self.moves = moves
+        self.capture_actions = capture_actions
         self.move_count = 0
 
     def __str__(self):

@@ -238,3 +238,14 @@ class TestMovements(unittest.TestCase):
         ends = alternates_landing_on_enemy_and_empty_space(self.chess_board, start, [(1, 1)], potential_end_locations, Mock())
 
         assert ends == [(2, 2), (4, 4)]
+
+    # def test_take_a_piece_and_become_it(self):
+    #     start = (0, 0)
+    #     start = (1, 1)
+    #     self.chess_board[start] = Mock(color="pink")
+    #     self.chess_board[end] = Mock(color="purple")
+    #     potential_end_locations = [end]
+    #     ends = take_a_piece_become_the_piece(self.chess_board, start, [(1, 1)], potential_end_locations, Mock())
+
+    #     # hmmm. assert it's in ends... how to actually move though and check that it took and became the movements.
+    #     # needs more setup
