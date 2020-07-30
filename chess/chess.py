@@ -6,6 +6,8 @@ class Chess:
     def __init__(self, existing_board=None):
         self._board = ChessBoard(existing_board)
 
+    # Methods to place chess
+
     @property
     def board(self):
         return self._get_board()

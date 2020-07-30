@@ -2,14 +2,13 @@
 # disabling too many instance attributes for now.
 # once I implement enpassant and castling,
 # I shouldn't need some of the FEN attributes.
-import json
-
-from .. import standard_chess_json
 from .base import Board
 from ..piece import Piece
 
 from ..movement import get_all_potential_end_locations
 from .. import movement
+
+from ..chess_configurations import get_standard_chess_pieces
 
 from .. import capture_actions
 
@@ -31,8 +30,6 @@ class ChessBoard(Board):
         self.pieces = []
         self.players = {}
         self.end_game = {}
-
-        self.standard_chess = standard_chess_json
 
         if not existing_board:
             existing_board = self.load_json()
@@ -193,16 +190,12 @@ class ChessBoard(Board):
 
         return default_actions
 
-    def load_json(self, json_data=None):
+    @staticmethod
+    def load_json(json_data=None):
         if json_data:
             return json_data
 
-        filename = self.standard_chess
-        data = None
-        with open(filename) as data_file:
-            data = json.load(data_file)
-
-        return data
+        return get_standard_chess_pieces()
 
     def end_locations_for_piece_at_location(self, start_location):
         piece = self[start_location]
