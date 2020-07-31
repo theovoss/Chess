@@ -3,7 +3,7 @@
 import operator as _operator
 
 
-def get_all_potential_end_locations(start, directions, board):
+def get_all_potential_end_locations(start, directions, board, targetted_locations=[]):
     ends = []
     for direction in directions:
         new_start = start
@@ -15,8 +15,21 @@ def get_all_potential_end_locations(start, directions, board):
     return ends
 
 
+def distance_of_two(board, start, directions, potential_end_locations, player_direction):
+    return [x for x in _get_two_moves_away(start, directions) if x in potential_end_locations]
+
+
 def distance_of_one(board, start, directions, potential_end_locations, player_direction):
     return [x for x in _get_one_move_away(start, directions) if x in potential_end_locations]
+
+
+def cant_move_onto_threatened_square(board, start, directions, potential_end_locations, player_direction):
+    pass
+
+
+def _get_two_moves_away(start, directions):
+    double_unit = [tuple(map(_operator.add, move, move)) for move in directions]
+    return [tuple(map(_operator.add, start, move)) for move in double_unit]
 
 
 def _get_one_move_away(start, directions):

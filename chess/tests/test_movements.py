@@ -3,6 +3,7 @@
 import unittest
 from unittest.mock import Mock
 from chess.movement import (distance_of_one,
+                            distance_of_two,
                             doesnt_land_on_piece,
                             doesnt_land_on_own_piece,
                             cant_jump_pieces,
@@ -27,6 +28,17 @@ class TestMovements(unittest.TestCase):
         already_acceptable_possitions = [(1, 2), (1, 0), (2, 1), (3, 3), (5, 5), (2, 3), (9, 1)]
         positions = distance_of_one(self.chess_board, start_square, directions, potential_end_locations=already_acceptable_possitions, player_direction=Mock())
         expected_positions = [(1, 2), (1, 0), (2, 1)]
+        assert len(positions) == len(expected_positions)
+        for pos in positions:
+            assert pos in positions
+
+    def test_distance_of_two_filtering_given_positions(self):
+        directions = [(1, 0), (0, 1), (0, -1)]
+        start_square = (1, 1)
+        already_acceptable_possitions = [(1, 2), (1, 0), (2, 1), (3, 3), (5, 5), (2, 3), (9, 1), (3, 1), (1, 3)]
+
+        positions = distance_of_two(self.chess_board, start_square, directions, potential_end_locations=already_acceptable_possitions, player_direction=Mock())
+        expected_positions = [(1, 3), (3, 1)]
         assert len(positions) == len(expected_positions)
         for pos in positions:
             assert pos in positions

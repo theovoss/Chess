@@ -197,6 +197,13 @@ class ChessBoard(Board):
 
         return get_standard_chess_pieces()
 
+    def all_end_locations_for_color(self, color):
+        ends = []
+        for location, piece in self._board.items():
+            if piece and piece.color == color:
+                ends += self.end_locations_for_piece_at_location(location)
+        return ends
+
     def end_locations_for_piece_at_location(self, start_location):
         piece = self[start_location]
         if not piece:
