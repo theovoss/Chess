@@ -3,7 +3,7 @@
 import operator as _operator
 
 
-def get_all_potential_end_locations(start, directions, board, targetted_locations=[]):
+def get_all_potential_end_locations(start, directions, board):
     ends = []
     for direction in directions:
         new_start = start
