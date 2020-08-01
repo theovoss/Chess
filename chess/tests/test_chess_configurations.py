@@ -27,10 +27,10 @@ class TestChessConfigurer(unittest.TestCase):
         directions = get_movement_directions()
         assert len(directions) >= 5
         assert 'horizontal' in directions
-        assert 'forward/backward' in directions
-        assert 'diagonals' in directions
-        assert 'L shape' in directions
-        assert 'extended L shape' in directions
+        assert 'vertical' in directions
+        assert 'diagonal' in directions
+        assert 'L' in directions
+        assert 'extended L' in directions
 
     def test_get_standard_chess_pieces(self):
         chess_json = get_standard_chess_pieces()

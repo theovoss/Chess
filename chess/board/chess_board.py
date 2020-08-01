@@ -163,6 +163,7 @@ class ChessBoard(Board):
                 moves = self.get_piece_moves(name, json_data)
                 actions = self.get_piece_capture_actions(name, json_data, self.default_capture_actions)
                 a_piece = Piece(name, color, moves, actions)
+
                 self.pieces.append(a_piece)
 
                 for position_moves_dict in player_pieces[piece]:

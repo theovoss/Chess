@@ -3,6 +3,7 @@ import inspect
 from chess import movement
 from chess import capture_actions
 from chess import standard_chess_json
+from chess.piece.directions import get_direction_shorthands
 
 
 def get_movement_rules():
@@ -16,13 +17,7 @@ def get_capture_action_rules():
 
 
 def get_movement_directions():
-    return [
-        'horizontal',
-        'forward/backward',
-        'diagonals',
-        'L shape',
-        'extended L shape'
-    ]
+    return get_direction_shorthands()
 
 
 def get_standard_chess_pieces():

@@ -1,3 +1,4 @@
+from .directions import convert_shorthand_directions
 
 
 class Piece:
@@ -5,9 +6,10 @@ class Piece:
     def __init__(self, piece_name, piece_color, moves, capture_actions):
         self.kind = piece_name
         self.color = piece_color
-        self.moves = moves
+        self.external_moves = moves
         self.capture_actions = capture_actions
         self.move_count = 0
+        self.moves = self._convert_moves(moves)
 
     def __str__(self):
         return "{} {}".format(self.color, self.kind)
@@ -19,3 +21,18 @@ class Piece:
         if self.color == "white":
             character = character.upper()
         return character
+
+    @staticmethod
+    def _convert_moves(moves):
+        converted_moves = []
+        for move in moves:
+            converted_directions = []
+            for direction in move['directions']:
+                if isinstance(direction, str):
+                    converted_directions += convert_shorthand_directions(direction)
+                else:
+                    converted_directions.append(direction)
+            converted_move = move
+            converted_move["directions"] = converted_directions
+            converted_moves.append(converted_move)
+        return converted_moves

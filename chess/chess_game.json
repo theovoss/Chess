@@ -2,54 +2,46 @@
     "pieces": {
         "pawn": {
             "moves": [{
-                "directions": [[1, 0], [-1, 0]],
+                "directions": ["vertical"],
                 "conditions": ["distance_of_one", "doesnt_land_on_piece", "directional"]
             },
             {
-                "directions": [[1, 1], [1, -1], [-1, 1], [-1, -1]],
+                "directions": ["diagonal"],
                 "conditions": ["ends_on_enemy", "distance_of_one", "directional", "en_passant"]
             },
             {
-                "directions": [[2, 0], [-2, 0]],
-                "conditions": ["doesnt_land_on_piece", "directional", "first_move", "cant_jump_pieces", "distance_of_one"]
+                "directions": ["vertical"],
+                "conditions": ["doesnt_land_on_piece", "directional", "first_move", "cant_jump_pieces", "distance_of_two"]
             }]
         },
         "rook": {
             "moves": [{
-                "directions": [[1, 0], [0, 1], [-1, 0], [0, -1]],
+                "directions": ["vertical", "horizontal"],
                 "conditions": ["doesnt_land_on_own_piece", "cant_jump_pieces"]
-            },
-            {
-                "directions": [[0, 2], [0, -3]],
-                "conditions": ["castling"]
             }]
         },
         "knight": {
             "moves": [{
-                "directions": [[2, 1], [2, -1], [1, 2], [1, -2], [-1, 2], [-1, -2], [-2, 1], [-2, -1]],
+                "directions": ["L"],
                 "conditions": ["doesnt_land_on_own_piece", "distance_of_one"]
             }]
         },
         "bishop": {
             "moves": [{
-                "directions": [[-1, -1], [1, 1], [-1, 1], [1, -1]],
+                "directions": ["diagonal"],
                 "conditions": ["doesnt_land_on_own_piece", "cant_jump_pieces"]
             }]
         },
         "queen": {
             "moves": [{
-                "directions": [[-1, -1], [1, 1], [-1, 1], [1, -1], [1, 0], [0, 1], [0, -1], [-1, 0]],
+                "directions": ["diagonal", "horizontal", "vertical"],
                 "conditions": ["doesnt_land_on_own_piece", "cant_jump_pieces"]
             }]
         },
         "king": {
             "moves": [{
-                "directions": [[-1, -1], [1, 1], [-1, 1], [1, -1], [1, 0], [0, 1], [0, -1], [-1, 0]],
+                "directions": ["diagonal", "horizontal", "vertical"],
                 "conditions": ["doesnt_land_on_own_piece", "distance_of_one", "doesnt_end_in_check"]
-            },
-            {
-                "directions": [[0, -2], [0, 2]],
-                "conditions": ["castling"]
             }]
         }
     },
@@ -103,7 +95,6 @@
         },
         "Player 2": {
             "pawn": [
-
                 {"position": [6, 0], "move_count": 0},
                 {"position": [6, 1], "move_count": 0},
                 {"position": [6, 2], "move_count": 0},
