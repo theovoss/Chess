@@ -10,7 +10,7 @@ MODULES := $(wildcard $(PACKAGE)/*.py)
 
 # Python settings
 PYTHON_MAJOR ?= 3
-PYTHON_MINOR ?= 6
+PYTHON_MINOR ?= 7
 
 # System paths
 PLATFORM := $(shell python -c 'import sys; print(sys.platform)')
