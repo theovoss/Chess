@@ -62,25 +62,28 @@ def alternates_landing_on_enemy_and_empty_space(board, start, directions, potent
     return ends
 
 
+def _get_unit_direction(start, end):
+    direction = tuple(map(_operator.sub, end, start))
+    dividor = max(map(abs, direction))
+    direction = tuple(map(_operator.floordiv, direction, (dividor, dividor)))
+    return direction
+
+
 def cant_jump_pieces(board, start, directions, potential_end_locations, player_direction):
     end_locations = potential_end_locations
-    for location in potential_end_locations:
-        # get a direction from start
-        # remove all locations beyond location
-        direction = tuple(map(_operator.sub, location, start))
-        dividor = max(map(abs, direction))
-        direction = tuple(map(_operator.floordiv, direction, (dividor, dividor)))
+    directions = [_get_unit_direction(start, end) for end in potential_end_locations]
+    for direction in set(directions):
         location_to_remove = start
         found_piece = False
         while True:
             location_to_remove = tuple(map(_operator.add, location_to_remove, direction))
-            if not found_piece and board[location_to_remove]:
-                found_piece = True
-            elif location_to_remove in end_locations and found_piece:
-                end_locations.remove(location_to_remove)
-            elif location_to_remove not in board:
+            if location_to_remove not in board:
                 print("{} not in board".format(location_to_remove))
                 break
+            elif not found_piece and board[location_to_remove]:
+                found_piece = True
+            elif found_piece and location_to_remove in end_locations:
+                end_locations.remove(location_to_remove)
             else:
                 # print("floating somehwere {}".format(location_to_remove))
                 # print("had found piece: {}".format(found_piece))

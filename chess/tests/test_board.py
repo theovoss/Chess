@@ -120,6 +120,23 @@ class TestValidateKnightMoves(unittest.TestCase):
         assert self.chess_board[(1, 3)].kind == 'pawn'
 
 
+class TestValidateRookMoves(unittest.TestCase):
+
+    def setUp(self):
+        self.chess_board = ChessBoard()
+
+    def test_destinations_rook_horizontally_no_pieces_in_way(self):
+        # move rook over a bit
+        self.chess_board[(0, 5)] = self.chess_board[(0, 7)]
+        # delete pieces to right so it has space to move back to where it started
+        self.chess_board[(0,6)] = None
+        self.chess_board[(0,7)] = None
+
+        result = self.chess_board.end_locations_for_piece_at_location((0, 5))
+
+        assert result == [(0, 6), (0, 7)]
+
+
 class TestValidatePawnMoves(unittest.TestCase):
 
     """Chess movement unit tests."""
