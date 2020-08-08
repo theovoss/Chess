@@ -80,7 +80,8 @@ def cant_jump_pieces(board, start, directions, potential_end_locations, player_d
             if location_to_remove not in board:
                 print("{} not in board".format(location_to_remove))
                 break
-            elif not found_piece and board[location_to_remove]:
+
+            if not found_piece and board[location_to_remove]:
                 found_piece = True
             elif found_piece and location_to_remove in end_locations:
                 end_locations.remove(location_to_remove)

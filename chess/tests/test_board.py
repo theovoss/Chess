@@ -129,8 +129,8 @@ class TestValidateRookMoves(unittest.TestCase):
         # move rook over a bit
         self.chess_board[(0, 5)] = self.chess_board[(0, 7)]
         # delete pieces to right so it has space to move back to where it started
-        self.chess_board[(0,6)] = None
-        self.chess_board[(0,7)] = None
+        self.chess_board[(0, 6)] = None
+        self.chess_board[(0, 7)] = None
 
         result = self.chess_board.end_locations_for_piece_at_location((0, 5))
 
