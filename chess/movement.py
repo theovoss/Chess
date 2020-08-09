@@ -62,7 +62,7 @@ def alternates_landing_on_enemy_and_empty_space(board, start, directions, potent
     return ends
 
 
-def _get_unit_direction(start, end):
+def get_unit_direction(start, end):
     direction = tuple(map(_operator.sub, end, start))
     dividor = max(map(abs, direction))
     direction = tuple(map(_operator.floordiv, direction, (dividor, dividor)))
@@ -71,7 +71,7 @@ def _get_unit_direction(start, end):
 
 def cant_jump_pieces(board, start, directions, potential_end_locations, player_direction):
     end_locations = potential_end_locations
-    directions = [_get_unit_direction(start, end) for end in potential_end_locations]
+    directions = [get_unit_direction(start, end) for end in potential_end_locations]
     for direction in set(directions):
         location_to_remove = start
         found_piece = False

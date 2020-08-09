@@ -55,7 +55,7 @@ class TestChess(unittest.TestCase):
         internal_queen = Chess.convert_to_internal_indexes(queen)
         internal_enemy_queen_pawn = Chess.convert_to_internal_indexes(enemy_queen_pawn)
 
-        self.chess.board[internal_queen].capture_actions = ['becomes_piece']
+        self.chess.board[internal_queen].moves[0]['capture_actions'] = ['becomes_piece']
         self.chess.board[internal_queen_pawn] = None
         self.chess.move(queen, enemy_queen_pawn)
 

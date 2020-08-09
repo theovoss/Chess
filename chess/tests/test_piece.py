@@ -31,7 +31,7 @@ class TestPiece(unittest.TestCase):
             }
         ]
 
-        piece = Piece("None", "None", moves, "None")
+        piece = Piece("None", "None", moves)
 
         assert piece.moves == expected_moves
 
@@ -58,6 +58,6 @@ class TestPiece(unittest.TestCase):
             }
         ]
 
-        piece = Piece("None", "None", moves, "None")
+        piece = Piece("None", "None", moves)
 
         assert piece.moves == expected_moves

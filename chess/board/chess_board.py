@@ -108,7 +108,7 @@ class ChessBoard(Board):
                     name = map_fen_to_piece_name[fen_row[actual_column].lower()]
                     color = "black" if fen_row[actual_column].islower() else "white"
                     moves = self.get_piece_moves(name, json_data)
-                    self[(row, column)] = Piece(name, color, moves, self.default_capture_actions)
+                    self[(row, column)] = Piece(name, color, moves)
                     actual_column += 1
 
     def export(self):
@@ -161,8 +161,7 @@ class ChessBoard(Board):
             for piece in player_pieces:
                 name = piece
                 moves = self.get_piece_moves(name, json_data)
-                actions = self.get_piece_capture_actions(name, json_data, self.default_capture_actions)
-                a_piece = Piece(name, color, moves, actions)
+                a_piece = Piece(name, color, moves)
 
                 self.pieces.append(a_piece)
 
@@ -183,13 +182,6 @@ class ChessBoard(Board):
     @staticmethod
     def get_piece_moves(name, json_data):
         return json_data['pieces'][name]['moves']
-
-    @staticmethod
-    def get_piece_capture_actions(name, json_data, default_actions):
-        if 'capture_actions' in json_data['pieces'][name]:
-            return json_data['pieces'][name]['capture_actions']
-
-        return default_actions
 
     @staticmethod
     def load_json(json_data=None):
@@ -254,7 +246,19 @@ class ChessBoard(Board):
         return False
 
     def _move_piece(self, start_location, end_location):
-        actions = [getattr(capture_actions, action) for action in self[start_location].capture_actions if hasattr(capture_actions, action)]
+        unit_direction = list(movement.get_unit_direction(start_location, end_location))
+        piece = self[start_location]
+        action_names = self.default_capture_actions
+        print("Unit direction is:")
+        print(unit_direction)
+        for move in piece.moves:
+            print("Move directions are:")
+            print(move['directions'])
+            if unit_direction in move['directions'] and 'capture_actions' in move:
+                action_names = move['capture_actions']
+
+        print("Capture Actions are{}".format(action_names))
+        actions = [getattr(capture_actions, action) for action in action_names if hasattr(capture_actions, action)]
 
         for action in actions:
             action(self.board, start_location, end_location)

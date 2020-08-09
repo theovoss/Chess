@@ -3,11 +3,10 @@ from .directions import convert_shorthand_directions
 
 class Piece:
 
-    def __init__(self, piece_name, piece_color, moves, capture_actions):
+    def __init__(self, piece_name, piece_color, moves):
         self.kind = piece_name
         self.color = piece_color
         self.external_moves = moves
-        self.capture_actions = capture_actions
         self.move_count = 0
         self.moves = self._convert_moves(moves)
 

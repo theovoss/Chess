@@ -137,6 +137,28 @@ class TestValidateRookMoves(unittest.TestCase):
         assert result == [(0, 6), (0, 7)]
 
 
+class TestBecomesPieceCaptureAction(unittest.TestCase):
+
+    def setUp(self):
+        self.chess_board = ChessBoard()
+
+    def test_rook_becomes_pawn(self):
+        # change pawn in front of rook to opposite color
+        self.chess_board[(1, 7)].color = 'black'
+        # add becomes_piece to rook's capture actions
+        self.chess_board[(0, 7)].moves[0]['capture_actions'] = ['becomes_piece']
+
+        # make sure a black pawn is where we think it is
+        assert self.chess_board[(1, 7)].kind == "pawn"
+        assert self.chess_board[(1, 7)].color == "black"
+        assert self.chess_board[(0, 7)].color != "black"
+
+        self.chess_board.move((0, 7), (1, 7))
+
+        assert self.chess_board[(1, 7)].kind == "pawn"
+        assert self.chess_board[(1, 7)].color == "white"
+
+
 class TestValidatePawnMoves(unittest.TestCase):
 
     """Chess movement unit tests."""
