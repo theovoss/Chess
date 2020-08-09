@@ -54,6 +54,9 @@ class TestBoard(unittest.TestCase):
     def test_initial_king_positions(self):
         self.verify_pieces_at_locations_are_correct_piece_and_color([(0, 4)], "king")
 
+    def test_pawns_are_all_different_instances(self):
+        assert self.chess_board[(1, 0)] is not self.chess_board[(1, 1)]
+
     def test_starting_board_fen_export(self):
         assert self.chess_board.generate_fen() == starting_fen_board
 

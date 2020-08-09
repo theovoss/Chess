@@ -161,11 +161,11 @@ class ChessBoard(Board):
             for piece in player_pieces:
                 name = piece
                 moves = self.get_piece_moves(name, json_data)
-                a_piece = Piece(name, color, moves)
 
-                self.pieces.append(a_piece)
+                self.pieces.append(Piece(name, color, moves))
 
                 for position_moves_dict in player_pieces[piece]:
+                    a_piece = Piece(name, color, moves)
                     location = position_moves_dict['position']
                     a_piece.move_count = position_moves_dict['move_count']
                     self[tuple(location)] = a_piece

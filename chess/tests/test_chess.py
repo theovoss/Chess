@@ -60,7 +60,6 @@ class TestChess(unittest.TestCase):
         self.chess.move(queen, enemy_queen_pawn)
 
         former_queen = self.chess.board[internal_enemy_queen_pawn]
-        print("former_queen")
-        print(former_queen)
+
         assert former_queen.color == "white"
         assert former_queen.kind == "pawn"
