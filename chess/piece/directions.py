@@ -10,7 +10,7 @@ shorthands = {
 def convert_shorthand_directions(shorthand):
     if isinstance(shorthand, str) and shorthand in shorthands:
         return shorthands[shorthand]
-    return shorthand
+    return [shorthand]
 
 
 def get_direction_shorthands():

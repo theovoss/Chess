@@ -17,11 +17,10 @@ class TestChessConfigurer(unittest.TestCase):
 
     def test_get_capture_action_rules(self):
         rules = get_capture_action_rules()
-        assert len(rules) > 3
+        assert len(rules) > 2
         assert 'explode' in rules
-        assert 'replace' in rules
         assert 'becomes_piece' in rules
-        assert 'increment_move_count' in rules
+        assert 'captures_destination' in rules
 
     def test_get_movement_directions(self):
         directions = get_movement_directions()

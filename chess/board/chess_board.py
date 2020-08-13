@@ -3,6 +3,7 @@
 # once I implement enpassant and castling,
 # I shouldn't need some of the FEN attributes.
 from .base import Board
+from .history import History
 from ..piece import Piece
 
 from ..movement import get_all_potential_end_locations
@@ -11,6 +12,7 @@ from .. import movement
 from ..chess_configurations import get_standard_chess_pieces
 
 from .. import capture_actions
+from .. import post_move_actions
 
 map_fen_to_piece_name = {
     'k': "king",
@@ -23,13 +25,15 @@ map_fen_to_piece_name = {
 
 
 class ChessBoard(Board):
-    default_capture_actions = ['replace', 'increment_move_count']
+    default_capture_actions = ['captures_destination']
+    default_post_move_actions = ['increment_move_count']
 
     def __init__(self, existing_board=None):
         super().__init__(8, 8)
         self.pieces = []
         self.players = {}
         self.end_game = {}
+        self._history = History()
 
         if not existing_board:
             existing_board = self.load_json()
@@ -235,7 +239,7 @@ class ChessBoard(Board):
             print("is valid move")
             is_capture = self[end_location] is not None
 
-            self._move_piece(start_location, end_location)
+            self._move_piece(start_location, end_location, is_capture)
 
             if self[end_location].kind != "pawn" and not is_capture:
                 self.half_move_clock += 1
@@ -245,23 +249,53 @@ class ChessBoard(Board):
         print('is not valid move')
         return False
 
-    def _move_piece(self, start_location, end_location):
-        unit_direction = list(movement.get_unit_direction(start_location, end_location))
-        piece = self[start_location]
-        action_names = self.default_capture_actions
-        print("Unit direction is:")
-        print(unit_direction)
+    def _get_move_definition(self, start, end):
+        unit_direction = list(movement.get_unit_direction(start, end))
+        piece = self[start]
+
         for move in piece.moves:
-            print("Move directions are:")
-            print(move['directions'])
-            if unit_direction in move['directions'] and 'capture_actions' in move:
-                action_names = move['capture_actions']
+            if unit_direction in move['directions']:
+                return move
+        return None
 
-        print("Capture Actions are{}".format(action_names))
-        actions = [getattr(capture_actions, action) for action in action_names if hasattr(capture_actions, action)]
+    def _get_capture_actions(self, start, end):
+        move = self._get_move_definition(start, end)
 
-        for action in actions:
+        action_names = self.default_capture_actions
+        if 'capture_actions' in move:
+            action_names = move['capture_actions']
+
+        return [getattr(capture_actions, action) for action in action_names if hasattr(capture_actions, action)]
+
+    def _get_post_move_actions(self, start, end):
+        move = self._get_move_definition(start, end)
+
+        post_actions = self.default_capture_actions
+        if 'post_move_actions' in move:
+            post_actions = move['post_move_actions']
+
+        return [getattr(post_move_actions, action) for action in post_actions if hasattr(post_move_actions, action)]
+
+    def _move_piece(self, start_location, end_location, is_capture):
+        actions = self._get_capture_actions(start_location, end_location)
+        post_actions = self._get_post_move_actions(start_location, end_location)
+
+        piece = self.board[start_location]
+
+        captures = {}
+        if is_capture:
+            for action in actions:
+                captures.update(action(self.board, start_location, end_location))
+
+            for capture_location in captures:
+                self.board[capture_location] = None
+
+        self.board[end_location] = self.board[start_location]
+
+        for action in post_actions:
             action(self.board, start_location, end_location)
+
+        self._history.add(History.construct_history_object(start_location, end_location, piece, captures))
 
     def is_valid_move(self, start_location, end_location):
         possible_moves = self.valid_moves(start_location)

@@ -1,4 +1,4 @@
-"""Chess Board unit test module."""
+# pylint: disable=W0212
 
 import unittest
 
@@ -30,6 +30,7 @@ class TestBoard(unittest.TestCase):
 
     def test_init(self):
         assert len(self.chess_board) == 64
+        assert len(self.chess_board._history) == 0
 
     def test_has_pawn_at_1_3(self):
         piece = self.chess_board[(1, 3)]
@@ -113,14 +114,51 @@ class TestValidateKnightMoves(unittest.TestCase):
     def test_move_knight(self):
         result = self.chess_board.move((0, 1), (2, 0))
 
-        assert result is True
+        assert result
         assert self.chess_board[(2, 0)].kind == 'knight'
+        assert self.chess_board._history.json == [{
+            'start': (0, 1),
+            'end': (2, 0),
+            'piece': {
+                'name': 'knight',
+                'color': 'white',
+                'moves': self.chess_board[(2, 0)].moves
+            }}]
 
-    def test_move_knight_on_top_of_a_pawn(self):
-        result = self.chess_board.move((1, 0), (3, 1))
+    def test_move_knight_on_top_of_own_pawn(self):
+        assert not self.chess_board.is_valid_move((0, 1), (1, 3))
+        result = self.chess_board.move((0, 1), (1, 3))
 
-        assert result is False
+        assert not result
         assert self.chess_board[(1, 3)].kind == 'pawn'
+
+    def test_move_knight_on_top_of_opponent_pawn(self):
+        some_moves = ['move over here', 'move over there']
+        self.chess_board[(1, 3)].color = 'black'
+        self.chess_board[(1, 3)].moves = some_moves
+        assert self.chess_board.is_valid_move((0, 1), (1, 3))
+        result = self.chess_board.move((0, 1), (1, 3))
+
+        assert result
+        assert self.chess_board[(1, 3)].kind == 'knight'
+
+        print(self.chess_board._history.json)
+        self.assertEqual(self.chess_board._history.json, [{
+            'start': (0, 1),
+            'end': (1, 3),
+            'piece': {
+                'name': 'knight',
+                'color': 'white',
+                'moves': self.chess_board[(1, 3)].moves
+            },
+            'captures': {
+                (1, 3): {
+                    'name': 'pawn',
+                    'color': 'black',
+                    'moves': some_moves
+                }
+            }
+        }])
 
 
 class TestValidateRookMoves(unittest.TestCase):

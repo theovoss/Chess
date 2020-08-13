@@ -4,6 +4,7 @@
 import unittest
 
 from chess.board.history import History
+from chess.piece.piece import Piece
 
 
 class TestHistory(unittest.TestCase):
@@ -87,6 +88,12 @@ class TestHistory(unittest.TestCase):
     def test_construct_history_object(self):
         start = [0, 0]
         end = [4, 5]
-        record = History.construct_history_object(start, end)
-
-        self.assertEqual(record, {'start': start, 'end': end})
+        piece = Piece("name", "red", [{"directions": ["move"]}])
+        captures = {(5, 5): piece}
+        record = History.construct_history_object(start, end, piece, captures)
+        self.assertEqual(piece.moves, [{'directions': ['move']}])
+        self.assertEqual(record, {
+            'start': start,
+            'end': end,
+            'piece': {'name': 'name', 'color': 'red', 'moves': [{'directions': ['move']}]},
+            'captures': {(5, 5): {'name': 'name', 'color': 'red', 'moves': [{'directions': ['move']}]}}})

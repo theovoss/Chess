@@ -15,6 +15,6 @@ class TestDirections(unittest.TestCase):
         assert expected == actual
 
     def test_doesnt_convert_non_shorthand_directions(self):
-        actual = convert_shorthand_directions([0, 1])
+        actual = convert_shorthand_directions("hello")
 
-        assert [0, 1] == actual
+        assert ["hello"] == actual

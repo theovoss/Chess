@@ -2,41 +2,29 @@
 # allow unused variables so all capture action functions can have same parameter definition
 
 
-def replace(board, start, end):
-    board[end] = board[start]
-    board[start] = None
+def captures_destination(board, start, end):
+    return {end: board[end]}
 
 
 def becomes_piece(board, start, end):
-    if not _is_capturing(board, end):
-        replace(board, start, end)
-        return
+    captured = {end: board[end]}
+    enemy_piece = board[end]
+    moving_piece = board[start]
 
-    board[end].color = board[start].color
-    board[end].move_count = board[start].move_count
-    board[start] = None
+    enemy_piece.color = moving_piece.color
+    enemy_piece.move_count = moving_piece.move_count
+
+    board[start] = enemy_piece
+
+    return captured
 
 
 def explode(board, start, end):
-    if not _is_capturing(board, end):
-        replace(board, start, end)
-        return
+    captured = {end: board[end]}
 
     for place in board.get_surrounding_locations(end):
         if place[0] < 0 or place[1] < 0:
             continue
-        board[place] = None
-    board[end] = None
-
-
-def increment_move_count(board, start, end):
-    if _has_piece(board, end):
-        board[end].move_count += 1
-
-
-def _has_piece(board, location):
-    return board[location] is not None
-
-
-def _is_capturing(board, location):
-    return board[location] is not None
+        if board[place]:
+            captured[place] = board[place]
+    return captured

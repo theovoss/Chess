@@ -44,9 +44,22 @@ class History():
         return record
 
     @staticmethod
-    def construct_history_object(start, end):
-        # TODO: add captures
-        return {
+    def construct_history_object(start, end, piece, captures=None):
+        obj = {
             'start': start,
-            'end': end
+            'end': end,
+            'piece': {
+                'name': piece.kind,
+                'color': piece.color,
+                'moves': piece.moves
+            }
         }
+        if captures:
+            obj['captures'] = {}
+            for location, captured in captures.items():
+                obj['captures'][location] = {
+                    'name': captured.kind,
+                    'color': captured.color,
+                    'moves': captured.moves
+                }
+        return obj

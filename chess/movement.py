@@ -1,6 +1,7 @@
 # pylint: disable=W0613
 # allow unused variables so all movement functions can have same parameter definition
 import operator as _operator
+from math import gcd
 
 
 def get_all_potential_end_locations(start, directions, board):
@@ -64,7 +65,7 @@ def alternates_landing_on_enemy_and_empty_space(board, start, directions, potent
 
 def get_unit_direction(start, end):
     direction = tuple(map(_operator.sub, end, start))
-    dividor = max(map(abs, direction))
+    dividor = abs(gcd(direction[0], direction[1]))
     direction = tuple(map(_operator.floordiv, direction, (dividor, dividor)))
     return direction
 

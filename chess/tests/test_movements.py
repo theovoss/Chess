@@ -11,8 +11,62 @@ from chess.movement import (distance_of_one,
                             directional,
                             first_move,
                             get_all_potential_end_locations,
-                            alternates_landing_on_enemy_and_empty_space)
+                            alternates_landing_on_enemy_and_empty_space,
+                            get_unit_direction)
 from chess.board.chess_board import ChessBoard
+
+
+class TestMovementHelpers(unittest.TestCase):
+    def test_get_diagonal_unit_direction(self):
+        unit = get_unit_direction((2, 2), (3, 3))
+        self.assertEqual(unit, (1, 1))
+
+        unit = get_unit_direction((2, 2), (3, 1))
+        self.assertEqual(unit, (1, -1))
+
+        unit = get_unit_direction((2, 2), (1, 3))
+        self.assertEqual(unit, (-1, 1))
+
+        unit = get_unit_direction((2, 2), (1, 1))
+        self.assertEqual(unit, (-1, -1))
+
+    def test_get_horizontal_and_vertical_unit_direction(self):
+        unit = get_unit_direction((2, 2), (2, 3))
+        self.assertEqual(unit, (0, 1))
+
+        unit = get_unit_direction((2, 2), (2, 1))
+        self.assertEqual(unit, (0, -1))
+
+        unit = get_unit_direction((2, 2), (3, 2))
+        self.assertEqual(unit, (1, 0))
+
+        unit = get_unit_direction((2, 2), (1, 2))
+        self.assertEqual(unit, (-1, 0))
+
+    def test_get_L_unit_direction(self):
+        unit = get_unit_direction((2, 2), (3, 4))
+        self.assertEqual(unit, (1, 2))
+
+        unit = get_unit_direction((2, 2), (4, 3))
+        self.assertEqual(unit, (2, 1))
+
+        unit = get_unit_direction((2, 2), (1, 4))
+        self.assertEqual(unit, (-1, 2))
+
+        unit = get_unit_direction((2, 2), (1, 0))
+        self.assertEqual(unit, (-1, -2))
+
+        unit = get_unit_direction((2, 2), (3, 0))
+        self.assertEqual(unit, (1, -2))
+
+        unit = get_unit_direction((2, 2), (0, 3))
+        self.assertEqual(unit, (-2, 1))
+
+        unit = get_unit_direction((2, 2), (0, 1))
+        self.assertEqual(unit, (-2, -1))
+
+        unit = get_unit_direction((2, 2), (4, 1))
+        self.assertEqual(unit, (2, -1))
 
 
 class TestMovements(unittest.TestCase):
@@ -250,14 +304,3 @@ class TestMovements(unittest.TestCase):
         ends = alternates_landing_on_enemy_and_empty_space(self.chess_board, start, [(1, 1)], potential_end_locations, Mock())
 
         assert ends == [(2, 2), (4, 4)]
-
-    # def test_take_a_piece_and_become_it(self):
-    #     start = (0, 0)
-    #     start = (1, 1)
-    #     self.chess_board[start] = Mock(color="pink")
-    #     self.chess_board[end] = Mock(color="purple")
-    #     potential_end_locations = [end]
-    #     ends = take_a_piece_become_the_piece(self.chess_board, start, [(1, 1)], potential_end_locations, Mock())
-
-    #     # hmmm. assert it's in ends... how to actually move though and check that it took and became the movements.
-    #     # needs more setup
