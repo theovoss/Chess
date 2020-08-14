@@ -89,11 +89,11 @@ class TestHistory(unittest.TestCase):
         start = [0, 0]
         end = [4, 5]
         piece = Piece("name", "red", [{"directions": ["move"]}])
-        captures = {(5, 5): piece}
+        captures = History.construct_capture_obj({(5, 5): piece})
         record = History.construct_history_object(start, end, piece, captures)
         self.assertEqual(piece.moves, [{'directions': ['move']}])
         self.assertEqual(record, {
             'start': start,
             'end': end,
             'piece': {'name': 'name', 'color': 'red', 'moves': [{'directions': ['move']}]},
-            'captures': {(5, 5): {'name': 'name', 'color': 'red', 'moves': [{'directions': ['move']}]}}})
+            'captures': [{'location': (5, 5), 'name': 'name', 'color': 'red', 'moves': [{'directions': ['move']}]}]})

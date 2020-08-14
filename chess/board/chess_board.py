@@ -308,12 +308,14 @@ class ChessBoard(Board):
 
         piece = self.board[start_location]
 
-        captures = {}
+        captures = []
         if is_capture:
             for action in actions:
-                captures.update(action(self.board, start_location, end_location))
+                captureds = action(self.board, start_location, end_location)
+                captures += History.construct_capture_obj(captureds)
 
-            for capture_location in captures:
+            for capture in captures:
+                capture_location = capture['location']
                 self.board[capture_location] = None
 
         self.board[end_location] = self.board[start_location]

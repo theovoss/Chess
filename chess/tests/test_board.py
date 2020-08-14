@@ -151,13 +151,14 @@ class TestValidateKnightMoves(unittest.TestCase):
                 'color': 'white',
                 'moves': self.chess_board[(1, 3)].moves
             },
-            'captures': {
-                (1, 3): {
+            'captures': [
+                {
                     'name': 'pawn',
                     'color': 'black',
-                    'moves': some_moves
+                    'moves': some_moves,
+                    'location': (1, 3)
                 }
-            }
+            ]
         }])
 
 

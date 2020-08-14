@@ -67,11 +67,12 @@ class History():
             }
         }
         if captures:
-            obj['captures'] = {}
-            for location, captured in captures.items():
-                obj['captures'][location] = {
-                    'name': captured.kind,
-                    'color': captured.color,
-                    'moves': captured.moves
-                }
+            obj['captures'] = captures
         return obj
+
+    @staticmethod
+    def construct_capture_obj(captureds):
+        captures = []
+        for location, piece in captureds.items():
+            captures.append({'location': location, 'name': piece.kind, 'color': piece.color, 'moves': piece.moves})
+        return captures
