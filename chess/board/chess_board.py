@@ -33,10 +33,15 @@ class ChessBoard(Board):
         self.pieces = []
         self.players = {}
         self.end_game = {}
-        self._history = History()
 
         if not existing_board:
             existing_board = self.load_json()
+
+        existing_history = {'initial_board': existing_board}
+        if 'history' in existing_board:
+            existing_history = existing_board.get('history')
+
+        self._history = History(existing_history)
 
         self.initialize_board(existing_board)
         if existing_board and existing_board['players']['current'] == "Player 1":
@@ -147,8 +152,8 @@ class ChessBoard(Board):
 
         json_data['end_game'] = self.end_game
 
-        print("export data is:")
-        print(json_data)
+        json_data['history'] = self._history.json
+
         return json_data
 
     def initialize_board(self, json_data):
@@ -223,7 +228,28 @@ class ChessBoard(Board):
             all_end_points += ends
         return all_end_points
 
-    def move(self, start_location, end_location):
+    def first(self):
+        self.clear_board()
+        self.initialize_board(self._history.initial_board)
+        self._history.first()
+
+    def next(self):
+        move = self._history.next()
+        if move:
+            self.move(move['start'], move['end'], save=False)
+
+    def previous(self):
+        move = self._history.previous()
+        if not move:
+            return
+        moving_piece = move['piece']
+        self.board[move['start']] = Piece(moving_piece['name'], moving_piece['color'], moving_piece['moves'])
+        self.board[move['end']] = None
+        if 'captures' in move:
+            for location, piece in move['captures'].items():
+                self.board[location] = Piece(piece['name'], piece['color'], piece['moves'])
+
+    def move(self, start_location, end_location, save=True):
         if self.is_valid_move(start_location, end_location):
             if self.current_players_turn == 'w':
                 if self[start_location].color == 'black':
@@ -239,14 +265,14 @@ class ChessBoard(Board):
             print("is valid move")
             is_capture = self[end_location] is not None
 
-            self._move_piece(start_location, end_location, is_capture)
+            self._move_piece(start_location, end_location, is_capture, save)
 
             if self[end_location].kind != "pawn" and not is_capture:
                 self.half_move_clock += 1
             else:
                 self.half_move_clock = 0
             return True
-        print('is not valid move')
+        print('is not valid move start: ' + str(start_location) + " end: " + str(end_location))
         return False
 
     def _get_move_definition(self, start, end):
@@ -276,7 +302,7 @@ class ChessBoard(Board):
 
         return [getattr(post_move_actions, action) for action in post_actions if hasattr(post_move_actions, action)]
 
-    def _move_piece(self, start_location, end_location, is_capture):
+    def _move_piece(self, start_location, end_location, is_capture, save=True):
         actions = self._get_capture_actions(start_location, end_location)
         post_actions = self._get_post_move_actions(start_location, end_location)
 
@@ -291,11 +317,14 @@ class ChessBoard(Board):
                 self.board[capture_location] = None
 
         self.board[end_location] = self.board[start_location]
+        self.board[start_location] = None
 
+        print("end location: {}, start location: {}".format(end_location, start_location))
         for action in post_actions:
             action(self.board, start_location, end_location)
 
-        self._history.add(History.construct_history_object(start_location, end_location, piece, captures))
+        if save:
+            self._history.add(History.construct_history_object(start_location, end_location, piece, captures))
 
     def is_valid_move(self, start_location, end_location):
         possible_moves = self.valid_moves(start_location)

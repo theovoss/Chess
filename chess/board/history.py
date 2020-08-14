@@ -3,16 +3,28 @@ import copy
 
 class History():
 
-    def __init__(self):
+    def __init__(self, json=None):
         self._index = -1
         self._history = []
+        self._initial_board = {}
+        if json:
+            if 'history' in json:
+                self._history = json['history']
+            if 'initial_board' in json:
+                self._initial_board = json['initial_board']
+            if 'index' in json:
+                self._index = json['index']
 
     def __len__(self):
         return len(self._history)
 
     @property
+    def initial_board(self):
+        return self._initial_board
+
+    @property
     def json(self):
-        return self._history
+        return {'history': self._history, 'initial_board': self._initial_board, 'index': self._index}
 
     def add(self, obj):
         if self._index != len(self) - 1:

@@ -83,7 +83,7 @@ class TestHistory(unittest.TestCase):
         for i in range(3):
             self.history.add({str(i): i})
         data = self.history.json
-        self.assertEqual(data, [{'0': 0}, {'1': 1}, {'2': 2}])
+        self.assertEqual(data, {'history': [{'0': 0}, {'1': 1}, {'2': 2}], 'initial_board': {}, 'index': 2})
 
     def test_construct_history_object(self):
         start = [0, 0]
