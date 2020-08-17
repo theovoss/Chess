@@ -236,18 +236,18 @@ class ChessBoard(Board):
     def next(self):
         move = self._history.next()
         if move:
-            self.move(move['start'], move['end'], save=False)
+            self.move(tuple(move['start']), tuple(move['end']), save=False)
 
     def previous(self):
         move = self._history.previous()
         if not move:
             return
         moving_piece = move['piece']
-        self.board[move['start']] = Piece(moving_piece['name'], moving_piece['color'], moving_piece['moves'])
-        self.board[move['end']] = None
+        self.board[tuple(move['start'])] = Piece(moving_piece['name'], moving_piece['color'], moving_piece['moves'])
+        self.board[tuple(move['end'])] = None
         if 'captures' in move:
             for location, piece in move['captures'].items():
-                self.board[location] = Piece(piece['name'], piece['color'], piece['moves'])
+                self.board[tuple(location)] = Piece(piece['name'], piece['color'], piece['moves'])
 
     def move(self, start_location, end_location, save=True):
         if self.is_valid_move(start_location, end_location):
