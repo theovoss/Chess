@@ -246,7 +246,7 @@ class ChessBoard(Board):
         self.board[tuple(move['start'])] = Piece(moving_piece['name'], moving_piece['color'], moving_piece['moves'])
         self.board[tuple(move['end'])] = None
         if 'captures' in move:
-            for capture in move['captures'].items():
+            for capture in move['captures']:
                 self.board[tuple(capture['location'])] = Piece(capture['name'], capture['color'], capture['moves'])
 
     def move(self, start_location, end_location, save=True):
