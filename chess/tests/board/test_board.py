@@ -3,6 +3,7 @@
 import unittest
 
 from chess.board import ChessBoard
+from chess.board.json_helper import load_json
 
 starting_fen_board = "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1"
 
@@ -85,7 +86,7 @@ class TestBoard(unittest.TestCase):
 
     @unittest.skip(reason="need to convert directions to internal output, or output a friendlier version")
     def test_starting_board_custom_export(self):
-        expected_json = self.chess_board.load_json()
+        expected_json = load_json()
         exported_json = self.chess_board.export()
         self.compare_boards(exported_json['board'], expected_json['board'])
         exported_json.pop('board')

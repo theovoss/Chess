@@ -12,3 +12,33 @@ class Board:
     @property
     def board(self):
         return self._board
+
+    @staticmethod
+    def get_surrounding_locations(location):
+        return [
+            (location[0] + 1, location[1]),
+            (location[0] - 1, location[1]),
+            (location[0] + 1, location[1] + 1),
+            (location[0] - 1, location[1] + 1),
+            (location[0] + 1, location[1] - 1),
+            (location[0] - 1, location[1] - 1),
+            (location[0], location[1] + 1),
+            (location[0], location[1] - 1),
+        ]
+
+    def __getitem__(self, key):
+        return self.board[key]
+
+    def __setitem__(self, key, value):
+        self.board[key] = value
+
+    def __iter__(self):
+        for key in self.board:
+            yield key
+
+    def __len__(self):
+        return len(self.board)
+
+    def clear_board(self):
+        for location in self:
+            self[location] = None

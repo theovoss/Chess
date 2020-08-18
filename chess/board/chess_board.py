@@ -4,15 +4,13 @@
 # I shouldn't need some of the FEN attributes.
 from .base import Board
 from .history import History
+from . import json_helper
+
+from .. import movement
 from ..piece import Piece
 
 from ..movement import get_all_potential_end_locations
-from .. import movement
 
-from ..chess_configurations import get_standard_chess_pieces
-
-from .. import capture_actions
-from .. import post_move_actions
 
 map_fen_to_piece_name = {
     'k': "king",
@@ -25,8 +23,6 @@ map_fen_to_piece_name = {
 
 
 class ChessBoard(Board):
-    default_capture_actions = ['captures_destination']
-    default_post_move_actions = ['increment_move_count']
 
     def __init__(self, existing_board=None):
         super().__init__(8, 8)
@@ -35,7 +31,7 @@ class ChessBoard(Board):
         self.end_game = {}
 
         if not existing_board:
-            existing_board = self.load_json()
+            existing_board = json_helper.load_json()
 
         existing_history = {'initial_board': existing_board}
         if 'history' in existing_board:
@@ -54,19 +50,6 @@ class ChessBoard(Board):
         self.en_passant_target_square = "-"
         self.half_move_clock = 0
         self.full_move_number = 1
-
-    def __getitem__(self, key):
-        return self.board[key]
-
-    def __setitem__(self, key, value):
-        self.board[key] = value
-
-    def __iter__(self):
-        for key in self.board:
-            yield key
-
-    def __len__(self):
-        return len(self.board)
 
     def generate_fen(self):
         """Generate a FEN representation of the board."""
@@ -99,7 +82,7 @@ class ChessBoard(Board):
         return fen
 
     def import_fen_board(self, fen_board):
-        json_data = self.load_json()
+        json_data = json_helper.load_json()
         board_data, self.current_players_turn, self.castling_opportunities,\
             self.en_passant_target_square, self.half_move_clock,\
             self.full_move_number = fen_board.split(' ')
@@ -116,7 +99,7 @@ class ChessBoard(Board):
                 except ValueError:
                     name = map_fen_to_piece_name[fen_row[actual_column].lower()]
                     color = "black" if fen_row[actual_column].islower() else "white"
-                    moves = self.get_piece_moves(name, json_data)
+                    moves = json_helper.get_piece_moves(name, json_data)
                     self[(row, column)] = Piece(name, color, moves)
                     actual_column += 1
 
@@ -161,7 +144,7 @@ class ChessBoard(Board):
 
         for piece in json_data['pieces']:
             name = piece
-            moves = self.get_piece_moves(name, json_data)
+            moves = json_helper.get_piece_moves(name, json_data)
 
             self.pieces.append(Piece(name, "white", moves))
 
@@ -175,7 +158,7 @@ class ChessBoard(Board):
             player_pieces = json_board[player]
             for piece in player_pieces:
                 name = piece
-                moves = self.get_piece_moves(name, json_data)
+                moves = json_helper.get_piece_moves(name, json_data)
 
                 for position_moves_dict in player_pieces[piece]:
                     a_piece = Piece(name, color, moves)
@@ -187,21 +170,6 @@ class ChessBoard(Board):
             self.current_players_turn = 'w'
         else:
             self.current_players_turn = 'b'
-
-    def clear_board(self):
-        for location in self:
-            self[location] = None
-
-    @staticmethod
-    def get_piece_moves(name, json_data):
-        return json_data['pieces'][name]['moves']
-
-    @staticmethod
-    def load_json(json_data=None):
-        if json_data:
-            return json_data
-
-        return get_standard_chess_pieces()
 
     def all_end_locations_for_color(self, color):
         ends = []
@@ -291,38 +259,11 @@ class ChessBoard(Board):
         print('is not valid move start: ' + str(start_location) + " end: " + str(end_location))
         return False
 
-    def _get_move_definition(self, start, end):
-        unit_direction = list(movement.get_unit_direction(start, end))
-        piece = self[start]
-
-        for move in piece.moves:
-            if unit_direction in move['directions']:
-                return move
-        return None
-
-    def _get_capture_actions(self, start, end):
-        move = self._get_move_definition(start, end)
-
-        action_names = self.default_capture_actions
-        if 'capture_actions' in move:
-            action_names = move['capture_actions']
-
-        return [getattr(capture_actions, action) for action in action_names if hasattr(capture_actions, action)]
-
-    def _get_post_move_actions(self, start, end):
-        move = self._get_move_definition(start, end)
-
-        post_actions = self.default_capture_actions
-        if 'post_move_actions' in move:
-            post_actions = move['post_move_actions']
-
-        return [getattr(post_move_actions, action) for action in post_actions if hasattr(post_move_actions, action)]
-
     def _move_piece(self, start_location, end_location, is_capture, save=True):
-        actions = self._get_capture_actions(start_location, end_location)
-        post_actions = self._get_post_move_actions(start_location, end_location)
-
         piece = self.board[start_location]
+
+        actions = json_helper.get_capture_actions(piece, start_location, end_location)
+        post_actions = json_helper.get_post_move_actions(piece, start_location, end_location)
 
         captures = []
         if is_capture:
@@ -339,7 +280,7 @@ class ChessBoard(Board):
 
         print("end location: {}, start location: {}".format(end_location, start_location))
         for action in post_actions:
-            action(self.board, start_location, end_location)
+            action(self.board, end_location)
 
         if save:
             self._history.add(History.construct_history_object(start_location, end_location, piece, captures))
@@ -352,20 +293,3 @@ class ChessBoard(Board):
 
     def valid_moves(self, start_location):
         return self.end_locations_for_piece_at_location(start_location)
-
-    @staticmethod
-    def get_surrounding_locations(location):
-        return [
-            (location[0] + 1, location[1]),
-            (location[0] - 1, location[1]),
-            (location[0] + 1, location[1] + 1),
-            (location[0] - 1, location[1] + 1),
-            (location[0] + 1, location[1] - 1),
-            (location[0] - 1, location[1] - 1),
-            (location[0], location[1] + 1),
-            (location[0], location[1] - 1),
-        ]
-
-    @property
-    def board(self):
-        return self._board
