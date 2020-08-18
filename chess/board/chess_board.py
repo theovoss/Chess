@@ -159,6 +159,12 @@ class ChessBoard(Board):
     def initialize_board(self, json_data):
         json_board = json_data['board']
 
+        for piece in json_data['pieces']:
+            name = piece
+            moves = self.get_piece_moves(name, json_data)
+
+            self.pieces.append(Piece(name, "white", moves))
+
         self.end_game = json_data['end_game']
         for player in ['Player 1', 'Player 2']:
             players_data = json_data['players']
@@ -170,8 +176,6 @@ class ChessBoard(Board):
             for piece in player_pieces:
                 name = piece
                 moves = self.get_piece_moves(name, json_data)
-
-                self.pieces.append(Piece(name, color, moves))
 
                 for position_moves_dict in player_pieces[piece]:
                     a_piece = Piece(name, color, moves)

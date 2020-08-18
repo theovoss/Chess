@@ -354,3 +354,27 @@ class TestHistory(unittest.TestCase):
         assert new_board[(3, 1)] is None
         assert new_board[(5, 2)] is not None
         assert new_board[(2, 1)] is not None
+
+
+class TestHistory(unittest.TestCase):
+    def setUp(self):
+        self.chess_board = ChessBoard()
+
+    def test_initialize_and_export_doesnt_lose_data(self):
+        exported_data = self.chess_board.export()
+
+        # simulating all the pawns having been captured
+        exported_data['board']['Player 1'].pop('pawn', None)
+        exported_data['board']['Player 2'].pop('pawn', None)
+
+        self.assertIn('pawn', exported_data['pieces'])
+        self.assertNotIn('pawn', exported_data['board']['Player 1'])
+        self.assertNotIn('pawn', exported_data['board']['Player 2'])
+
+        chess_board = ChessBoard(exported_data)
+
+        new_exported_data = chess_board.export()
+
+        self.assertIn('pawn', new_exported_data['pieces'])
+        self.assertNotIn('pawn', exported_data['board']['Player 1'])
+        self.assertNotIn('pawn', exported_data['board']['Player 2'])
