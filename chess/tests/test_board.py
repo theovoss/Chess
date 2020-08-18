@@ -320,6 +320,30 @@ class TestHistory(unittest.TestCase):
         assert self.chess_board[(2, 1)] is not None
         assert self.chess_board[(1, 1)] is None
 
+    def test_can_undo_and_redo_last_move(self):
+        self.chess_board.move((1, 1), (2, 1))
+        self.chess_board.move((6, 2), (5, 2))
+        self.chess_board.move((2, 1), (3, 1))
+        self.chess_board.move((5, 2), (4, 2))
+        assert self.chess_board[(4, 2)] is not None
+        assert self.chess_board[(3, 1)] is not None
+        assert self.chess_board[(5, 2)] is None
+        assert self.chess_board[(2, 1)] is None
+
+        self.chess_board.previous()
+
+        assert self.chess_board[(4, 2)] is None
+        assert self.chess_board[(3, 1)] is not None
+        assert self.chess_board[(5, 2)] is not None
+        assert self.chess_board[(2, 1)] is None
+
+        self.chess_board.next()
+
+        assert self.chess_board[(4, 2)] is not None
+        assert self.chess_board[(3, 1)] is not None
+        assert self.chess_board[(5, 2)] is None
+        assert self.chess_board[(2, 1)] is None
+
     def test_export_includes_history(self):
         self.chess_board.move((1, 1), (2, 1))
         self.chess_board.move((6, 2), (5, 2))

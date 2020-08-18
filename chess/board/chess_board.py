@@ -256,19 +256,28 @@ class ChessBoard(Board):
             for capture in move['captures']:
                 self.board[tuple(capture['location'])] = Piece(capture['name'], capture['color'], capture['moves'])
 
+        self._toggle_current_player()
+
+    def _toggle_current_player(self):
+        if self.current_players_turn == 'w':
+            self.current_players_turn = 'b'
+        else:
+            self.current_players_turn = 'w'
+
     def move(self, start_location, end_location, save=True):
         if self.is_valid_move(start_location, end_location):
+            # TODO: add this correct color moving check to a precondition and wrap in is_valid_move
             if self.current_players_turn == 'w':
                 if self[start_location].color == 'black':
                     print('black trying to move, but whites turn')
                     return False
-                self.current_players_turn = 'b'
             else:
                 if self[start_location].color == 'white':
                     print('white trying to move, but blacks turn')
                     return False
                 self.full_move_number += 1
-                self.current_players_turn = 'w'
+
+            self._toggle_current_player()
             print("is valid move")
             is_capture = self[end_location] is not None
 
