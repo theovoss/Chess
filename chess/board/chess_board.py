@@ -232,6 +232,9 @@ class ChessBoard(Board):
             all_end_points += ends
         return all_end_points
 
+    def get_history(self):
+        return self._history.all()
+
     def first(self):
         self.clear_board()
         self.initialize_board(self._history.initial_board)

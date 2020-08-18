@@ -29,6 +29,20 @@ class Chess:
     def destinations(self, start_location):
         return self._board.end_locations_for_piece_at_location(start_location)
 
+    # Methods to navigate history
+
+    def previous(self):
+        self._board.previous()
+
+    def next(self):
+        self._board.next()
+
+    def first(self):
+        self._board.first()
+
+    def get_history(self):
+        self._board.get_history()
+
     @staticmethod
     def convert_to_internal_indexes(location):
         if isinstance(location, str):

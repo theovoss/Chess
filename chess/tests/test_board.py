@@ -356,7 +356,7 @@ class TestHistory(unittest.TestCase):
         assert new_board[(2, 1)] is not None
 
 
-class TestHistory(unittest.TestCase):
+class TestExportImport(unittest.TestCase):
     def setUp(self):
         self.chess_board = ChessBoard()
 

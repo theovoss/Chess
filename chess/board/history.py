@@ -34,7 +34,10 @@ class History():
         self._index += 1
 
     def all(self):
-        return copy.deepcopy(self._history)
+        history = copy.deepcopy(self._history)
+        if self._index >= 0 and self._index < len(self._history):
+            history[self._index]['current'] = True
+        return history
 
     def previous(self):
         record = self._history[self._index]

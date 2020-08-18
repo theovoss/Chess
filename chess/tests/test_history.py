@@ -22,6 +22,32 @@ class TestHistory(unittest.TestCase):
         actual = self.history.all()
         self.assertEqual(len(actual), 5)
         self.assertEqual(actual[0], {"0": 0})
+        self.assertEqual(actual[4], {"4": 4, 'current': True})
+
+    def test_get_full_history_current_when_not_first(self):
+        for i in range(5):
+            self.history.add({str(i): i})
+        self.history.previous()
+        self.history.previous()
+        actual = self.history.all()
+        self.assertEqual(len(actual), 5)
+        self.assertEqual(actual[0], {"0": 0})
+        self.assertEqual(actual[1], {"1": 1})
+        self.assertEqual(actual[2], {"2": 2, 'current': True})
+        self.assertEqual(actual[3], {"3": 3})
+        self.assertEqual(actual[4], {"4": 4})
+
+    def test_get_full_history_current_when_no_history(self):
+        actual = self.history.all()
+        self.assertEqual(len(actual), 0)
+
+    def test_get_full_history_current_when_at_first(self):
+        for i in range(5):
+            self.history.add({str(i): i})
+        self.history.first()
+        actual = self.history.all()
+        self.assertEqual(len(actual), 5)
+        self.assertEqual(actual[0], {"0": 0})
         self.assertEqual(actual[4], {"4": 4})
 
     def test_previous(self):
