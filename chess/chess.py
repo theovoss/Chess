@@ -41,7 +41,7 @@ class Chess:
         self._board.first()
 
     def get_history(self):
-        self._board.get_history()
+        return self._board.get_history()
 
     @staticmethod
     def convert_to_internal_indexes(location):
