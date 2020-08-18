@@ -59,30 +59,10 @@ class TestBoard(unittest.TestCase):
     def test_pawns_are_all_different_instances(self):
         assert self.chess_board[(1, 0)] is not self.chess_board[(1, 1)]
 
-    def test_starting_board_fen_export(self):
-        assert self.chess_board.generate_fen() == starting_fen_board
-
-    def test_one_move_fen_export(self):
-        self.chess_board[(6, 0)] = None
-        expected_fen = "rnbqkbnr/1ppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1"
-        assert expected_fen == self.chess_board.generate_fen()
-
     def test_clear_board_removes_all_pieces(self):
         self.chess_board.clear_board()
         for location in self.chess_board.board:
             assert self.chess_board[location] is None
-
-    def test_starting_board_fen_import(self):
-        self.chess_board.clear_board()
-        self.chess_board.import_fen_board(starting_fen_board)
-
-        expected_white_pawn_positions = [(1, 0), (1, 1), (1, 2), (1, 3), (1, 4), (1, 5), (1, 6), (1, 7)]
-        self.verify_pieces_at_locations_are_correct_piece_and_color(expected_white_pawn_positions, "pawn")
-        self.verify_pieces_at_locations_are_correct_piece_and_color([(0, 1), (0, 6)], "knight")
-        self.verify_pieces_at_locations_are_correct_piece_and_color([(0, 0), (0, 7)], "rook")
-        self.verify_pieces_at_locations_are_correct_piece_and_color([(0, 2), (0, 5)], 'bishop')
-        self.verify_pieces_at_locations_are_correct_piece_and_color([(0, 3)], "queen")
-        self.verify_pieces_at_locations_are_correct_piece_and_color([(0, 4)], "king")
 
     @unittest.skip(reason="need to convert directions to internal output, or output a friendlier version")
     def test_starting_board_custom_export(self):

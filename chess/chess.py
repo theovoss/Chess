@@ -6,17 +6,13 @@ class Chess:
     def __init__(self, existing_board=None):
         self._board = ChessBoard(existing_board)
 
-    # Methods to place chess
-
+    # Methods to play chess
     @property
     def board(self):
         return self._get_board()
 
     def _get_board(self):
         return self._board.board
-
-    def generate_fen(self):
-        return self._board.generate_fen()
 
     def export(self):
         return self._board.export()
