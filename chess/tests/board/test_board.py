@@ -410,3 +410,15 @@ class TestExportImport(unittest.TestCase):
         self.assertIn('pawn', new_exported_data['pieces'])
         self.assertNotIn('pawn', exported_data['board']['Player 1'])
         self.assertNotIn('pawn', exported_data['board']['Player 2'])
+
+    def test_initialize_and_export_includes_promotable(self):
+        # move white pawn to end
+        self.chess_board[(6, 1)] = self.chess_board[(1, 1)]
+        self.chess_board.move((6, 1), (7, 2))
+        self.assertTrue(self.chess_board[(7, 2)].promote_me_daddy)
+
+        exported_data = self.chess_board.export()
+
+        chess_board = ChessBoard(exported_data)
+
+        self.assertTrue(chess_board[(7, 2)].promote_me_daddy)

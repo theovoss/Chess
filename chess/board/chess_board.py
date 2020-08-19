@@ -66,6 +66,7 @@ class ChessBoard(Board):
                     a_piece = Piece(name, color, moves)
                     location = position_moves_dict['position']
                     a_piece.move_count = position_moves_dict['move_count']
+                    a_piece.promote_me_daddy = position_moves_dict.get('promote_me_daddy', False)
                     self[tuple(location)] = a_piece
 
         if json_data['players']['current'] == "Player 1":
@@ -97,9 +98,9 @@ class ChessBoard(Board):
             if piece:
                 player = map_color_to_name[piece.color]
                 if piece.kind in json_board[player]:
-                    json_board[player][piece.kind].append({"position": list(location), "move_count": piece.move_count})
+                    json_board[player][piece.kind].append({"position": list(location), "move_count": piece.move_count, "promote_me_daddy": piece.promote_me_daddy})
                 else:
-                    json_board[player][piece.kind] = [{"position": list(location), "move_count": piece.move_count}]
+                    json_board[player][piece.kind] = [{"position": list(location), "move_count": piece.move_count, "promote_me_daddy": piece.promote_me_daddy}]
 
         json_data['board'] = json_board
 
