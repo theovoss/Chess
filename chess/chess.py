@@ -25,8 +25,13 @@ class Chess:
     def destinations(self, start_location):
         return self._board.end_locations_for_piece_at_location(start_location)
 
-    # Methods to navigate history
+    def promote(self, location, new_piece_name):
+        self._board.promote(location, new_piece_name)
 
+    def get_all_piece_names(self):
+        return self._board.get_all_piece_names()
+
+    # Methods to navigate history
     def previous(self):
         self._board.previous()
 

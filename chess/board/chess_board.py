@@ -139,6 +139,9 @@ class ChessBoard(Board):
                 ends += self.end_locations_for_piece_at_location(location)
         return ends
 
+    def get_all_piece_names(self):
+        return [piece.kind for piece in self.pieces]
+
     # validity checks
     def is_valid_move(self, start_location, end_location):
         possible_moves = self.valid_moves(start_location)
@@ -197,6 +200,14 @@ class ChessBoard(Board):
 
         if save:
             self._history.add(History.construct_history_object(start_location, end_location, piece, captures))
+
+    def promote(self, location, new_piece_name):
+        if self[location].promote_me_daddy:
+            color = self[location].color
+            promoted = [piece for piece in self.pieces if piece.kind == new_piece_name][0]
+            promoted.color = color
+
+            self[location] = promoted
 
     # History related methods
     def get_history(self):

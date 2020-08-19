@@ -3,11 +3,13 @@
         "pawn": {
             "moves": [{
                 "directions": ["vertical"],
-                "conditions": ["distance_of_one", "doesnt_land_on_piece", "directional"]
+                "conditions": ["distance_of_one", "doesnt_land_on_piece", "directional"],
+                "post_move_actions": ["increment_move_count", "promotable"]
             },
             {
                 "directions": ["diagonal"],
-                "conditions": ["ends_on_enemy", "distance_of_one", "directional", "en_passant"]
+                "conditions": ["ends_on_enemy", "distance_of_one", "directional", "en_passant"],
+                "post_move_actions": ["increment_move_count", "promotable"]
             },
             {
                 "directions": ["vertical"],

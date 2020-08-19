@@ -64,6 +64,11 @@ class TestBoard(unittest.TestCase):
         for location in self.chess_board.board:
             assert self.chess_board[location] is None
 
+    def test_can_get_all_piece_names(self):
+        expected = ['pawn', 'rook', 'knight', 'bishop', 'queen', 'king']
+        actual = self.chess_board.get_all_piece_names()
+        self.assertEqual(actual, expected)
+
     @unittest.skip(reason="need to convert directions to internal output, or output a friendlier version")
     def test_starting_board_custom_export(self):
         expected_json = load_json()
@@ -200,6 +205,28 @@ class TestValidatePawnMoves(unittest.TestCase):
         self.chess_board[(1, 3)].move_count = 1
         ends = self.chess_board.end_locations_for_piece_at_location((1, 3))
         assert ends == [(2, 3)]
+
+    def test_white_pawn_promotion(self):
+        # move white pawn 1 away
+
+        promotion_location = (7, 2)  # diagonal capture for promotion
+        self.chess_board[(6, 1)] = self.chess_board[(1, 1)]
+        self.chess_board.move((6, 1), promotion_location)
+
+        self.assertTrue(self.chess_board[promotion_location].promote_me_daddy)
+
+        self.chess_board.promote(promotion_location, 'rook')
+        self.assertEqual(self.chess_board[promotion_location].kind, 'rook')
+
+    def test_pawn_cant_promote_just_anywhere(self):
+        # move white pawn 1 away
+        promotion_location = (2, 1)
+        self.chess_board.move((1, 1), promotion_location)
+
+        self.assertFalse(self.chess_board[promotion_location].promote_me_daddy)
+
+        self.chess_board.promote(promotion_location, 'rook')
+        self.assertEqual(self.chess_board[promotion_location].kind, 'pawn')
 
 
 class TestHistory(unittest.TestCase):

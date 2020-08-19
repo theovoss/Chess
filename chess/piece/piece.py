@@ -9,6 +9,7 @@ class Piece:
         self.external_moves = moves
         self.move_count = 0
         self.moves = self._convert_moves(moves)
+        self.promote_me_daddy = False
 
     def __str__(self):
         return "{} {}".format(self.color, self.kind)

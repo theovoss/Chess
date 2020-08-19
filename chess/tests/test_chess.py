@@ -63,3 +63,8 @@ class TestChess(unittest.TestCase):
 
         assert former_queen.color == "white"
         assert former_queen.kind == "pawn"
+
+    def test_can_get_all_piece_names(self):
+        expected = ['pawn', 'rook', 'knight', 'bishop', 'queen', 'king']
+        actual = self.chess.get_all_piece_names()
+        self.assertEqual(actual, expected)
