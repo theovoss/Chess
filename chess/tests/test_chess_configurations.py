@@ -1,7 +1,7 @@
 # pylint: disable=R0201
 
 import unittest
-from chess.chess_configurations import get_movement_rules, get_capture_action_rules, get_movement_directions, get_standard_chess_pieces
+from chess.chess_configurations import get_movement_rules, get_capture_action_rules, get_movement_directions, get_standard_chess_pieces, get_post_move_actions_rules
 
 
 class TestChessConfigurer(unittest.TestCase):
@@ -21,6 +21,12 @@ class TestChessConfigurer(unittest.TestCase):
         assert 'explode' in rules
         assert 'becomes_piece' in rules
         assert 'captures_destination' in rules
+
+    def test_get_post_move_action_rules(self):
+        rules = get_post_move_actions_rules()
+        assert len(rules) > 1
+        assert 'increment_move_count' in rules
+        assert 'promotable' in rules
 
     def test_get_movement_directions(self):
         directions = get_movement_directions()

@@ -2,6 +2,7 @@ import json
 import inspect
 from chess import movement
 from chess import capture_actions
+from chess import post_move_actions
 from chess import standard_chess_json
 from chess.piece.directions import get_direction_shorthands
 
@@ -13,6 +14,11 @@ def get_movement_rules():
 
 def get_capture_action_rules():
     actions = inspect.getmembers(capture_actions)
+    return [rule[0] for rule in actions if rule[0][0] != '_']
+
+
+def get_post_move_actions_rules():
+    actions = inspect.getmembers(post_move_actions)
     return [rule[0] for rule in actions if rule[0][0] != '_']
 
 
