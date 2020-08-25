@@ -185,7 +185,7 @@ class ChessBoard(Board):
         captures = []
         if is_capture:
             for action in actions:
-                captureds = action(self.board, start_location, end_location)
+                captureds = action(self, start_location, end_location)
                 captures += History.construct_capture_obj(captureds)
 
             for capture in captures:
@@ -197,7 +197,7 @@ class ChessBoard(Board):
 
         print("end location: {}, start location: {}".format(end_location, start_location))
         for action in post_actions:
-            action(self.board, end_location)
+            action(self, end_location)
 
         if save:
             self._history.add(History.construct_history_object(start_location, end_location, piece, captures))

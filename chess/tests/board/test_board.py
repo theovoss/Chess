@@ -165,6 +165,19 @@ class TestValidateRookMoves(unittest.TestCase):
         assert result == [(0, 6), (0, 7)]
 
 
+class TestValidatePieceExplodes(unittest.TestCase):
+
+    def setUp(self):
+        self.chess_board = ChessBoard()
+
+    def test_move_can_explode(self):
+        self.chess_board[(1, 3)] = None
+        self.chess_board[(0, 3)].moves[0]['capture_actions'] = ['explode']
+        self.chess_board.move((0, 3), (6, 3))
+
+        assert self.chess_board[(6, 3)].kind == 'queen'
+
+
 class TestBecomesPieceCaptureAction(unittest.TestCase):
 
     def setUp(self):
