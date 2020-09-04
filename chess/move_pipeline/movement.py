@@ -3,6 +3,8 @@
 import operator as _operator
 from math import gcd
 
+from chess.helpers import add_unit_direction
+
 
 def get_all_potential_end_locations(start, directions, board):
     ends = []
@@ -14,11 +16,11 @@ def get_all_potential_end_locations(start, directions, board):
         print(direction)
         # if direction == 1:
         #     import pdb; pdb.set_trace()
-        location = tuple(map(_operator.add, new_start, direction))
+        location = add_unit_direction(new_start, direction)
         while location in board:
             ends.append(location)
             new_start = location
-            location = tuple(map(_operator.add, new_start, direction))
+            location = add_unit_direction(new_start, direction)
     return ends
 
 
@@ -35,12 +37,12 @@ def cant_move_onto_threatened_square(board, start, directions, potential_end_loc
 
 
 def _get_two_moves_away(start, directions):
-    double_unit = [tuple(map(_operator.add, move, move)) for move in directions]
-    return [tuple(map(_operator.add, start, move)) for move in double_unit]
+    double_unit = [add_unit_direction(move, move) for move in directions]
+    return [add_unit_direction(start, move) for move in double_unit]
 
 
 def _get_one_move_away(start, directions):
-    ret_val = [tuple(map(_operator.add, move, start)) for move in directions]
+    ret_val = [add_unit_direction(move, start) for move in directions]
     return ret_val
 
 
@@ -48,10 +50,10 @@ def alternates_landing_on_enemy_and_empty_space(board, start, directions, potent
     ends = []
     for direction in directions:
         new_start = start
-        location = tuple(map(_operator.add, new_start, direction))
+        location = add_unit_direction(new_start, direction)
         while location in board:
-            initial_move = tuple(map(_operator.add, direction, new_start))
-            new_start = tuple(map(_operator.add, direction, initial_move))
+            initial_move = add_unit_direction(direction, new_start)
+            new_start = add_unit_direction(direction, initial_move)
             if initial_move in potential_end_locations and new_start in potential_end_locations:
                 # enemy piece at first move and no pices at second move
                 if board[initial_move] and not board[new_start] and board[initial_move].color != board[start].color:

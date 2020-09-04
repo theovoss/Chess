@@ -178,13 +178,13 @@ class TestValidatePieceExplodes(unittest.TestCase):
         assert self.chess_board[(6, 3)].kind == 'queen'
 
 
-@unittest.skip(reason="Not yet implemented")
+# @unittest.skip(reason="Not yet implemented")
 class TestValidateCastling(unittest.TestCase):
 
     def setUp(self):
         self.chess_board = ChessBoard()
 
-    def test_castling_king_side(self):
+    def test_castling_white_king_side(self):
         self.chess_board[(0, 5)] = None
         self.chess_board[(0, 6)] = None
 
@@ -194,8 +194,9 @@ class TestValidateCastling(unittest.TestCase):
 
         assert self.chess_board[(0, 6)].kind == 'king'
         assert self.chess_board[(0, 5)].kind == 'rook'
+        self.assertIsNone(self.chess_board[(0, 7)])
 
-    def test_castling_queen_side(self):
+    def test_castling_white_queen_side(self):
         self.chess_board[(0, 1)] = None
         self.chess_board[(0, 2)] = None
         self.chess_board[(0, 3)] = None
@@ -206,6 +207,38 @@ class TestValidateCastling(unittest.TestCase):
 
         assert self.chess_board[(0, 2)].kind == 'king'
         assert self.chess_board[(0, 3)].kind == 'rook'
+        self.assertIsNone(self.chess_board[(0, 0)])
+
+    def test_castling_black_king_side(self):
+        # move white so it's black's turn
+        self.chess_board.move((1, 1), (2, 1))
+
+        self.chess_board[(7, 5)] = None
+        self.chess_board[(7, 6)] = None
+
+        assert self.chess_board[(7, 4)].kind == 'king'
+
+        self.chess_board.move((7, 4), (7, 6))
+
+        assert self.chess_board[(7, 6)].kind == 'king'
+        assert self.chess_board[(7, 5)].kind == 'rook'
+        self.assertIsNone(self.chess_board[(7, 7)])
+
+    def test_castling_black_queen_side(self):
+        # move white so it's black's turn
+        self.chess_board.move((1, 1), (2, 1))
+
+        self.chess_board[(7, 1)] = None
+        self.chess_board[(7, 2)] = None
+        self.chess_board[(7, 3)] = None
+
+        assert self.chess_board[(7, 4)].kind == 'king'
+
+        self.chess_board.move((7, 4), (7, 2))
+
+        assert self.chess_board[(7, 2)].kind == 'king'
+        assert self.chess_board[(7, 3)].kind == 'rook'
+        self.assertIsNone(self.chess_board[(7, 0)])
 
 
 class TestBecomesPieceCaptureAction(unittest.TestCase):

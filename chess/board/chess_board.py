@@ -2,14 +2,13 @@
 # disabling too many instance attributes for now.
 # once I implement enpassant and castling,
 # I shouldn't need some of the FEN attributes.
-import operator as _operator  # TODO: abstract adding location + direction into helper
-
 from .base import Board
 from .history import History
 from . import json_helper
 
-from ..move_pipeline import movement, pre_move_checks
+from ..move_pipeline import movement, pre_move_checks, side_effects
 from ..piece import Piece
+from ..helpers import add_unit_direction
 
 from ..move_pipeline.movement import get_all_potential_end_locations
 
@@ -125,26 +124,34 @@ class ChessBoard(Board):
 
         all_end_points = []
         for move in piece.moves:
+            # Pre Move Checks
             if not self._do_prechecks_pass(start_location, move):
                 # pre checks don't pass, so it's not a valid move, continue to next move
                 continue
 
-            directions = move['directions']
-            conditions = [getattr(movement, condition) for condition in move['conditions'] if hasattr(movement, condition)]
+            # Directions and limitations
+            ends = self._get_end_locations_for_move(move, start_location, player_direction)
 
-            ends = get_all_potential_end_locations(start_location, directions, self)
-            for condition in conditions:
-                print("ends before condition: {} are: {}".format(condition, ends))
-                ends = condition(self, start_location, directions, ends, player_direction)
-                print("ends after condition: {} are: {}".format(condition, ends))
             all_end_points += ends
         return all_end_points
+
+    def _get_end_locations_for_move(self, move, start, player_direction):
+        directions = move['directions']
+        conditions = [getattr(movement, condition) for condition in move['conditions'] if hasattr(movement, condition)]
+
+        ends = get_all_potential_end_locations(start, directions, self)
+        for condition in conditions:
+            print("ends before condition: {} are: {}".format(condition, ends))
+            ends = condition(self, start, directions, ends, player_direction)
+            print("ends after condition: {} are: {}".format(condition, ends))
+
+        return ends
 
     def _do_prechecks_pass(self, start, move):
         passed_pre_check = True
         if 'pre_move_checks' in move:
             for check_definition in move['pre_move_checks']:
-                locations = [tuple(map(_operator.add, start, relative_location)) for relative_location in check_definition['locations']]
+                locations = [add_unit_direction(start, relative_location) for relative_location in check_definition['locations']]
 
                 checks = check_definition['checks']
                 passed = [getattr(pre_move_checks, check)(self, locations, self._history) for check in checks if hasattr(pre_move_checks, check)]
@@ -187,39 +194,54 @@ class ChessBoard(Board):
 
             self._toggle_current_player()
             print("is valid move")
-            is_capture = self[end_location] is not None
 
-            self._move_piece(start_location, end_location, is_capture, save)
+            self._move_piece(start_location, end_location, save)
 
             return True
         print('is not valid move start: ' + str(start_location) + " end: " + str(end_location))
         return False
 
-    def _move_piece(self, start_location, end_location, is_capture, save=True):
+    def _move_piece(self, start_location, end_location, save=True):
         piece = self.board[start_location]
 
-        actions = json_helper.get_capture_actions(piece, start_location, end_location)
         post_actions = json_helper.get_post_move_actions(piece, start_location, end_location)
+        effects = json_helper.get_side_effects(piece, start_location, end_location)
+
+        # Move
+        captures = self._move_and_capture(piece, start_location, end_location)
+
+        # Post Move
+        for action in post_actions:
+            action(self, end_location)
+
+        # Side Effects
+        for effect in effects:
+            method = getattr(side_effects, effect['method'])
+            if method:
+                method(self, start_location, **effect['kwargs'])
+
+        # Save to history
+        if save:
+            self._history.add(History.construct_history_object(start_location, end_location, piece, captures))
+
+    def _move_and_capture(self, piece, start, end):
+        actions = json_helper.get_capture_actions(piece, start, end)
 
         captures = []
-        if is_capture:
+        if self[end] is not None:
+            # capturing piece!
             for action in actions:
-                captureds = action(self, start_location, end_location)
+                captureds = action(self, start, end)
                 captures += History.construct_capture_obj(captureds)
 
             for capture in captures:
                 capture_location = capture['location']
                 self.board[capture_location] = None
 
-        self.board[end_location] = self.board[start_location]
-        self.board[start_location] = None
+        self.board[end] = self.board[start]
+        self.board[start] = None
 
-        print("end location: {}, start location: {}".format(end_location, start_location))
-        for action in post_actions:
-            action(self, end_location)
-
-        if save:
-            self._history.add(History.construct_history_object(start_location, end_location, piece, captures))
+        return captures
 
     def promote(self, location, new_piece_name):
         if self[location].promote_me_daddy:
