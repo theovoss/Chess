@@ -1,6 +1,6 @@
-from .. import movement
-from .. import capture_actions
-from .. import post_move_actions
+from ..move_pipeline import movement
+from ..move_pipeline import capture_actions
+from ..move_pipeline import post_move_actions
 
 from ..chess_configurations import get_standard_chess_pieces
 

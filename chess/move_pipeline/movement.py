@@ -137,7 +137,3 @@ def _directional_helper(start, end, direct):
         if end > start:
             return False
     return True
-
-
-def first_move(board, start, directions, potential_end_locations, player_direction):
-    return potential_end_locations if board[start].move_count == 0 else []

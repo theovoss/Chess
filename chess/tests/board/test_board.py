@@ -178,6 +178,36 @@ class TestValidatePieceExplodes(unittest.TestCase):
         assert self.chess_board[(6, 3)].kind == 'queen'
 
 
+@unittest.skip(reason="Not yet implemented")
+class TestValidateCastling(unittest.TestCase):
+
+    def setUp(self):
+        self.chess_board = ChessBoard()
+
+    def test_castling_king_side(self):
+        self.chess_board[(0, 5)] = None
+        self.chess_board[(0, 6)] = None
+
+        assert self.chess_board[(0, 4)].kind == 'king'
+
+        self.chess_board.move((0, 4), (0, 6))
+
+        assert self.chess_board[(0, 6)].kind == 'king'
+        assert self.chess_board[(0, 5)].kind == 'rook'
+
+    def test_castling_queen_side(self):
+        self.chess_board[(0, 1)] = None
+        self.chess_board[(0, 2)] = None
+        self.chess_board[(0, 3)] = None
+
+        assert self.chess_board[(0, 4)].kind == 'king'
+
+        self.chess_board.move((0, 4), (0, 2))
+
+        assert self.chess_board[(0, 2)].kind == 'king'
+        assert self.chess_board[(0, 3)].kind == 'rook'
+
+
 class TestBecomesPieceCaptureAction(unittest.TestCase):
 
     def setUp(self):

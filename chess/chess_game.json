@@ -13,7 +13,15 @@
             },
             {
                 "directions": ["vertical"],
-                "conditions": ["doesnt_land_on_piece", "directional", "first_move", "cant_jump_pieces", "distance_of_two"]
+                "pre_move_checks": [{"locations": [[0, 0]], "checks": ["has_not_moved"]}],
+                "conditions": ["doesnt_land_on_piece", "directional", "cant_jump_pieces", "distance_of_two"]
+            },
+            {
+                "directions": [[1, 1], [-1, 1]],
+                "pre_move_checks": [
+                    {"locations": [[0, 1]], "checks": ["has_moved_once", "moved_last"]}
+                ],
+                "conditions": ["distance_of_two", "directional"]
             }]
         },
         "rook": {
@@ -44,7 +52,17 @@
             "moves": [{
                 "directions": ["diagonal", "horizontal", "vertical"],
                 "conditions": ["doesnt_land_on_own_piece", "distance_of_one", "doesnt_end_in_check"]
-            }]
+            },
+            {
+                "directions": [[0, 1]],
+                "pre_move_checks": [
+                    {"locations": [[0, 0], [0, 3]], "checks": ["has_not_moved"]},
+                    {"locations": [[0, 1], [0, 2]], "checks": ["is_empty"]},
+                    {"locations": [[0, 0], [0, 1], [0, 2]], "checks": ["is_not_threatened"]}
+                ],
+                "conditions": ["distance_of_two"]
+            }
+            ]
         }
     },
     "end_game": {

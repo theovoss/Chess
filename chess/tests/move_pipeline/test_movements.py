@@ -2,17 +2,18 @@
 
 import unittest
 from unittest.mock import Mock
-from chess.movement import (distance_of_one,
-                            distance_of_two,
-                            doesnt_land_on_piece,
-                            doesnt_land_on_own_piece,
-                            cant_jump_pieces,
-                            ends_on_enemy,
-                            directional,
-                            first_move,
-                            get_all_potential_end_locations,
-                            alternates_landing_on_enemy_and_empty_space,
-                            get_unit_direction)
+from chess.move_pipeline.movement import (
+    distance_of_one,
+    distance_of_two,
+    doesnt_land_on_piece,
+    doesnt_land_on_own_piece,
+    cant_jump_pieces,
+    ends_on_enemy,
+    directional,
+    get_all_potential_end_locations,
+    alternates_landing_on_enemy_and_empty_space,
+    get_unit_direction
+)
 from chess.board.chess_board import ChessBoard
 
 
@@ -266,24 +267,6 @@ class TestMovements(unittest.TestCase):
 
         ends = directional(self.chess_board, start, None, potential_end_locations, (1, 1))
         assert ends == [(4, 2)]
-
-    def test_first_move(self):
-        start = (3, 1)
-        self.chess_board[start] = Mock(move_count=0)
-        potential_end_locations = [(4, 2), (4, 3), (2, 2), (2, 1), (2, 2)]
-
-        ends = first_move(self.chess_board, start, None, potential_end_locations, Mock())
-
-        assert ends == potential_end_locations
-
-    def test_not_first_move(self):
-        start = (3, 1)
-        self.chess_board[start] = Mock(move_count=1)
-        potential_end_locations = [(4, 2), (4, 3), (2, 2), (2, 1), (2, 2)]
-
-        ends = first_move(self.chess_board, start, None, potential_end_locations, Mock())
-
-        assert ends == []
 
     def test_alternates_landing_on_enemy_and_empty_space(self):
         start = (0, 0)

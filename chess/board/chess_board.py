@@ -2,14 +2,16 @@
 # disabling too many instance attributes for now.
 # once I implement enpassant and castling,
 # I shouldn't need some of the FEN attributes.
+import operator as _operator  # TODO: abstract adding location + direction into helper
+
 from .base import Board
 from .history import History
 from . import json_helper
 
-from .. import movement
+from ..move_pipeline import movement, pre_move_checks
 from ..piece import Piece
 
-from ..movement import get_all_potential_end_locations
+from ..move_pipeline.movement import get_all_potential_end_locations
 
 
 class ChessBoard(Board):
@@ -123,8 +125,13 @@ class ChessBoard(Board):
 
         all_end_points = []
         for move in piece.moves:
+            if not self._do_prechecks_pass(start_location, move):
+                # pre checks don't pass, so it's not a valid move, continue to next move
+                continue
+
             directions = move['directions']
             conditions = [getattr(movement, condition) for condition in move['conditions'] if hasattr(movement, condition)]
+
             ends = get_all_potential_end_locations(start_location, directions, self)
             for condition in conditions:
                 print("ends before condition: {} are: {}".format(condition, ends))
@@ -132,6 +139,18 @@ class ChessBoard(Board):
                 print("ends after condition: {} are: {}".format(condition, ends))
             all_end_points += ends
         return all_end_points
+
+    def _do_prechecks_pass(self, start, move):
+        passed_pre_check = True
+        if 'pre_move_checks' in move:
+            for check_definition in move['pre_move_checks']:
+                locations = [tuple(map(_operator.add, start, relative_location)) for relative_location in check_definition['locations']]
+
+                checks = check_definition['checks']
+                passed = [getattr(pre_move_checks, check)(self, locations, self._history) for check in checks if hasattr(pre_move_checks, check)]
+                if False in passed:
+                    passed_pre_check = False
+        return passed_pre_check
 
     def all_end_locations_for_color(self, color):
         ends = []

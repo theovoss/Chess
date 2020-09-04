@@ -1,8 +1,8 @@
 import json
 import inspect
-from chess import movement
-from chess import capture_actions
-from chess import post_move_actions
+from chess.move_pipeline import movement
+from chess.move_pipeline import capture_actions
+from chess.move_pipeline import post_move_actions
 from chess import standard_chess_json
 from chess.piece.directions import get_direction_shorthands
 

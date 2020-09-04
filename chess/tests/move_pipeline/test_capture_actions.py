@@ -2,9 +2,9 @@
 
 import unittest
 from unittest.mock import Mock
-from chess.capture_actions import (becomes_piece,
-                                   explode,
-                                   captures_destination)
+from chess.move_pipeline.capture_actions import (becomes_piece,
+                                                 explode,
+                                                 captures_destination)
 from chess.board.chess_board import ChessBoard
 from chess.chess import Chess
 

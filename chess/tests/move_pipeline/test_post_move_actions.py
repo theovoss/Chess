@@ -2,7 +2,7 @@ import unittest
 from unittest.mock import Mock
 
 from chess.board.chess_board import ChessBoard
-from chess.post_move_actions import increment_move_count, promotable
+from chess.move_pipeline.post_move_actions import increment_move_count, promotable
 
 
 class TestPostMoveActions(unittest.TestCase):
