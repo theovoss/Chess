@@ -29,31 +29,62 @@ def _distance_between(start, end, direction):
     return increments
 
 
-def _get_move_definition(piece, start, end):
+def _get_move_definition(board, piece, start, end):
     unit_direction = list(movement.get_unit_direction(start, end))
 
     for move in piece.moves:
         if unit_direction in move['directions']:
-            if 'conditions' in move and 'distance_of_one' in move['conditions']:
-                if _distance_between(start, end, unit_direction) == 1:
+            if 'conditions' in move:
+                if 'ends_on_enemy' in move['conditions'] and 'distance_of_one' in move['conditions']:
+                    if board[end] is not None and _distance_between(start, end, unit_direction) == 1:
+                        return move
+                elif 'distance_of_one' in move['conditions']:
+                    if _distance_between(start, end, unit_direction) == 1:
+                        return move
+                elif 'ends_on_enemy' in move['conditions']:
+                    if board[end] is not None:
+                        return move
+                else:
                     return move
             else:
                 return move
     return None
 
 
-def get_capture_actions(piece, start, end):
-    move = _get_move_definition(piece, start, end)
+def get_capture_actions(board, piece, start, end):
+    ret_val = []
+
+    move = _get_move_definition(board, piece, start, end)
 
     action_names = default_capture_actions
     if move and 'capture_actions' in move:
         action_names = move['capture_actions']
 
-    return [getattr(capture_actions, action) for action in action_names if hasattr(capture_actions, action)]
+    for action in action_names:
+        ret_val.append(get_specific_capture_action(action))
+    return ret_val
 
 
-def get_post_move_actions(piece, start, end):
-    move = _get_move_definition(piece, start, end)
+def get_additional_captures(board, piece, start, end):
+    move = _get_move_definition(board, piece, start, end)
+
+    if move and 'capture_at' in move:
+        ret_val = {}
+        for relative_direction in move['capture_at']:
+            location = add_unit_direction(start, relative_direction)
+            ret_val[location] = board[location]
+        return ret_val
+    return []
+
+
+def get_specific_capture_action(action):
+    if hasattr(capture_actions, action):
+        return getattr(capture_actions, action)
+    return None
+
+
+def get_post_move_actions(board, piece, start, end):
+    move = _get_move_definition(board, piece, start, end)
 
     post_actions = default_post_move_actions
     if move and 'post_move_actions' in move:
@@ -62,12 +93,8 @@ def get_post_move_actions(piece, start, end):
     return [getattr(post_move_actions, action) for action in post_actions if hasattr(post_move_actions, action)]
 
 
-def get_side_effects(piece, start, end):
-    move = _get_move_definition(piece, start, end)
-    print("THOR: Getting effects")
-    print("move is")
-    print(move)
-    print("Piece is " + piece.kind)
+def get_side_effects(board, piece, start, end):
+    move = _get_move_definition(board, piece, start, end)
 
     if move and 'side_effects' in move:
         return move['side_effects']

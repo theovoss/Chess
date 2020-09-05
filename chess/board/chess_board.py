@@ -204,8 +204,8 @@ class ChessBoard(Board):
     def _move_piece(self, start_location, end_location, save=True):
         piece = self.board[start_location]
 
-        post_actions = json_helper.get_post_move_actions(piece, start_location, end_location)
-        effects = json_helper.get_side_effects(piece, start_location, end_location)
+        post_actions = json_helper.get_post_move_actions(self, piece, start_location, end_location)
+        effects = json_helper.get_side_effects(self, piece, start_location, end_location)
 
         # Move
         captures = self._move_and_capture(piece, start_location, end_location)
@@ -225,8 +225,8 @@ class ChessBoard(Board):
             self._history.add(History.construct_history_object(start_location, end_location, piece, captures))
 
     def _move_and_capture(self, piece, start, end):
-        actions = json_helper.get_capture_actions(piece, start, end)
-
+        actions = json_helper.get_capture_actions(self, piece, start, end)
+        additional_captures = json_helper.get_additional_captures(self, piece, start, end)
         captures = []
         if self[end] is not None:
             # capturing piece!
@@ -234,9 +234,12 @@ class ChessBoard(Board):
                 captureds = action(self, start, end)
                 captures += History.construct_capture_obj(captureds)
 
-            for capture in captures:
-                capture_location = capture['location']
-                self.board[capture_location] = None
+        if additional_captures:
+            captures += History.construct_capture_obj(additional_captures)
+
+        for capture in captures:
+            capture_location = capture['location']
+            self.board[capture_location] = None
 
         self.board[end] = self.board[start]
         self.board[start] = None

@@ -1,12 +1,21 @@
 # pylint: disable=W0613
 # allow unused variables so all capture action functions can have same parameter definition
+from chess.helpers import add_unit_direction
 
 
-def captures_destination(board, start, end):
+def capture(board, start, end, **kwargs):
+    ret_val = {}
+    locations = [add_unit_direction(start, location) for location in kwargs['locations']]
+    for location in locations:
+        ret_val[location] = board[location]
+    return ret_val
+
+
+def captures_destination(board, start, end, **kwargs):
     return {end: board[end]}
 
 
-def becomes_piece(board, start, end):
+def becomes_piece(board, start, end, **kwargs):
     captured = {end: board[end]}
     enemy_piece = board[end]
     moving_piece = board[start]
@@ -19,7 +28,7 @@ def becomes_piece(board, start, end):
     return captured
 
 
-def explode(board, start, end):
+def explode(board, start, end, **kwargs):
     captured = {end: board[end]}
 
     for place in board.get_surrounding_locations(end):

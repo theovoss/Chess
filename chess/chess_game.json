@@ -8,20 +8,34 @@
             },
             {
                 "directions": ["diagonal"],
-                "conditions": ["ends_on_enemy", "distance_of_one", "directional", "en_passant"],
+                "conditions": ["ends_on_enemy", "distance_of_one", "directional"],
                 "post_move_actions": ["increment_move_count", "promotable"]
             },
             {
                 "directions": ["vertical"],
                 "pre_move_checks": [{"locations": [[0, 0]], "checks": ["has_not_moved"]}],
-                "conditions": ["doesnt_land_on_piece", "directional", "cant_jump_pieces", "distance_of_two"]
+                "conditions": ["doesnt_land_on_piece", "directional", "cant_jump_pieces", "distance_of_two"],
+                "post_move_actions": ["increment_move_count", "promotable"]
             },
             {
                 "directions": [[1, 1], [-1, 1]],
                 "pre_move_checks": [
                     {"locations": [[0, 1]], "checks": ["has_moved_once", "moved_last"]}
                 ],
-                "conditions": ["distance_of_two", "directional"]
+                "conditions": ["distance_of_one", "directional"],
+                "capture_at": [
+                    [0, 1]
+                ]
+            },
+            {
+                "directions": [[1, -1], [-1, -1]],
+                "pre_move_checks": [
+                    {"locations": [[0, -1]], "checks": ["has_moved_once", "moved_last"]}
+                ],
+                "conditions": ["distance_of_one", "directional"],
+                "capture_at": [
+                    [0, -1]
+                ]
             }]
         },
         "rook": {

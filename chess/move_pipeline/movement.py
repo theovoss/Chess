@@ -10,12 +10,6 @@ def get_all_potential_end_locations(start, directions, board):
     ends = []
     for direction in directions:
         new_start = start
-        print("New start")
-        print(new_start)
-        print("direction")
-        print(direction)
-        # if direction == 1:
-        #     import pdb; pdb.set_trace()
         location = add_unit_direction(new_start, direction)
         while location in board:
             ends.append(location)

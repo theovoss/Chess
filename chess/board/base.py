@@ -27,7 +27,7 @@ class Board:
         ]
 
     def __getitem__(self, key):
-        return self.board[key]
+        return self.board.get(key)
 
     def __setitem__(self, key, value):
         self.board[key] = value

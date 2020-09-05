@@ -14,7 +14,7 @@ def has_moved_once(board, locations, history):
 
 def is_empty(board, locations, history):
     for location in locations:
-        if location in board and board[location] is not None:
+        if board[location] is not None:
             return False
     return True
 

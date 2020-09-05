@@ -176,7 +176,44 @@ class TestValidatePieceExplodes(unittest.TestCase):
         self.assertEqual(self.chess_board[(6, 3)].kind, 'queen')
 
 
-# @unittest.skip(reason="Not yet implemented")
+class TestValidateEnPassant(unittest.TestCase):
+
+    def setUp(self):
+        self.chess_board = ChessBoard()
+
+    def test_en_passant_king_side_black_captures(self):
+        # move black pawn in range of white row for en pessante
+        self.chess_board[(3, 3)] = self.chess_board[(6, 3)]
+        self.chess_board[(6, 3)] = None
+
+        # move white pawn forward by two
+        self.chess_board.move((1, 4), (3, 4))
+
+        # move en passant with black pawn
+        self.chess_board.move((3, 3), (2, 4))
+
+        self.assertEqual(self.chess_board[(2, 4)].kind, 'pawn')
+        self.assertEqual(self.chess_board[(2, 4)].color, 'black')
+        self.assertIsNone(self.chess_board[(3, 3)])
+        self.assertIsNone(self.chess_board[(3, 4)])
+
+    def test_en_passant_queen_side_black_captures(self):
+        # move black pawn in range of white row for en pessante
+        self.chess_board[(3, 3)] = self.chess_board[(6, 3)]
+        self.chess_board[(6, 3)] = None
+
+        # move white pawn forward by two
+        self.chess_board.move((1, 2), (3, 2))
+
+        # move en passant with black pawn
+        self.chess_board.move((3, 3), (2, 2))
+
+        self.assertEqual(self.chess_board[(2, 2)].kind, 'pawn')
+        self.assertEqual(self.chess_board[(2, 2)].color, 'black')
+        self.assertIsNone(self.chess_board[(3, 3)])
+        self.assertIsNone(self.chess_board[(3, 2)])
+
+
 class TestValidateCastling(unittest.TestCase):
 
     def setUp(self):
