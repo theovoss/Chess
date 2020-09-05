@@ -38,13 +38,13 @@ class TestCaptureActions(unittest.TestCase):
         self.chess_board[end] = end_piece
 
         captures = becomes_piece(self.chess_board, start, end)
-        assert captures == {end: end_piece}
+        self.assertEqual(captures, {end: end_piece})
         new_piece = self.chess_board[start]
 
-        assert new_piece.moves == piece2_moves
-        assert new_piece.capture_actions == piece2_moves
-        assert new_piece.color == 1
-        assert new_piece.move_count == piece1_move_count
+        self.assertEqual(new_piece.moves, piece2_moves)
+        self.assertEqual(new_piece.capture_actions, piece2_moves)
+        self.assertEqual(new_piece.color, 1)
+        self.assertEqual(new_piece.move_count, piece1_move_count)
 
     def test_explode_center_of_board(self):
         self._populate_mock_board()
@@ -58,7 +58,7 @@ class TestCaptureActions(unittest.TestCase):
         expected_captures = ['D3', 'D4', 'D5', 'C3', 'C4', 'C5', 'E3', 'E4', 'E5']
         expected_internal_captures = [Chess.convert_to_internal_indexes(empty) for empty in expected_captures]
 
-        assert set(captures.keys()) == set(expected_internal_captures)
+        self.assertEqual(set(captures.keys()), set(expected_internal_captures))
 
     def test_explode_edge_of_board(self):
         self._populate_mock_board()
@@ -70,7 +70,7 @@ class TestCaptureActions(unittest.TestCase):
         expected_captures = ['D1', 'D2', 'C1', 'C2', 'E1', 'E2']
         expected_internal_captures = [Chess.convert_to_internal_indexes(empty) for empty in expected_captures]
 
-        assert set(captures.keys()) == set(expected_internal_captures)
+        self.assertEqual(set(captures.keys()), set(expected_internal_captures))
 
     def test_explode_corner_of_board(self):
         self._populate_mock_board()
@@ -82,14 +82,14 @@ class TestCaptureActions(unittest.TestCase):
         expected_captures = ['A1', 'A2', 'B1', 'B2']
         expected_internal_captures = [Chess.convert_to_internal_indexes(empty) for empty in expected_captures]
 
-        assert set(captures.keys()) == set(expected_internal_captures)
+        self.assertEqual(set(captures.keys()), set(expected_internal_captures))
 
     def test_captures_destination(self):
         end = (5, 6)
         piece = Mock(name="this piece")
         self.chess_board[end] = piece
         captures = captures_destination(self.chess_board, (1, 4), end)
-        assert captures == {end: piece}
+        self.assertEqual(captures, {end: piece})
 
     def _populate_mock_board(self):
         for place in self.chess_board.board.keys():

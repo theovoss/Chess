@@ -21,21 +21,21 @@ class TestBoard(unittest.TestCase):
 
     def verify_pieces_at_locations_are_correct_piece_and_color(self, white_positions, piece):
         for location in white_positions:
-            assert self.chess_board[location].kind == piece
-            assert self.chess_board[location].color == "white"
+            self.assertEqual(self.chess_board[location].kind, piece)
+            self.assertEqual(self.chess_board[location].color, "white")
 
         black_positions = self.convert_default_white_spaces_to_black(white_positions)
         for location in black_positions:
-            assert self.chess_board[location].kind == piece
-            assert self.chess_board[location].color == "black"
+            self.assertEqual(self.chess_board[location].kind, piece)
+            self.assertEqual(self.chess_board[location].color, "black")
 
     def test_init(self):
-        assert len(self.chess_board) == 64
-        assert len(self.chess_board._history) == 0
+        self.assertEqual(len(self.chess_board), 64)
+        self.assertEqual(len(self.chess_board._history), 0)
 
     def test_has_pawn_at_1_3(self):
         piece = self.chess_board[(1, 3)]
-        assert len(piece.moves) > 0
+        self.assertGreater(len(piece.moves), 0)
 
     def test_initial_pawn_positions(self):
         expected_white_pawn_positions = [(1, 0), (1, 1), (1, 2), (1, 3), (1, 4), (1, 5), (1, 6), (1, 7)]
@@ -57,12 +57,12 @@ class TestBoard(unittest.TestCase):
         self.verify_pieces_at_locations_are_correct_piece_and_color([(0, 4)], "king")
 
     def test_pawns_are_all_different_instances(self):
-        assert self.chess_board[(1, 0)] is not self.chess_board[(1, 1)]
+        self.assertIsNot(self.chess_board[(1, 0)], self.chess_board[(1, 1)])
 
     def test_clear_board_removes_all_pieces(self):
         self.chess_board.clear_board()
         for location in self.chess_board.board:
-            assert self.chess_board[location] is None
+            self.assertIsNone(self.chess_board[location])
 
     def test_can_get_all_piece_names(self):
         expected = ['pawn', 'rook', 'knight', 'bishop', 'queen', 'king']
@@ -76,20 +76,19 @@ class TestBoard(unittest.TestCase):
         self.compare_boards(exported_json['board'], expected_json['board'])
         exported_json.pop('board')
         for key, value in exported_json.items():
-            assert expected_json[key] == value
-        assert len(expected_json) == len(exported_json) + 1
+            self.assertEqual(expected_json[key], value)
+        self.assertEqual(len(expected_json), len(exported_json) + 1)
 
-    @staticmethod
-    def compare_boards(board1, board2):
+    def compare_boards(self, board1, board2):
         for player in board1:
-            assert player in board2
+            self.assertIn(player, board2)
             for piece in board1[player]:
-                assert piece in board2[player]
+                self.assertIn(piece, board2[player])
                 piece_locations1 = board1[player][piece]
                 piece_locations2 = board2[player][piece]
-                assert len(piece_locations1) == len(piece_locations2)
+                self.assertEqual(len(piece_locations1), len(piece_locations2))
                 for location in piece_locations1:
-                    assert location in piece_locations2
+                    self.assertIn(location, piece_locations2)
 
 
 class TestValidateKnightMoves(unittest.TestCase):
@@ -100,35 +99,34 @@ class TestValidateKnightMoves(unittest.TestCase):
     def test_move_knight(self):
         result = self.chess_board.move((0, 1), (2, 0))
 
-        assert result
-        assert self.chess_board[(2, 0)].kind == 'knight'
-        assert self.chess_board._history.json['history'] == [{
+        self.assertTrue(result)
+        self.assertEqual(self.chess_board[(2, 0)].kind, 'knight')
+        self.assertEqual(self.chess_board._history.json['history'], [{
             'start': (0, 1),
             'end': (2, 0),
             'piece': {
                 'name': 'knight',
                 'color': 'white',
                 'moves': self.chess_board[(2, 0)].moves
-            }}]
+            }}])
 
     def test_move_knight_on_top_of_own_pawn(self):
-        assert not self.chess_board.is_valid_move((0, 1), (1, 3))
+        self.assertFalse(self.chess_board.is_valid_move((0, 1), (1, 3)))
         result = self.chess_board.move((0, 1), (1, 3))
 
-        assert not result
-        assert self.chess_board[(1, 3)].kind == 'pawn'
+        self.assertFalse(result)
+        self.assertEqual(self.chess_board[(1, 3)].kind, 'pawn')
 
     def test_move_knight_on_top_of_opponent_pawn(self):
         some_moves = ['move over here', 'move over there']
         self.chess_board[(1, 3)].color = 'black'
         self.chess_board[(1, 3)].moves = some_moves
-        assert self.chess_board.is_valid_move((0, 1), (1, 3))
+        self.assertTrue(self.chess_board.is_valid_move((0, 1), (1, 3)))
         result = self.chess_board.move((0, 1), (1, 3))
 
-        assert result
-        assert self.chess_board[(1, 3)].kind == 'knight'
+        self.assertTrue(result)
+        self.assertEqual(self.chess_board[(1, 3)].kind, 'knight')
 
-        print(self.chess_board._history.json)
         self.assertEqual(self.chess_board._history.json['history'], [{
             'start': (0, 1),
             'end': (1, 3),
@@ -162,7 +160,7 @@ class TestValidateRookMoves(unittest.TestCase):
 
         result = self.chess_board.end_locations_for_piece_at_location((0, 5))
 
-        assert result == [(0, 6), (0, 7)]
+        self.assertEqual(result, [(0, 6), (0, 7)])
 
 
 class TestValidatePieceExplodes(unittest.TestCase):
@@ -175,7 +173,7 @@ class TestValidatePieceExplodes(unittest.TestCase):
         self.chess_board[(0, 3)].moves[0]['capture_actions'] = ['explode']
         self.chess_board.move((0, 3), (6, 3))
 
-        assert self.chess_board[(6, 3)].kind == 'queen'
+        self.assertEqual(self.chess_board[(6, 3)].kind, 'queen')
 
 
 # @unittest.skip(reason="Not yet implemented")
@@ -188,12 +186,12 @@ class TestValidateCastling(unittest.TestCase):
         self.chess_board[(0, 5)] = None
         self.chess_board[(0, 6)] = None
 
-        assert self.chess_board[(0, 4)].kind == 'king'
+        self.assertEqual(self.chess_board[(0, 4)].kind, 'king')
 
         self.chess_board.move((0, 4), (0, 6))
 
-        assert self.chess_board[(0, 6)].kind == 'king'
-        assert self.chess_board[(0, 5)].kind == 'rook'
+        self.assertEqual(self.chess_board[(0, 6)].kind, 'king')
+        self.assertEqual(self.chess_board[(0, 5)].kind, 'rook')
         self.assertIsNone(self.chess_board[(0, 7)])
 
     def test_castling_white_queen_side(self):
@@ -201,12 +199,12 @@ class TestValidateCastling(unittest.TestCase):
         self.chess_board[(0, 2)] = None
         self.chess_board[(0, 3)] = None
 
-        assert self.chess_board[(0, 4)].kind == 'king'
+        self.assertEqual(self.chess_board[(0, 4)].kind, 'king')
 
         self.chess_board.move((0, 4), (0, 2))
 
-        assert self.chess_board[(0, 2)].kind == 'king'
-        assert self.chess_board[(0, 3)].kind == 'rook'
+        self.assertEqual(self.chess_board[(0, 2)].kind, 'king')
+        self.assertEqual(self.chess_board[(0, 3)].kind, 'rook')
         self.assertIsNone(self.chess_board[(0, 0)])
 
     def test_castling_black_king_side(self):
@@ -216,12 +214,12 @@ class TestValidateCastling(unittest.TestCase):
         self.chess_board[(7, 5)] = None
         self.chess_board[(7, 6)] = None
 
-        assert self.chess_board[(7, 4)].kind == 'king'
+        self.assertEqual(self.chess_board[(7, 4)].kind, 'king')
 
         self.chess_board.move((7, 4), (7, 6))
 
-        assert self.chess_board[(7, 6)].kind == 'king'
-        assert self.chess_board[(7, 5)].kind == 'rook'
+        self.assertEqual(self.chess_board[(7, 6)].kind, 'king')
+        self.assertEqual(self.chess_board[(7, 5)].kind, 'rook')
         self.assertIsNone(self.chess_board[(7, 7)])
 
     def test_castling_black_queen_side(self):
@@ -232,12 +230,12 @@ class TestValidateCastling(unittest.TestCase):
         self.chess_board[(7, 2)] = None
         self.chess_board[(7, 3)] = None
 
-        assert self.chess_board[(7, 4)].kind == 'king'
+        self.assertEqual(self.chess_board[(7, 4)].kind, 'king')
 
         self.chess_board.move((7, 4), (7, 2))
 
-        assert self.chess_board[(7, 2)].kind == 'king'
-        assert self.chess_board[(7, 3)].kind == 'rook'
+        self.assertEqual(self.chess_board[(7, 2)].kind, 'king')
+        self.assertEqual(self.chess_board[(7, 3)].kind, 'rook')
         self.assertIsNone(self.chess_board[(7, 0)])
 
 
@@ -253,14 +251,14 @@ class TestBecomesPieceCaptureAction(unittest.TestCase):
         self.chess_board[(0, 7)].moves[0]['capture_actions'] = ['becomes_piece']
 
         # make sure a black pawn is where we think it is
-        assert self.chess_board[(1, 7)].kind == "pawn"
-        assert self.chess_board[(1, 7)].color == "black"
-        assert self.chess_board[(0, 7)].color != "black"
+        self.assertEqual(self.chess_board[(1, 7)].kind, "pawn")
+        self.assertEqual(self.chess_board[(1, 7)].color, "black")
+        self.assertNotEqual(self.chess_board[(0, 7)].color, "black")
 
         self.chess_board.move((0, 7), (1, 7))
 
-        assert self.chess_board[(1, 7)].kind == "pawn"
-        assert self.chess_board[(1, 7)].color == "white"
+        self.assertEqual(self.chess_board[(1, 7)].kind, "pawn")
+        self.assertEqual(self.chess_board[(1, 7)].color, "white")
 
 
 class TestValidatePawnMoves(unittest.TestCase):
@@ -271,16 +269,16 @@ class TestValidatePawnMoves(unittest.TestCase):
         self.chess_board = ChessBoard()
 
     def test_pawn_can_move_forward(self):
-        assert self.chess_board[(2, 3)] is None
+        self.assertIsNone(self.chess_board[(2, 3)])
         ends = self.chess_board.end_locations_for_piece_at_location((1, 3))
-        assert ends == [(2, 3), (3, 3)]
+        self.assertEqual(ends, [(2, 3), (3, 3)])
 
     def test_pawn_cant_move_forward_twice_if_not_first_move(self):
-        assert self.chess_board[(2, 3)] is None
-        assert self.chess_board[(3, 3)] is None
+        self.assertIsNone(self.chess_board[(2, 3)])
+        self.assertIsNone(self.chess_board[(3, 3)])
         self.chess_board[(1, 3)].move_count = 1
         ends = self.chess_board.end_locations_for_piece_at_location((1, 3))
-        assert ends == [(2, 3)]
+        self.assertEqual(ends, [(2, 3)])
 
     def test_white_pawn_promotion(self):
         # move white pawn 1 away
@@ -314,13 +312,13 @@ class TestHistory(unittest.TestCase):
         self.chess_board.move((6, 2), (5, 2))
         self.chess_board.move((2, 1), (3, 1))
         self.chess_board.move((5, 2), (4, 2))
-        assert self.chess_board[(3, 1)] is not None
-        assert self.chess_board[(2, 1)] is None
-        assert self.chess_board[(1, 1)] is None
+        self.assertIsNotNone(self.chess_board[(3, 1)])
+        self.assertIsNone(self.chess_board[(2, 1)])
+        self.assertIsNone(self.chess_board[(1, 1)])
         self.chess_board.first()
-        assert self.chess_board[(1, 1)] is not None
-        assert self.chess_board[(2, 1)] is None
-        assert self.chess_board[(3, 1)] is None
+        self.assertIsNotNone(self.chess_board[(1, 1)])
+        self.assertIsNone(self.chess_board[(2, 1)])
+        self.assertIsNone(self.chess_board[(3, 1)])
 
     def test_next(self):
         self.chess_board.move((1, 1), (2, 1))
@@ -328,70 +326,70 @@ class TestHistory(unittest.TestCase):
         self.chess_board.move((2, 1), (3, 1))
         self.chess_board.move((5, 2), (4, 2))
 
-        assert self.chess_board[(1, 1)] is None
-        assert self.chess_board[(6, 2)] is None
+        self.assertIsNone(self.chess_board[(1, 1)])
+        self.assertIsNone(self.chess_board[(6, 2)])
 
-        assert self.chess_board[(3, 1)] is not None
-        assert self.chess_board[(4, 2)] is not None
+        self.assertIsNotNone(self.chess_board[(3, 1)])
+        self.assertIsNotNone(self.chess_board[(4, 2)])
 
         self.chess_board.first()
 
-        assert self.chess_board[(1, 1)] is not None
-        assert self.chess_board[(6, 2)] is not None
+        self.assertIsNotNone(self.chess_board[(1, 1)])
+        self.assertIsNotNone(self.chess_board[(6, 2)])
 
         self.chess_board.next()  # 1,1 -> 2, 1
 
-        assert self.chess_board[(1, 1)] is None
-        assert self.chess_board[(2, 1)] is not None
+        self.assertIsNone(self.chess_board[(1, 1)])
+        self.assertIsNotNone(self.chess_board[(2, 1)])
 
         self.chess_board.next()  # 6,2 -> 5, 2
 
-        assert self.chess_board[(6, 2)] is None
-        assert self.chess_board[(5, 2)] is not None
+        self.assertIsNone(self.chess_board[(6, 2)])
+        self.assertIsNotNone(self.chess_board[(5, 2)])
 
         self.chess_board.next()  # 2, 1 -> 3, 1
 
-        assert self.chess_board[(3, 1)] is not None
-        assert self.chess_board[(2, 1)] is None
+        self.assertIsNotNone(self.chess_board[(3, 1)])
+        self.assertIsNone(self.chess_board[(2, 1)])
 
         self.chess_board.next()  # 5, 2 -> 4, 2
 
-        assert self.chess_board[(5, 2)] is None
-        assert self.chess_board[(4, 2)] is not None
+        self.assertIsNone(self.chess_board[(5, 2)])
+        self.assertIsNotNone(self.chess_board[(4, 2)])
 
         self.chess_board.next()
         self.chess_board.next()
         self.chess_board.next()
 
-        assert self.chess_board[(1, 1)] is None
-        assert self.chess_board[(6, 2)] is None
+        self.assertIsNone(self.chess_board[(1, 1)])
+        self.assertIsNone(self.chess_board[(6, 2)])
 
-        assert self.chess_board[(3, 1)] is not None
-        assert self.chess_board[(4, 2)] is not None
+        self.assertIsNotNone(self.chess_board[(3, 1)])
+        self.assertIsNotNone(self.chess_board[(4, 2)])
 
     def test_previous(self):
         self.chess_board.move((1, 1), (2, 1))
         self.chess_board.move((6, 2), (5, 2))
         self.chess_board.move((2, 1), (3, 1))
         self.chess_board.move((5, 2), (4, 2))
-        assert self.chess_board[(4, 2)] is not None
-        assert self.chess_board[(3, 1)] is not None
-        assert self.chess_board[(5, 2)] is None
-        assert self.chess_board[(2, 1)] is None
+        self.assertIsNotNone(self.chess_board[(4, 2)])
+        self.assertIsNotNone(self.chess_board[(3, 1)])
+        self.assertIsNone(self.chess_board[(5, 2)])
+        self.assertIsNone(self.chess_board[(2, 1)])
 
         self.chess_board.previous()
 
-        assert self.chess_board[(4, 2)] is None
-        assert self.chess_board[(3, 1)] is not None
-        assert self.chess_board[(5, 2)] is not None
-        assert self.chess_board[(2, 1)] is None
+        self.assertIsNone(self.chess_board[(4, 2)])
+        self.assertIsNotNone(self.chess_board[(3, 1)])
+        self.assertIsNotNone(self.chess_board[(5, 2)])
+        self.assertIsNone(self.chess_board[(2, 1)])
 
         self.chess_board.previous()
 
-        assert self.chess_board[(4, 2)] is None
-        assert self.chess_board[(3, 1)] is None
-        assert self.chess_board[(5, 2)] is not None
-        assert self.chess_board[(2, 1)] is not None
+        self.assertIsNone(self.chess_board[(4, 2)])
+        self.assertIsNone(self.chess_board[(3, 1)])
+        self.assertIsNotNone(self.chess_board[(5, 2)])
+        self.assertIsNotNone(self.chess_board[(2, 1)])
 
         self.chess_board.previous()
         self.chess_board.previous()
@@ -401,67 +399,67 @@ class TestHistory(unittest.TestCase):
 
         self.chess_board.next()
 
-        assert self.chess_board[(2, 1)] is not None
-        assert self.chess_board[(1, 1)] is None
+        self.assertIsNotNone(self.chess_board[(2, 1)])
+        self.assertIsNone(self.chess_board[(1, 1)])
 
     def test_can_undo_and_redo_last_move(self):
         self.chess_board.move((1, 1), (2, 1))
         self.chess_board.move((6, 2), (5, 2))
         self.chess_board.move((2, 1), (3, 1))
         self.chess_board.move((5, 2), (4, 2))
-        assert self.chess_board[(4, 2)] is not None
-        assert self.chess_board[(3, 1)] is not None
-        assert self.chess_board[(5, 2)] is None
-        assert self.chess_board[(2, 1)] is None
+        self.assertIsNotNone(self.chess_board[(4, 2)])
+        self.assertIsNotNone(self.chess_board[(3, 1)])
+        self.assertIsNone(self.chess_board[(5, 2)])
+        self.assertIsNone(self.chess_board[(2, 1)])
 
         self.chess_board.previous()
 
-        assert self.chess_board[(4, 2)] is None
-        assert self.chess_board[(3, 1)] is not None
-        assert self.chess_board[(5, 2)] is not None
-        assert self.chess_board[(2, 1)] is None
+        self.assertIsNone(self.chess_board[(4, 2)])
+        self.assertIsNotNone(self.chess_board[(3, 1)])
+        self.assertIsNotNone(self.chess_board[(5, 2)])
+        self.assertIsNone(self.chess_board[(2, 1)])
 
         self.chess_board.next()
 
-        assert self.chess_board[(4, 2)] is not None
-        assert self.chess_board[(3, 1)] is not None
-        assert self.chess_board[(5, 2)] is None
-        assert self.chess_board[(2, 1)] is None
+        self.assertIsNotNone(self.chess_board[(4, 2)])
+        self.assertIsNotNone(self.chess_board[(3, 1)])
+        self.assertIsNone(self.chess_board[(5, 2)])
+        self.assertIsNone(self.chess_board[(2, 1)])
 
     def test_export_includes_history(self):
         self.chess_board.move((1, 1), (2, 1))
         self.chess_board.move((6, 2), (5, 2))
         self.chess_board.move((2, 1), (3, 1))
         self.chess_board.move((5, 2), (4, 2))
-        assert self.chess_board[(4, 2)] is not None
-        assert self.chess_board[(3, 1)] is not None
-        assert self.chess_board[(5, 2)] is None
-        assert self.chess_board[(2, 1)] is None
+        self.assertIsNotNone(self.chess_board[(4, 2)])
+        self.assertIsNotNone(self.chess_board[(3, 1)])
+        self.assertIsNone(self.chess_board[(5, 2)])
+        self.assertIsNone(self.chess_board[(2, 1)])
 
         export = self.chess_board.export()
         new_board = ChessBoard(export)
 
-        assert len(new_board._history) == 4
-        assert new_board._history._index == 3
+        self.assertEqual(len(new_board._history), 4)
+        self.assertEqual(new_board._history._index, 3)
 
-        assert new_board[(4, 2)] is not None
-        assert new_board[(3, 1)] is not None
-        assert new_board[(5, 2)] is None
-        assert new_board[(2, 1)] is None
-
-        new_board.previous()
-
-        assert new_board[(4, 2)] is None
-        assert new_board[(3, 1)] is not None
-        assert new_board[(5, 2)] is not None
-        assert new_board[(2, 1)] is None
+        self.assertIsNotNone(new_board[(4, 2)])
+        self.assertIsNotNone(new_board[(3, 1)])
+        self.assertIsNone(new_board[(5, 2)])
+        self.assertIsNone(new_board[(2, 1)])
 
         new_board.previous()
 
-        assert new_board[(4, 2)] is None
-        assert new_board[(3, 1)] is None
-        assert new_board[(5, 2)] is not None
-        assert new_board[(2, 1)] is not None
+        self.assertIsNone(new_board[(4, 2)])
+        self.assertIsNotNone(new_board[(3, 1)])
+        self.assertIsNotNone(new_board[(5, 2)])
+        self.assertIsNone(new_board[(2, 1)])
+
+        new_board.previous()
+
+        self.assertIsNone(new_board[(4, 2)])
+        self.assertIsNone(new_board[(3, 1)])
+        self.assertIsNotNone(new_board[(5, 2)])
+        self.assertIsNotNone(new_board[(2, 1)])
 
 
 class TestExportImport(unittest.TestCase):

@@ -16,7 +16,7 @@ class TestPostMoveActions(unittest.TestCase):
 
         increment_move_count(self.chess_board, end)
 
-        assert self.chess_board[end].move_count == 6
+        self.assertEqual(self.chess_board[end].move_count, 6)
 
     def test_promotable(self):
         location = (1, 1)

@@ -33,7 +33,7 @@ class TestPiece(unittest.TestCase):
 
         piece = Piece("None", "None", moves)
 
-        assert piece.moves == expected_moves
+        self.assertEqual(piece.moves, expected_moves)
 
     def test_converts_shorthand_and_non_shorthand_directions(self):
         moves = [
@@ -60,4 +60,4 @@ class TestPiece(unittest.TestCase):
 
         piece = Piece("None", "None", moves)
 
-        assert piece.moves == expected_moves
+        self.assertEqual(piece.moves, expected_moves)

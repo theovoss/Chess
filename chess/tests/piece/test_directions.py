@@ -12,9 +12,9 @@ class TestDirections(unittest.TestCase):
         expected = [[1, 0], [-1, 0]]
         actual = convert_shorthand_directions("vertical")
 
-        assert expected == actual
+        self.assertEqual(expected, actual)
 
     def test_doesnt_convert_non_shorthand_directions(self):
         actual = convert_shorthand_directions("hello")
 
-        assert ["hello"] == actual
+        self.assertEqual(["hello"], actual)

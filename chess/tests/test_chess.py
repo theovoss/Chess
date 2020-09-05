@@ -12,7 +12,7 @@ class TestChess(unittest.TestCase):
         self.chess = Chess()
 
     def test_init(self):
-        assert isinstance(self.chess.board, dict)
+        self.assertTrue(isinstance(self.chess.board, dict))
 
     def test_convert_to_internal_notation(self):
         expected = {
@@ -34,17 +34,17 @@ class TestChess(unittest.TestCase):
             "H2": (1, 7),
         }
         for key, value in expected.items():
-            assert Chess.convert_to_internal_indexes(key) == value, 'expected: {}\nactual: {}'.format(value, Chess.convert_to_internal_indexes(key))
+            self.assertEqual(Chess.convert_to_internal_indexes(key), value, 'expected: {}\nactual: {}'.format(value, Chess.convert_to_internal_indexes(key)))
 
     def test_move_pawn_forward_once(self):
         start = "A2"
         end = "A3"
         internal_start = Chess.convert_to_internal_indexes(start)
         internal_end = Chess.convert_to_internal_indexes(end)
-        assert self.chess.board[internal_end] is None
-        assert self.chess.board[internal_start]
+        self.assertIsNone(self.chess.board[internal_end])
+        self.assertIsNotNone(self.chess.board[internal_start])
         self.chess.move(start, end)
-        assert self.chess.board[internal_end]
+        self.assertIsNotNone(self.chess.board[internal_end])
 
     def test_take_piece_become_piece__queen_to_pawn(self):
         queen_pawn = "D2"
@@ -61,8 +61,8 @@ class TestChess(unittest.TestCase):
 
         former_queen = self.chess.board[internal_enemy_queen_pawn]
 
-        assert former_queen.color == "white"
-        assert former_queen.kind == "pawn"
+        self.assertEqual(former_queen.color, "white")
+        self.assertEqual(former_queen.kind, "pawn")
 
     def test_can_get_all_piece_names(self):
         expected = ['pawn', 'rook', 'knight', 'bishop', 'queen', 'king']
