@@ -215,14 +215,15 @@ class ChessBoard(Board):
             action(self, end_location)
 
         # Side Effects
+        history_side_effects = []
         for effect in effects:
             method = getattr(side_effects, effect['method'])
             if method:
-                method(self, start_location, **effect['kwargs'])
+                history_side_effects += method(self, start_location, **effect['kwargs'])
 
         # Save to history
         if save:
-            self._history.add(History.construct_history_object(start_location, end_location, piece, captures))
+            self._history.add(History.construct_history_object(start_location, end_location, piece, captures, history_side_effects))
 
     def _move_and_capture(self, piece, start, end):
         actions = json_helper.get_capture_actions(self, piece, start, end)
@@ -275,8 +276,16 @@ class ChessBoard(Board):
         moving_piece = move['piece']
         self.board[tuple(move['start'])] = Piece(moving_piece['name'], moving_piece['color'], moving_piece['moves'])
         self.board[tuple(move['end'])] = None
+
+        # TODO: refactor store an undo function in history for undoing/redoing each capture/side effect/move
         if 'captures' in move:
             for capture in move['captures']:
                 self.board[tuple(capture['location'])] = Piece(capture['name'], capture['color'], capture['moves'])
-
+        if 'side_effects' in move:
+            print("Move side effects")
+            print(move['side_effects'])
+            for effect in move['side_effects']:
+                if effect['method'] == 'move':
+                    self.board[tuple(effect['start'])] = self.board[tuple(effect['end'])]
+                    self.board[tuple(effect['end'])] = None
         self._toggle_current_player()

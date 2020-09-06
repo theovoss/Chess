@@ -59,7 +59,7 @@ class History():
         return record
 
     @staticmethod
-    def construct_history_object(start, end, piece, captures=None):
+    def construct_history_object(start, end, piece, captures=None, side_effects=None):
         obj = {
             'start': start,
             'end': end,
@@ -71,6 +71,8 @@ class History():
         }
         if captures:
             obj['captures'] = captures
+        if side_effects:
+            obj['side_effects'] = side_effects
         return obj
 
     @staticmethod
@@ -79,3 +81,15 @@ class History():
         for location, piece in captureds.items():
             captures.append({'location': location, 'name': piece.kind, 'color': piece.color, 'moves': piece.moves})
         return captures
+
+    @staticmethod
+    def construct_side_effect(method, **kwargs):
+        start = kwargs['start']
+        end = kwargs['end']
+        if method == 'move':
+            return [{
+                'method': 'move',
+                'start': start,
+                'end': end
+            }]
+        return []

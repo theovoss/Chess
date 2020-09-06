@@ -498,6 +498,29 @@ class TestHistory(unittest.TestCase):
         self.assertIsNotNone(new_board[(5, 2)])
         self.assertIsNotNone(new_board[(2, 1)])
 
+    def test_castling_is_undoable_when_navigating_history(self):
+        self.chess_board[(0, 5)] = None
+        self.chess_board[(0, 6)] = None
+
+        self.chess_board.move((0, 4), (0, 6))
+
+        self.assertIsNone(self.chess_board[(0, 7)])
+        self.assertIsNone(self.chess_board[(0, 4)])
+
+        self.chess_board.previous()
+
+        self.assertIsNotNone(self.chess_board[(0, 7)])
+        self.assertIsNotNone(self.chess_board[(0, 4)])
+        self.assertIsNone(self.chess_board[(0, 5)])
+        self.assertIsNone(self.chess_board[(0, 6)])
+
+        self.chess_board.next()
+
+        self.assertIsNone(self.chess_board[(0, 7)])
+        self.assertIsNone(self.chess_board[(0, 4)])
+        self.assertIsNotNone(self.chess_board[(0, 5)])
+        self.assertIsNotNone(self.chess_board[(0, 6)])
+
 
 class TestExportImport(unittest.TestCase):
     def setUp(self):
