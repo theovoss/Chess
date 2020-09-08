@@ -59,6 +59,13 @@ class TestBoard(unittest.TestCase):
     def test_pawns_are_all_different_instances(self):
         self.assertIsNot(self.chess_board[(1, 0)], self.chess_board[(1, 1)])
 
+    def test_black_cant_move_when_whites_turn(self):
+        self.assertFalse(self.chess_board.move((6, 3), (5, 3)))
+
+    def test_white_cant_move_when_blacks_turn(self):
+        self.chess_board.move((1, 1), (2, 1))
+        self.assertFalse(self.chess_board.move((2, 1), (3, 1)))
+
     def test_clear_board_removes_all_pieces(self):
         self.chess_board.clear_board()
         for location in self.chess_board.board:
