@@ -57,6 +57,11 @@ class TestChess(unittest.TestCase):
 
         self.chess.board[internal_queen].moves[0]['capture_actions'] = ['becomes_piece']
         self.chess.board[internal_queen_pawn] = None
+
+        self.assertIsNone(self.chess.board[internal_queen_pawn])
+        self.assertEqual(self.chess.board[internal_queen].color, 'white')
+        self.assertEqual(self.chess.board[internal_enemy_queen_pawn].color, 'black')
+
         self.chess.move(queen, enemy_queen_pawn)
 
         former_queen = self.chess.board[internal_enemy_queen_pawn]

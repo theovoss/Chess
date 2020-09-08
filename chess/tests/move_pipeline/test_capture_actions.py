@@ -6,6 +6,7 @@ from chess.move_pipeline.capture_actions import (becomes_piece,
                                                  explode,
                                                  captures_destination)
 from chess.board.chess_board import ChessBoard
+from chess.piece.piece import Piece
 from chess.chess import Chess
 
 
@@ -20,20 +21,20 @@ class TestCaptureActions(unittest.TestCase):
         start = (1, 1)
         end = (1, 0)
 
-        piece2_moves = ['d', 'e', 'f']
+        piece2_moves = [{
+            "directions": ["vertical"],
+            "conditions": ["doesnt_land_on_piece"],
+            "post_move_actions": ["increment_move_count", "promotable"]
+        }]
         piece2_kind = 'pawn'
-        piece1_move_count = 5
-        end_piece = Mock(
-            color=2,
-            moves=piece2_moves,
-            capture_actions=piece2_moves,
-            kind=piece2_kind,
-            move_count=0)
-        piece = Mock(
-            color=1,
-            moves=['a', 'b', 'c'],
-            kind='queen',
-            move_count=piece1_move_count)
+
+        end_piece = Piece(piece2_kind, 'white', piece2_moves)
+        piece = Piece("queen", 'black', [{
+            "directions": ["horizontal"],
+            "conditions": ["ends_on_enemy"],
+            "post_move_actions": ["increment_move_count", "promotable"]
+        }])
+
         self.chess_board[start] = piece
         self.chess_board[end] = end_piece
 
@@ -42,9 +43,7 @@ class TestCaptureActions(unittest.TestCase):
         new_piece = self.chess_board[start]
 
         self.assertEqual(new_piece.moves, piece2_moves)
-        self.assertEqual(new_piece.capture_actions, piece2_moves)
-        self.assertEqual(new_piece.color, 1)
-        self.assertEqual(new_piece.move_count, piece1_move_count)
+        self.assertEqual(new_piece.color, 'black')
 
     def test_explode_center_of_board(self):
         self._populate_mock_board()

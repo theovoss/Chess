@@ -6,11 +6,9 @@ from .base import Board
 from .history import History
 from . import json_helper
 
-from ..move_pipeline import movement, pre_move_checks, side_effects
+from ..move.calculator import Calculator
+from ..move_pipeline import side_effects
 from ..piece import Piece
-from ..helpers import add_unit_direction
-
-from ..move_pipeline.movement import get_all_potential_end_locations
 
 
 class ChessBoard(Board):
@@ -35,6 +33,8 @@ class ChessBoard(Board):
             self.current_players_turn = "w"
         else:
             self.current_players_turn = "b"
+
+        self._calculator = Calculator()
 
     def _toggle_current_player(self):
         if self.current_players_turn == 'w':
@@ -112,122 +112,68 @@ class ChessBoard(Board):
         return json_data
 
     # Calculate Destinations, don't actually move
-    def end_locations_for_piece_at_location(self, start_location):
-        piece = self[start_location]
-        if not piece:
-            return []
-        player_direction = None
-        for player in self.players:
-            if piece.color == self.players[player]['color']:
-                player_direction = self.players[player]['direction']
-                break
-
-        all_end_points = []
-        for move in piece.moves:
-            # Pre Move Checks
-            if not self._do_prechecks_pass(start_location, move):
-                # pre checks don't pass, so it's not a valid move, continue to next move
-                continue
-
-            # Directions and limitations
-            ends = self._get_end_locations_for_move(move, start_location, player_direction)
-
-            all_end_points += ends
-        return all_end_points
-
-    def _get_end_locations_for_move(self, move, start, player_direction):
-        directions = move['directions']
-        conditions = [getattr(movement, condition) for condition in move['conditions'] if hasattr(movement, condition)]
-
-        ends = get_all_potential_end_locations(start, directions, self)
-        for condition in conditions:
-            print("ends before condition: {} are: {}".format(condition, ends))
-            ends = condition(self, start, directions, ends, player_direction)
-            print("ends after condition: {} are: {}".format(condition, ends))
-
-        return ends
-
-    def _do_prechecks_pass(self, start, move):
-        passed_pre_check = True
-        if 'pre_move_checks' in move:
-            for check_definition in move['pre_move_checks']:
-                locations = [add_unit_direction(start, relative_location) for relative_location in check_definition['locations']]
-
-                checks = check_definition['checks']
-                passed = [getattr(pre_move_checks, check)(self, locations, self._history) for check in checks if hasattr(pre_move_checks, check)]
-                if False in passed:
-                    passed_pre_check = False
-        return passed_pre_check
-
-    def all_end_locations_for_color(self, color):
-        ends = []
-        for location, piece in self._board.items():
-            if piece and piece.color == color:
-                ends += self.end_locations_for_piece_at_location(location)
-        return ends
-
     def get_all_piece_names(self):
         return [piece.kind for piece in self.pieces]
 
     # validity checks
     def is_valid_move(self, start_location, end_location):
-        possible_moves = self.valid_moves(start_location)
+        possible_moves = self.valid_moves(start_location).keys()
         if end_location in possible_moves:
             return True
         return False
 
     def valid_moves(self, start_location):
-        return self.end_locations_for_piece_at_location(start_location)
+        return self._calculator.get_destinations(self, start_location)
 
     # actually move stuff
-    def move(self, start_location, end_location, save=True):
-        if self.is_valid_move(start_location, end_location):
+    def move(self, start, end, save=True):
+        valid_moves = self.valid_moves(start)
+        if end in valid_moves:
             # TODO: add this correct color moving check to a precondition and wrap in is_valid_move
             if self.current_players_turn == 'w':
-                if self[start_location].color == 'black':
+                if self[start].color == 'black':
                     print('black trying to move, but whites turn')
                     return False
             else:
-                if self[start_location].color == 'white':
+                if self[start].color == 'white':
                     print('white trying to move, but blacks turn')
                     return False
 
             self._toggle_current_player()
             print("is valid move")
 
-            self._move_piece(start_location, end_location, save)
-
+            self._move_piece(start, end, valid_moves[end], save)
             return True
-        print('is not valid move start: ' + str(start_location) + " end: " + str(end_location))
+        print('is not valid move start: ' + str(start) + " end: " + str(end))
         return False
 
-    def _move_piece(self, start_location, end_location, save=True):
-        piece = self.board[start_location]
+    def _move_piece(self, start, end, move, save=True):
+        piece = self.board[start]
 
-        post_actions = json_helper.get_post_move_actions(self, piece, start_location, end_location)
-        effects = json_helper.get_side_effects(self, piece, start_location, end_location)
+        post_actions = json_helper.get_post_move_actions(move)
+        effects = json_helper.get_side_effects(move)
 
         # Move
-        captures = self._move_and_capture(piece, start_location, end_location)
+        captures = self._move_and_capture(start, end, move)
 
         # Post Move
         for action in post_actions:
-            action(self, end_location)
+            action(self, end)
 
         # Side Effects
         history_side_effects = []
         for effect in effects:
             method = getattr(side_effects, effect['method'])
             if method:
-                history_side_effects += method(self, start_location, **effect['kwargs'])
+                history_side_effects += method(self, start, **effect['kwargs'])
 
         # Save to history
         if save:
-            self._history.add(History.construct_history_object(start_location, end_location, piece, captures, history_side_effects))
+            self._history.add(History.construct_history_object(start, end, piece, captures, history_side_effects))
 
-    def _move_and_capture(self, piece, start, end):
-        actions = json_helper.get_capture_actions(self, piece, start, end)
-        additional_captures = json_helper.get_additional_captures(self, piece, start, end)
+    def _move_and_capture(self, start, end, move):
+        actions = json_helper.get_capture_actions(move)
+        additional_captures = json_helper.get_additional_captures(self, start, move)
         captures = []
         if self[end] is not None:
             # capturing piece!
@@ -270,22 +216,26 @@ class ChessBoard(Board):
             self.move(tuple(move['start']), tuple(move['end']), save=False)
 
     def previous(self):
+        effected_locations = []
         move = self._history.previous()
         if not move:
             return
         moving_piece = move['piece']
         self.board[tuple(move['start'])] = Piece(moving_piece['name'], moving_piece['color'], moving_piece['moves'])
         self.board[tuple(move['end'])] = None
+        effected_locations.append(move['start'])
+        effected_locations.append(move['end'])
 
         # TODO: refactor store an undo function in history for undoing/redoing each capture/side effect/move
         if 'captures' in move:
             for capture in move['captures']:
                 self.board[tuple(capture['location'])] = Piece(capture['name'], capture['color'], capture['moves'])
+                effected_locations.append(capture['location'])
         if 'side_effects' in move:
-            print("Move side effects")
-            print(move['side_effects'])
             for effect in move['side_effects']:
                 if effect['method'] == 'move':
                     self.board[tuple(effect['start'])] = self.board[tuple(effect['end'])]
                     self.board[tuple(effect['end'])] = None
+                    effected_locations.append(effect['start'])
+                    effected_locations.append(effect['end'])
         self._toggle_current_player()

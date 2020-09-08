@@ -75,7 +75,6 @@ def cant_jump_pieces(board, start, directions, potential_end_locations, player_d
         while True:
             location_to_remove = tuple(map(_operator.add, location_to_remove, direction))
             if location_to_remove not in board:
-                print("{} not in board".format(location_to_remove))
                 break
 
             if not found_piece and board[location_to_remove]:

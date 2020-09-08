@@ -23,7 +23,7 @@ class Chess:
         return self._board.move(start, end)
 
     def destinations(self, start_location):
-        return self._board.end_locations_for_piece_at_location(start_location)
+        return self._board.valid_moves(start_location)
 
     def promote(self, location, new_piece_name):
         self._board.promote(location, new_piece_name)

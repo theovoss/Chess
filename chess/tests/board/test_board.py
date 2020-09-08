@@ -91,7 +91,7 @@ class TestBoard(unittest.TestCase):
                     self.assertIn(location, piece_locations2)
 
 
-class TestValidateKnightMoves(unittest.TestCase):
+class TestKnightMoves(unittest.TestCase):
 
     def setUp(self):
         self.chess_board = ChessBoard()
@@ -118,35 +118,30 @@ class TestValidateKnightMoves(unittest.TestCase):
         self.assertEqual(self.chess_board[(1, 3)].kind, 'pawn')
 
     def test_move_knight_on_top_of_opponent_pawn(self):
-        some_moves = ['move over here', 'move over there']
         self.chess_board[(1, 3)].color = 'black'
-        self.chess_board[(1, 3)].moves = some_moves
         self.assertTrue(self.chess_board.is_valid_move((0, 1), (1, 3)))
         result = self.chess_board.move((0, 1), (1, 3))
 
         self.assertTrue(result)
         self.assertEqual(self.chess_board[(1, 3)].kind, 'knight')
 
-        self.assertEqual(self.chess_board._history.json['history'], [{
+        actual = self.chess_board._history.json['history'][0]
+        expected = {
             'start': (0, 1),
             'end': (1, 3),
             'piece': {
                 'name': 'knight',
                 'color': 'white',
                 'moves': self.chess_board[(1, 3)].moves
-            },
-            'captures': [
-                {
-                    'name': 'pawn',
-                    'color': 'black',
-                    'moves': some_moves,
-                    'location': (1, 3)
-                }
-            ]
-        }])
+            }
+        }
+        self.assertEqual(actual['start'], expected['start'])
+        self.assertEqual(actual['end'], expected['end'])
+        self.assertEqual(actual['piece'], expected['piece'])
+        self.assertEqual(len(actual['captures']), 1)
 
 
-class TestValidateRookMoves(unittest.TestCase):
+class TestRookMoves(unittest.TestCase):
 
     def setUp(self):
         self.chess_board = ChessBoard()
@@ -158,12 +153,12 @@ class TestValidateRookMoves(unittest.TestCase):
         self.chess_board[(0, 6)] = None
         self.chess_board[(0, 7)] = None
 
-        result = self.chess_board.end_locations_for_piece_at_location((0, 5))
+        result = list(self.chess_board.valid_moves((0, 5)).keys())
 
         self.assertEqual(result, [(0, 6), (0, 7)])
 
 
-class TestValidatePieceExplodes(unittest.TestCase):
+class TestPieceExplodes(unittest.TestCase):
 
     def setUp(self):
         self.chess_board = ChessBoard()
@@ -176,7 +171,7 @@ class TestValidatePieceExplodes(unittest.TestCase):
         self.assertEqual(self.chess_board[(6, 3)].kind, 'queen')
 
 
-class TestValidateEnPassant(unittest.TestCase):
+class TestEnPassant(unittest.TestCase):
 
     def setUp(self):
         self.chess_board = ChessBoard()
@@ -214,7 +209,7 @@ class TestValidateEnPassant(unittest.TestCase):
         self.assertIsNone(self.chess_board[(3, 2)])
 
 
-class TestValidateCastling(unittest.TestCase):
+class TestCastling(unittest.TestCase):
 
     def setUp(self):
         self.chess_board = ChessBoard()
@@ -284,6 +279,7 @@ class TestBecomesPieceCaptureAction(unittest.TestCase):
     def test_rook_becomes_pawn(self):
         # change pawn in front of rook to opposite color
         self.chess_board[(1, 7)].color = 'black'
+
         # add becomes_piece to rook's capture actions
         self.chess_board[(0, 7)].moves[0]['capture_actions'] = ['becomes_piece']
 
@@ -298,8 +294,7 @@ class TestBecomesPieceCaptureAction(unittest.TestCase):
         self.assertEqual(self.chess_board[(1, 7)].color, "white")
 
 
-class TestValidatePawnMoves(unittest.TestCase):
-
+class TestPawnMoves(unittest.TestCase):
     """Chess movement unit tests."""
 
     def setUp(self):
@@ -307,15 +302,16 @@ class TestValidatePawnMoves(unittest.TestCase):
 
     def test_pawn_can_move_forward(self):
         self.assertIsNone(self.chess_board[(2, 3)])
-        ends = self.chess_board.end_locations_for_piece_at_location((1, 3))
+        ends = list(self.chess_board.valid_moves((1, 3)).keys())
         self.assertEqual(ends, [(2, 3), (3, 3)])
 
     def test_pawn_cant_move_forward_twice_if_not_first_move(self):
         self.assertIsNone(self.chess_board[(2, 3)])
         self.assertIsNone(self.chess_board[(3, 3)])
-        self.chess_board[(1, 3)].move_count = 1
-        ends = self.chess_board.end_locations_for_piece_at_location((1, 3))
-        self.assertEqual(ends, [(2, 3)])
+        self.assertIsNone(self.chess_board[(4, 3)])
+        self.chess_board.move((1, 3), (2, 3))
+        ends = list(self.chess_board.valid_moves((2, 3)).keys())
+        self.assertEqual(ends, [(3, 3)])
 
     def test_white_pawn_promotion(self):
         # move white pawn 1 away
