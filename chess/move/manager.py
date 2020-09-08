@@ -15,15 +15,9 @@ class Manager():
     def move(self, board, start, end, history, save=True):
         valid_moves = board.valid_moves(start)
         if end in valid_moves:
-            # TODO: add this correct color moving check to a precondition and wrap in is_valid_move
-            if board.current_players_turn == 'w':
-                if board[start].color == 'black':
-                    print('black trying to move, but whites turn')
-                    return False
-            else:
-                if board[start].color == 'white':
-                    print('white trying to move, but blacks turn')
-                    return False
+            if board[start].color != board.current_players_turn:
+                print("{} tyring to move, but {}'s turn".format(board[start].color, board.current_players_turn))
+                return False
 
             board._toggle_current_player()
             print("is valid move")
@@ -36,31 +30,28 @@ class Manager():
     def _move_piece(self, board, start, end, move, history, save=True):
         piece = board[start]
 
-        post_actions = json_helper.get_post_move_actions(move)
-        effects = json_helper.get_side_effects(move)
+        # Calculate any captures
+        captures = self._calculate_captures(board, start, end, move)
 
-        # Move
-        captures = self._move_and_capture(board, start, end, move)
+        # Actually move from start to end
+        self._move(board, start, end)
 
         # Post Move
-        for action in post_actions:
-            action(board, end)
+        self._run_post_move_actions(board, end, move)
 
         # Side Effects
-        history_side_effects = []
-        for effect in effects:
-            method = getattr(side_effects, effect['method'])
-            if method:
-                history_side_effects += method(board, start, **effect['kwargs'])
+        effects = self._run_side_effects(board, start, end, move)
 
         # Save to history
         if save:
-            history.add(History.construct_history_object(start, end, piece, captures, history_side_effects))
+            history.add(History.construct_history_object(start, end, piece, captures, effects))
 
-    def _move_and_capture(self, board, start, end, move):
+    def _calculate_captures(self, board, start, end, move):
+        captures = []
+
         actions = json_helper.get_capture_actions(move)
         additional_captures = json_helper.get_additional_captures(board, start, move)
-        captures = []
+
         if board[end] is not None:
             # capturing piece!
             for action in actions:
@@ -74,7 +65,20 @@ class Manager():
             capture_location = capture['location']
             board[capture_location] = None
 
+        return captures
+
+    def _move(self, board, start, end):
         board[end] = board[start]
         board[start] = None
 
-        return captures
+    def _run_post_move_actions(self, board, end, move):
+        for action in json_helper.get_post_move_actions(move):
+            action(board, end)
+
+    def _run_side_effects(self, board, start, end, move):
+        history_side_effects = []
+        for effect in json_helper.get_side_effects(move):
+            method = getattr(side_effects, effect['method'])
+            if method:
+                history_side_effects += method(board, start, **effect['kwargs'])
+        return history_side_effects

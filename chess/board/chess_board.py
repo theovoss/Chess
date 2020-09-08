@@ -12,7 +12,6 @@ from ..piece import Piece
 
 
 class ChessBoard(Board):
-
     def __init__(self, existing_board=None):
         super().__init__(8, 8)
         self.pieces = []
@@ -29,19 +28,19 @@ class ChessBoard(Board):
         self._history = History(existing_history)
 
         self.initialize_board(existing_board)
-        if existing_board and existing_board['players']['current'] == "Player 1":
-            self.current_players_turn = "w"
-        else:
-            self.current_players_turn = "b"
+
+        self.current_players_turn = "white"
+        if existing_board['players']['current'] == "Player 2":
+            self._toggle_current_player()
 
         self._calculator = Calculator()
         self._manager = Manager()
 
     def _toggle_current_player(self):
-        if self.current_players_turn == 'w':
-            self.current_players_turn = 'b'
+        if self.current_players_turn == 'white':
+            self.current_players_turn = 'black'
         else:
-            self.current_players_turn = 'w'
+            self.current_players_turn = 'white'
 
     def initialize_board(self, json_data):
         json_board = json_data['board']
@@ -71,11 +70,6 @@ class ChessBoard(Board):
                     a_piece.promote_me_daddy = position_moves_dict.get('promote_me_daddy', False)
                     self[tuple(location)] = a_piece
 
-        if json_data['players']['current'] == "Player 1":
-            self.current_players_turn = 'w'
-        else:
-            self.current_players_turn = 'b'
-
     def export(self):
         json_data = {}
         json_data['pieces'] = {}
@@ -83,7 +77,7 @@ class ChessBoard(Board):
             json_data['pieces'][piece.kind] = {'moves': piece.moves}
 
         json_data['players'] = self.players
-        if self.current_players_turn == 'w':
+        if self.current_players_turn == 'white':
             json_data['players']['current'] = "Player 1"
         else:
             json_data['players']['current'] = "Player 2"
