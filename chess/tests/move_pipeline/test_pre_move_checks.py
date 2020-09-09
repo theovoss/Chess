@@ -6,7 +6,6 @@ from chess.move_pipeline.pre_move_checks import (
     is_empty,
     is_not_empty,
     moved_last,
-    is_not_threatened,
 )
 from chess.board.chess_board import ChessBoard
 from chess.board.history import History
@@ -20,22 +19,22 @@ class TestPreMoveChecksAboutMovement(unittest.TestCase):
         start = (3, 1)
         self.chess_board[start] = Mock(move_count=0)
 
-        self.assertTrue(has_not_moved(self.chess_board, [start], Mock()))
-        self.assertFalse(has_moved_once(self.chess_board, [start], Mock()))
+        self.assertTrue(has_not_moved(self.chess_board, [start], Mock(), Mock()))
+        self.assertFalse(has_moved_once(self.chess_board, [start], Mock(), Mock()))
 
     def test_moved_once(self):
         start = (3, 1)
         self.chess_board[start] = Mock(move_count=1)
 
-        self.assertFalse(has_not_moved(self.chess_board, [start], Mock()))
-        self.assertTrue(has_moved_once(self.chess_board, [start], Mock()))
+        self.assertFalse(has_not_moved(self.chess_board, [start], Mock(), Mock()))
+        self.assertTrue(has_moved_once(self.chess_board, [start], Mock(), Mock()))
 
     def test_moved_twice(self):
         start = (3, 1)
         self.chess_board[start] = Mock(move_count=2)
 
-        self.assertFalse(has_not_moved(self.chess_board, [start], Mock()))
-        self.assertFalse(has_moved_once(self.chess_board, [start], Mock()))
+        self.assertFalse(has_not_moved(self.chess_board, [start], Mock(), Mock()))
+        self.assertFalse(has_moved_once(self.chess_board, [start], Mock(), Mock()))
 
 
 class TestPreMoveChecksAboutHistory(unittest.TestCase):
@@ -50,17 +49,17 @@ class TestPreMoveChecksAboutHistory(unittest.TestCase):
     def test_moved_last_no_history(self):
         start = (3, 1)
 
-        self.assertFalse(moved_last(self.chess_board, [start], History()))
+        self.assertFalse(moved_last(self.chess_board, [start], History(), Mock()))
 
     def test_moved_last_with_history_not_last_move(self):
         start = (3, 1)
 
-        self.assertFalse(moved_last(self.chess_board, [start], self.history))
+        self.assertFalse(moved_last(self.chess_board, [start], self.history, Mock()))
 
     def test_moved_last_with_history_was_last_move(self):
         start = self.end
 
-        self.assertTrue(moved_last(self.chess_board, [start], self.history))
+        self.assertTrue(moved_last(self.chess_board, [start], self.history, Mock()))
 
 
 class TestPreMoveChecksAboutBoardLocation(unittest.TestCase):
@@ -78,18 +77,14 @@ class TestPreMoveChecksAboutBoardLocation(unittest.TestCase):
         pieces = [pawn, rook, knight, bishop, queen, king]
         out_of_range = (10, 10)
 
-        self.assertTrue(is_empty(self.chess_board, [empty], Mock()))
-        self.assertFalse(is_not_empty(self.chess_board, [empty], Mock()))
+        self.assertTrue(is_empty(self.chess_board, [empty], Mock(), Mock()))
+        self.assertFalse(is_not_empty(self.chess_board, [empty], Mock(), Mock()))
         for location in pieces:
-            self.assertFalse(is_empty(self.chess_board, [location], Mock()))
-            self.assertTrue(is_not_empty(self.chess_board, [location], Mock()))
+            self.assertFalse(is_empty(self.chess_board, [location], Mock(), Mock()))
+            self.assertTrue(is_not_empty(self.chess_board, [location], Mock(), Mock()))
 
-        self.assertFalse(is_empty(self.chess_board, pieces, Mock()))
-        self.assertTrue(is_not_empty(self.chess_board, pieces, Mock()))
+        self.assertFalse(is_empty(self.chess_board, pieces, Mock(), Mock()))
+        self.assertTrue(is_not_empty(self.chess_board, pieces, Mock(), Mock()))
 
-        self.assertTrue(is_empty(self.chess_board, [out_of_range], Mock()))
-        self.assertFalse(is_not_empty(self.chess_board, [out_of_range], Mock()))
-
-    def test_is_not_threatened(self):
-        # TODO: Feature still in progress
-        self.assertTrue(is_not_threatened(Mock(), Mock(), Mock()))
+        self.assertTrue(is_empty(self.chess_board, [out_of_range], Mock(), Mock()))
+        self.assertFalse(is_not_empty(self.chess_board, [out_of_range], Mock(), Mock()))
