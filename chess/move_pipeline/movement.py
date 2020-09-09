@@ -93,7 +93,7 @@ def cant_jump_pieces(board, start, directions, potential_end_locations, player_d
 def doesnt_land_on_own_piece(board, start, directions, potential_end_locations, player_direction):
     ends = []
     for end in potential_end_locations:
-        if board[end]:
+        if board[end] and board[start]:
             if board[start].color != board[end].color:
                 ends.append(end)
         else:
@@ -108,7 +108,7 @@ def doesnt_land_on_piece(board, start, directions, potential_end_locations, play
 def ends_on_enemy(board, start, directions, potential_end_locations, player_direction):
     ends = []
     for end in potential_end_locations:
-        if board[end] is not None and board[end].color != board[start].color:
+        if board[end] and board[start] and board[end].color != board[start].color:
             ends.append(end)
     return ends
 

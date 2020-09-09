@@ -84,7 +84,7 @@
                 "pre_move_checks": [
                     {"locations": [[0, 0], [0, -4]], "checks": ["has_not_moved"]},
                     {"locations": [[0, -1], [0, -2], [0, -3]], "checks": ["is_empty"]},
-                    {"locations": [[0, 0], [0, 1], [0, 2]], "checks": ["is_not_threatened"]}
+                    {"locations": [[0, 0], [0, -1], [0, -2]], "checks": ["is_not_threatened"]}
                 ],
                 "conditions": ["distance_of_two"],
                 "side_effects": [

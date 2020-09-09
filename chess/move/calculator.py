@@ -10,17 +10,20 @@ class Calculator():
         return self._calculate_destinations(board, start)
 
     def is_threatened(self, board, locations, threatened_by_color):
-        print("Is threatened color is: " + threatened_by_color)
         for location in locations:
             if self._location_is_threatened(board, location, threatened_by_color):
                 return True
         return False
 
     def _location_is_threatened(self, board, location, threatened_by_color):
+        # concept: for each move in every piece, follow the path outward from the location we're checking for threats
+        #          - ignore rules for checking is_threatened (to prevent recursion)
+        #          - ignore rules for directionality
         for piece in board.pieces:
             paths = []
             for move in piece.moves:
-                paths += self._get_all_paths(location, move, board)
+                path = self._get_all_paths(location, move, board)
+                paths += self._reduce_paths_to_valid_end_locations(board, move, location, (1, 0), path, ignore_conditions=['directional'])
             if self._path_has_specific_enemy_piece_targeting_location(board, piece, paths, location, threatened_by_color):
                 return True
         return False
@@ -31,14 +34,14 @@ class Calculator():
                 # there is an enemy piece along path. see if it's destinations includes the location we care about
                 destinations = self._calculate_destinations(board, path_location, include_threatened=False)
                 if location in destinations.keys():
-                    print("Piece {} at location {} is threatening".format(piece.kind, path_location))
+                    print("Piece {} at location {} is threatening {}".format(piece.kind, path_location, location))
                     return True
         return False
 
     def _location_has_enemy_piece(self, board, piece, location, threatened_by_color):
         return board[location] and \
-                board[location].kind == piece.kind and \
-                board[location].color == threatened_by_color
+            board[location].kind == piece.kind and \
+            board[location].color == threatened_by_color
 
     # private methods for calculating destinations
     def _calculate_destinations(self, board, start, include_threatened=True):
@@ -102,12 +105,14 @@ class Calculator():
                 location = add_unit_direction(new_start, direction)
         return ends
 
-    def _reduce_paths_to_valid_end_locations(self, board, move, start, player_direction, paths):
+    def _reduce_paths_to_valid_end_locations(self, board, move, start, player_direction, paths, ignore_conditions=None):
         ends = copy.deepcopy(paths)
         directions = move['directions']
         conditions = [getattr(movement, condition) for condition in move['conditions'] if hasattr(movement, condition)]
 
         for condition in conditions:
+            if ignore_conditions and condition in ignore_conditions:
+                continue
             ends = condition(board, start, directions, ends, player_direction)
 
         return ends

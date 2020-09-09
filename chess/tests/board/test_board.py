@@ -219,9 +219,12 @@ class TestCastling(unittest.TestCase):
         ([], [], 'black', 'queen', True, 'black queen side castling is successful'),
         ([(1, 4)], [{'start': (7, 3), 'end': (6, 4)}], 'white', 'king', False, "castling not allowed: white king in check by queen"),
         ([(6, 4)], [{'start': (0, 3), 'end': (1, 4)}], 'black', 'king', False, "castling not allowed: black king in check by queen"),
-        ([(1, 5)], [{'start': (7, 3), 'end': (6, 5)}], (0, 4), (0, 6), False, "castling not allowed: first square threatened by queen"),
-        ([(1, 6)], [{'start': (7, 3), 'end': (6, 6)}], (0, 4), (0, 6), False, "castling not allowed: second square threatened by queen"),
-        ([(1, 7)], [{'start': (7, 3), 'end': (6, 7)}], (0, 4), (0, 6), True, "castling allowed: rook threatened by queen"),
+        ([(1, 5)], [{'start': (7, 3), 'end': (6, 5)}], 'white', 'king', False, "castling not allowed: first square threatened by queen"),
+        ([(1, 6)], [{'start': (7, 3), 'end': (6, 6)}], 'white', 'king', False, "castling not allowed: second square threatened by queen"),
+        ([(1, 7)], [{'start': (7, 3), 'end': (6, 7)}], 'white', 'king', True, "castling allowed: rook threatened by queen"),
+        ([], [{'start': (7, 4), 'end': (1, 1)}], 'white', 'queen', False, "castling not allowed: second square queen side threatend by king"),
+        ([], [{'start': (0, 4), 'end': (6, 1)}], 'black', 'queen', False, "castling not allowed: second square queen side threatend by king"),
+        ([(1, 1), (1, 2)], [{'start': (6, 1), 'end': (2, 1)}], 'white', 'queen', True, "castling allowed: enemy pawns double move on first move should not block castling - makes sure prechecks are run"),
     ])
     def test_castling(self, delete_positions, setup_moves, color, side, successful, message):
         for position in delete_positions:
@@ -265,6 +268,7 @@ class TestCastling(unittest.TestCase):
         else:
             self.assertEqual(self.chess_board[start].kind, 'king', message)
             self.assertEqual(self.chess_board[rook_start].kind, 'rook', message)
+
 
 class TestBecomesPieceCaptureAction(unittest.TestCase):
 

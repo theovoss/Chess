@@ -11,4 +11,3 @@ class TestCalculator(unittest.TestCase):
 
     def test_is_threatened(self):
         self.assertTrue(self.calculator.is_threatened(self.chess_board, [(2, 2)], "white"))
-
