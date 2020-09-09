@@ -1,6 +1,7 @@
 # pylint: disable=W0212
 
 import unittest
+from parameterized import parameterized
 
 from chess.board import ChessBoard
 from chess.board.json_helper import load_json
@@ -19,16 +20,6 @@ class TestBoard(unittest.TestCase):
     def convert_default_white_spaces_to_black(white_positions):
         return [(7 - row, column) for row, column in white_positions]
 
-    def verify_pieces_at_locations_are_correct_piece_and_color(self, white_positions, piece):
-        for location in white_positions:
-            self.assertEqual(self.chess_board[location].kind, piece)
-            self.assertEqual(self.chess_board[location].color, "white")
-
-        black_positions = self.convert_default_white_spaces_to_black(white_positions)
-        for location in black_positions:
-            self.assertEqual(self.chess_board[location].kind, piece)
-            self.assertEqual(self.chess_board[location].color, "black")
-
     def test_init(self):
         self.assertEqual(len(self.chess_board), 64)
         self.assertEqual(len(self.chess_board._history), 0)
@@ -37,24 +28,24 @@ class TestBoard(unittest.TestCase):
         piece = self.chess_board[(1, 3)]
         self.assertGreater(len(piece.moves), 0)
 
-    def test_initial_pawn_positions(self):
-        expected_white_pawn_positions = [(1, 0), (1, 1), (1, 2), (1, 3), (1, 4), (1, 5), (1, 6), (1, 7)]
-        self.verify_pieces_at_locations_are_correct_piece_and_color(expected_white_pawn_positions, "pawn")
+    # locations, piece kind
+    @parameterized.expand([
+        ([(1, 0), (1, 1), (1, 2), (1, 3), (1, 4), (1, 5), (1, 6), (1, 7)], 'pawn'),
+        ([(0, 1), (0, 6)], "knight"),
+        ([(0, 0), (0, 7)], "rook"),
+        ([(0, 2), (0, 5)], 'bishop'),
+        ([(0, 3)], "queen"),
+        ([(0, 4)], "king")
+    ])
+    def test_initial_piece_positions(self, white_positions, piece):
+        for location in white_positions:
+            self.assertEqual(self.chess_board[location].kind, piece)
+            self.assertEqual(self.chess_board[location].color, "white")
 
-    def test_initial_knight_positions(self):
-        self.verify_pieces_at_locations_are_correct_piece_and_color([(0, 1), (0, 6)], "knight")
-
-    def test_initial_rook_positions(self):
-        self.verify_pieces_at_locations_are_correct_piece_and_color([(0, 0), (0, 7)], "rook")
-
-    def test_initial_bishop_positions(self):
-        self.verify_pieces_at_locations_are_correct_piece_and_color([(0, 2), (0, 5)], 'bishop')
-
-    def test_initial_queen_positions(self):
-        self.verify_pieces_at_locations_are_correct_piece_and_color([(0, 3)], "queen")
-
-    def test_initial_king_positions(self):
-        self.verify_pieces_at_locations_are_correct_piece_and_color([(0, 4)], "king")
+        black_positions = self.convert_default_white_spaces_to_black(white_positions)
+        for location in black_positions:
+            self.assertEqual(self.chess_board[location].kind, piece)
+            self.assertEqual(self.chess_board[location].color, "black")
 
     def test_pawns_are_all_different_instances(self):
         self.assertIsNot(self.chess_board[(1, 0)], self.chess_board[(1, 1)])
@@ -221,62 +212,59 @@ class TestCastling(unittest.TestCase):
     def setUp(self):
         self.chess_board = ChessBoard()
 
-    def test_castling_white_king_side(self):
-        self.chess_board[(0, 5)] = None
-        self.chess_board[(0, 6)] = None
+    @parameterized.expand([
+        ([], [], 'white', 'king', True, 'white king side castling is successful'),
+        ([], [], 'white', 'queen', True, 'white queen side castling is successful'),
+        ([], [], 'black', 'king', True, 'black king side castling is successful'),
+        ([], [], 'black', 'queen', True, 'black queen side castling is successful'),
+        ([(1, 4)], [{'start': (7, 3), 'end': (6, 4)}], 'white', 'king', False, "castling not allowed: white king in check by queen"),
+        ([(6, 4)], [{'start': (0, 3), 'end': (1, 4)}], 'black', 'king', False, "castling not allowed: black king in check by queen"),
+        ([(1, 5)], [{'start': (7, 3), 'end': (6, 5)}], (0, 4), (0, 6), False, "castling not allowed: first square threatened by queen"),
+        ([(1, 6)], [{'start': (7, 3), 'end': (6, 6)}], (0, 4), (0, 6), False, "castling not allowed: second square threatened by queen"),
+        ([(1, 7)], [{'start': (7, 3), 'end': (6, 7)}], (0, 4), (0, 6), True, "castling allowed: rook threatened by queen"),
+    ])
+    def test_castling(self, delete_positions, setup_moves, color, side, successful, message):
+        for position in delete_positions:
+            self.chess_board[position] = None
 
-        self.assertEqual(self.chess_board[(0, 4)].kind, 'king')
+        for move in setup_moves:
+            self.chess_board[move['end']] = self.chess_board[move['start']]
 
-        self.chess_board.move((0, 4), (0, 6))
+        self.verify_castling(color, side, successful, message)
 
-        self.assertEqual(self.chess_board[(0, 6)].kind, 'king')
-        self.assertEqual(self.chess_board[(0, 5)].kind, 'rook')
-        self.assertIsNone(self.chess_board[(0, 7)])
+    def verify_castling(self, color, side, is_successful, message):
+        row = 0
+        if color == 'black':
+            self.chess_board._toggle_current_player()
+            row = 7
 
-    def test_castling_white_queen_side(self):
-        self.chess_board[(0, 1)] = None
-        self.chess_board[(0, 2)] = None
-        self.chess_board[(0, 3)] = None
+        start = (row, 4)
 
-        self.assertEqual(self.chess_board[(0, 4)].kind, 'king')
+        if side == 'king':
+            self.chess_board[(row, 5)] = None
+            self.chess_board[(row, 6)] = None
+            end = (row, 6)
+            rook_start = (row, 7)
+            rook_end = (row, 5)
+        else:
+            self.chess_board[(row, 1)] = None
+            self.chess_board[(row, 2)] = None
+            self.chess_board[(row, 3)] = None
+            end = (row, 2)
+            rook_start = (row, 0)
+            rook_end = (row, 3)
 
-        self.chess_board.move((0, 4), (0, 2))
+        self.chess_board.move(start, end)
 
-        self.assertEqual(self.chess_board[(0, 2)].kind, 'king')
-        self.assertEqual(self.chess_board[(0, 3)].kind, 'rook')
-        self.assertIsNone(self.chess_board[(0, 0)])
+        if is_successful:
+            self.assertEqual(self.chess_board[end].kind, 'king', message)
+            self.assertEqual(self.chess_board[rook_end].kind, 'rook', message)
 
-    def test_castling_black_king_side(self):
-        # move white so it's black's turn
-        self.chess_board.move((1, 1), (2, 1))
-
-        self.chess_board[(7, 5)] = None
-        self.chess_board[(7, 6)] = None
-
-        self.assertEqual(self.chess_board[(7, 4)].kind, 'king')
-
-        self.chess_board.move((7, 4), (7, 6))
-
-        self.assertEqual(self.chess_board[(7, 6)].kind, 'king')
-        self.assertEqual(self.chess_board[(7, 5)].kind, 'rook')
-        self.assertIsNone(self.chess_board[(7, 7)])
-
-    def test_castling_black_queen_side(self):
-        # move white so it's black's turn
-        self.chess_board.move((1, 1), (2, 1))
-
-        self.chess_board[(7, 1)] = None
-        self.chess_board[(7, 2)] = None
-        self.chess_board[(7, 3)] = None
-
-        self.assertEqual(self.chess_board[(7, 4)].kind, 'king')
-
-        self.chess_board.move((7, 4), (7, 2))
-
-        self.assertEqual(self.chess_board[(7, 2)].kind, 'king')
-        self.assertEqual(self.chess_board[(7, 3)].kind, 'rook')
-        self.assertIsNone(self.chess_board[(7, 0)])
-
+            self.assertIsNone(self.chess_board[start], message)
+            self.assertIsNone(self.chess_board[rook_start], message)
+        else:
+            self.assertEqual(self.chess_board[start].kind, 'king', message)
+            self.assertEqual(self.chess_board[rook_start].kind, 'rook', message)
 
 class TestBecomesPieceCaptureAction(unittest.TestCase):
 
