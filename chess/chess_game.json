@@ -95,11 +95,15 @@
         }
     },
     "end_game": {
-        "lose": {
-            "conditions": ["king_cant_move", "enemy_can_take_king", "own_piece_cant_block_enemy_piece"]
+        "piece": "king",
+        "check": {
+            "conditions": ["endgame_piece_is_threatened"]
+        },
+        "checkmate": {
+            "conditions": ["endgame_piece_cant_move", "endgame_piece_is_threatened", "own_piece_cant_block_enemy_piece"]
         },
         "draw": {
-            "conditions": ["no_piece_of_current_player_can_move"]
+            "conditions": ["no_piece_of_current_player_can_move", "endgame_piece_is_not_threatened"]
         }
     },
     "players": {

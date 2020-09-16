@@ -12,8 +12,12 @@ class Manager():
 
             board[location] = promoted
 
-    def move(self, board, start, end, history, save=True):
+    def move(self, board, start, end, history, pinned_path, save=True):
         valid_moves = board.valid_moves(start)
+        if pinned_path:
+            pinned_path_set = set(pinned_path)
+            valid_moves = list(pinned_path_set.intersection(valid_moves))
+
         if end in valid_moves:
             if board[start].color != board.current_players_turn:
                 print("{} tyring to move, but {}'s turn".format(board[start].color, board.current_players_turn))
@@ -23,9 +27,15 @@ class Manager():
             print("is valid move")
 
             self._move_piece(board, start, end, valid_moves[end], history, save)
+
+            self._analyze_board_for_endgame(board)
+
             return True
         print('is not valid move start: ' + str(start) + " end: " + str(end))
         return False
+
+    def _analyze_board_for_endgame(self, board):
+        pass
 
     def _move_piece(self, board, start, end, move, history, save=True):
         piece = board[start]

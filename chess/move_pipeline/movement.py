@@ -1,9 +1,9 @@
 # pylint: disable=W0613
 # allow unused variables so all movement functions can have same parameter definition
 import operator as _operator
-from math import gcd
 
 from chess.helpers import add_unit_direction
+from chess.move.pathfinder import PathFinder
 
 
 def get_all_potential_end_locations(start, directions, board):
@@ -18,15 +18,15 @@ def get_all_potential_end_locations(start, directions, board):
     return ends
 
 
-def distance_of_two(board, start, directions, potential_end_locations, player_direction):
-    return [x for x in _get_two_moves_away(start, directions) if x in potential_end_locations]
+def distance_of_two(args):
+    return [x for x in _get_two_moves_away(args.start, args.directions) if x in args.ends]
 
 
-def distance_of_one(board, start, directions, potential_end_locations, player_direction):
-    return [x for x in _get_one_move_away(start, directions) if x in potential_end_locations]
+def distance_of_one(args):
+    return [x for x in _get_one_move_away(args.start, args.directions) if x in args.ends]
 
 
-def cant_move_onto_threatened_square(board, start, directions, potential_end_locations, player_direction):
+def cant_move_onto_threatened_square(args):
     pass
 
 
@@ -40,17 +40,18 @@ def _get_one_move_away(start, directions):
     return ret_val
 
 
-def alternates_landing_on_enemy_and_empty_space(board, start, directions, potential_end_locations, player_direction):
+def alternates_landing_on_enemy_and_empty_space(args):
     ends = []
-    for direction in directions:
-        new_start = start
+    board = args.board
+    for direction in args.directions:
+        new_start = args.start
         location = add_unit_direction(new_start, direction)
         while location in board:
             initial_move = add_unit_direction(direction, new_start)
             new_start = add_unit_direction(direction, initial_move)
-            if initial_move in potential_end_locations and new_start in potential_end_locations:
+            if initial_move in args.ends and new_start in args.ends:
                 # enemy piece at first move and no pices at second move
-                if board[initial_move] and not board[new_start] and board[initial_move].color != board[start].color:
+                if board[initial_move] and not board[new_start] and board[initial_move].color != board[args.start].color:
                     ends.append(new_start)
                 else:
                     break
@@ -59,25 +60,20 @@ def alternates_landing_on_enemy_and_empty_space(board, start, directions, potent
     return ends
 
 
-def get_unit_direction(start, end):
-    direction = tuple(map(_operator.sub, end, start))
-    dividor = abs(gcd(direction[0], direction[1]))
-    direction = tuple(map(_operator.floordiv, direction, (dividor, dividor)))
-    return direction
+def cant_jump_pieces(args):
+    end_locations = args.ends
 
+    directions = [PathFinder.get_unit_direction(args.start, end) for end in end_locations]
 
-def cant_jump_pieces(board, start, directions, potential_end_locations, player_direction):
-    end_locations = potential_end_locations
-    directions = [get_unit_direction(start, end) for end in potential_end_locations]
-    for direction in set(directions):
-        location_to_remove = start
+    for direction in directions:
+        location_to_remove = args.start
         found_piece = False
         while True:
             location_to_remove = tuple(map(_operator.add, location_to_remove, direction))
-            if location_to_remove not in board:
+            if location_to_remove not in args.board:
                 break
 
-            if not found_piece and board[location_to_remove]:
+            if not found_piece and args.board[location_to_remove]:
                 found_piece = True
             elif found_piece and location_to_remove in end_locations:
                 end_locations.remove(location_to_remove)
@@ -90,31 +86,33 @@ def cant_jump_pieces(board, start, directions, potential_end_locations, player_d
     return end_locations
 
 
-def doesnt_land_on_own_piece(board, start, directions, potential_end_locations, player_direction):
+def doesnt_land_on_own_piece(args):
     ends = []
-    for end in potential_end_locations:
-        if board[end] and board[start]:
-            if board[start].color != board[end].color:
+    board = args.board
+    for end in args.ends:
+        if board[end] and board[args.start]:
+            if board[args.start].color != board[end].color:
                 ends.append(end)
         else:
             ends.append(end)
     return ends
 
 
-def doesnt_land_on_piece(board, start, directions, potential_end_locations, player_direction):
-    return [end for end in potential_end_locations if not board[end]]
+def doesnt_land_on_piece(args):
+    return [end for end in args.ends if not args.board[end]]
 
 
-def ends_on_enemy(board, start, directions, potential_end_locations, player_direction):
+def ends_on_enemy(args):
     ends = []
-    for end in potential_end_locations:
-        if board[end] and board[start] and board[end].color != board[start].color:
+    board = args.board
+    for end in args.ends:
+        if board[end] and board[args.start] and board[end].color != board[args.start].color:
             ends.append(end)
     return ends
 
 
-def directional(board, start, directions, potential_end_locations, player_direction):
-    return [end for end in potential_end_locations if _is_directional(start, end, player_direction)]
+def directional(args):
+    return [end for end in args.ends if _is_directional(args.start, end, args.player_direction)]
 
 
 def _is_directional(start, end, direction):

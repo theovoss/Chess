@@ -8,7 +8,10 @@ from . import json_helper
 
 from ..move.calculator import Calculator
 from ..move.manager import Manager
+from ..move.endgame_analyzer import EndgameAnalyzer
 from ..piece import Piece
+
+from ..move_pipeline import endgame
 
 
 class ChessBoard(Board):
@@ -16,7 +19,6 @@ class ChessBoard(Board):
         super().__init__(8, 8)
         self.pieces = []
         self.players = {}
-        self.end_game = {}
 
         if not existing_board:
             existing_board = json_helper.load_json()
@@ -24,6 +26,8 @@ class ChessBoard(Board):
         existing_history = {'initial_board': existing_board}
         if 'history' in existing_board:
             existing_history = existing_board.get('history')
+
+        self.end_game = existing_board['end_game']
 
         self._history = History(existing_history)
 
@@ -35,6 +39,7 @@ class ChessBoard(Board):
 
         self._calculator = Calculator()
         self._manager = Manager()
+        self._endgame_analyzer = EndgameAnalyzer()
 
     def _toggle_current_player(self):
         if self.current_players_turn == 'white':
@@ -110,6 +115,17 @@ class ChessBoard(Board):
     def get_all_piece_names(self):
         return [piece.kind for piece in self.pieces]
 
+    def get_location_for_piece(self, name, color):
+        pieces = self.get_pieces_for_color(color)
+        return pieces[name]
+
+    def get_pieces_for_color(self, color):
+        for player in self.players:
+            print(self.players[player])
+            if self.players[player]['color'] == color:
+                return self.players[player]
+        return None
+
     # validity checks
     def is_valid_move(self, start_location, end_location):
         possible_moves = self.valid_moves(start_location).keys()
@@ -122,7 +138,15 @@ class ChessBoard(Board):
 
     # actually move stuff
     def move(self, start, end, save=True):
-        return self._manager.move(self, start, end, self._history, save)
+        pinned_path = []
+        if self._endgame_analyzer.is_pinned(self, self._calculator, self.current_players_turn, start):
+            pinned_path = self._endgame_analyzer.get_pinned_path(self, self._calculator, self.current_players_turn, start)
+
+        success = self._manager.move(self, start, end, self._history, pinned_path, save)
+        # self._endgame_analyzer.check_endgame_conditions()
+        if self._endgame_analyzer.is_check(self, self._calculator, self.current_players_turn):
+            pass
+        return success
 
     def promote(self, location, new_piece_name):
         self._manager.promote(self, location, new_piece_name)

@@ -2,6 +2,9 @@ import copy
 from collections import defaultdict
 from chess.helpers import add_unit_direction
 from chess.move_pipeline import movement, pre_move_checks
+from chess.move_pipeline.move_pipeline_accessor import MovePipelineAccessor
+from chess.move_pipeline.data.condition_args import ConditionArgs
+from chess.move.pathfinder import PathFinder
 
 
 class Calculator():
@@ -9,6 +12,7 @@ class Calculator():
     def get_destinations(self, board, start):
         return self._calculate_destinations(board, start)
 
+    # def get_threatened_path(self, board, location, threatened_by_color):
     def is_threatened(self, board, locations, threatened_by_color):
         for location in locations:
             if self._location_is_threatened(board, location, threatened_by_color):
@@ -18,14 +22,18 @@ class Calculator():
     def _location_is_threatened(self, board, location, threatened_by_color):
         # concept: for each move in every piece, follow the path outward from the location we're checking for threats
         #          - ignore rules for checking is_threatened (to prevent recursion)
-        #          - ignore rules for directionality
+        #          - ignore rules for directionality (so we don't have to take player direction into account)
         for piece in board.pieces:
-            paths = []
             for move in piece.moves:
-                path = self._get_all_paths(location, move, board)
-                paths += self._reduce_paths_to_valid_end_locations(board, move, location, (1, 0), path, ignore_conditions=['directional'])
-            if self._path_has_specific_enemy_piece_targeting_location(board, piece, paths, location, threatened_by_color):
-                return True
+                # TODO: paths is list of lists here from pathfinder, have to loop over each and see if we find piece.
+                possible_threat_paths = PathFinder.get_all_paths(location, move, board)
+                for path in possible_threat_paths:
+                    condition_args = ConditionArgs.generate(board, move, location, path, (1, 0))
+
+                    ends = self._reduce_paths_to_valid_end_locations(move, condition_args, ignore_conditions=['directional'])
+
+                    if self._path_has_specific_enemy_piece_targeting_location(board, piece, ends, location, threatened_by_color):
+                        return True
         return False
 
     def _path_has_specific_enemy_piece_targeting_location(self, board, piece, path, location, threatened_by_color):
@@ -59,8 +67,10 @@ class Calculator():
                 continue
 
             # Directions and limitations
-            paths = self._get_all_paths(start, move, board)
-            ends = self._reduce_paths_to_valid_end_locations(board, move, start, player_direction, paths)
+            paths = PathFinder.get_all_paths_flattened(start, move, board)
+            condition_args = ConditionArgs.generate(board, move, start, paths, player_direction)
+
+            ends = self._reduce_paths_to_valid_end_locations(move, condition_args)
 
             for end in ends:
                 all_end_points[end] = move
@@ -77,7 +87,7 @@ class Calculator():
     def _do_prechecks_pass(self, board, start, move, include_threatened):
         passed_pre_check = True
 
-        if 'pre_move_checks' in move and include_threatened:
+        if 'pre_move_checks' in move:
             for check_definition in move['pre_move_checks']:
                 enemy_color = 'black'
                 if board[start].color == 'black':
@@ -85,34 +95,19 @@ class Calculator():
 
                 locations = [add_unit_direction(start, relative_location) for relative_location in check_definition['locations']]
 
-                checks = check_definition['checks']
-                passed = [getattr(pre_move_checks, check)(board, locations, board._history, board[start].color) for check in checks if hasattr(pre_move_checks, check)]
-                if 'is_not_threatened' in checks:
+                precheck_names = check_definition['checks']
+                precheck_functions = MovePipelineAccessor.get_attributes(pre_move_checks, precheck_names)
+
+                passed = [check(board, locations, board._history, board[start].color) for check in precheck_functions]
+
+                if 'is_not_threatened' in precheck_names and include_threatened:
                     passed.append(not self.is_threatened(board, locations, enemy_color))
                 if False in passed:
-                    passed_pre_check = False
+                    return False
         return passed_pre_check
 
     # getting path and end locations
-    def _get_all_paths(self, start, move, board):
-        ends = []
-        for direction in move['directions']:
-            new_start = start
-            location = add_unit_direction(new_start, direction)
-            while location in board:
-                ends.append(location)
-                new_start = location
-                location = add_unit_direction(new_start, direction)
-        return ends
+    def _reduce_paths_to_valid_end_locations(self, move, condition_args, ignore_conditions=None):
+        conditions = MovePipelineAccessor.get_attributes(movement, move['conditions'], ignore_conditions)
 
-    def _reduce_paths_to_valid_end_locations(self, board, move, start, player_direction, paths, ignore_conditions=None):
-        ends = copy.deepcopy(paths)
-        directions = move['directions']
-        conditions = [getattr(movement, condition) for condition in move['conditions'] if hasattr(movement, condition)]
-
-        for condition in conditions:
-            if ignore_conditions and condition in ignore_conditions:
-                continue
-            ends = condition(board, start, directions, ends, player_direction)
-
-        return ends
+        return PathFinder.reduce_paths_to_valid_end_locations(conditions, condition_args)

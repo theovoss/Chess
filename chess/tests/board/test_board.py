@@ -89,6 +89,13 @@ class TestBoard(unittest.TestCase):
                     self.assertIn(location, piece_locations2)
 
 
+class TestEndgame(unittest.TestCase):
+    def setUp(self):
+        self.chess_board = ChessBoard()
+
+    def test_endgame(self):
+        self.chess_board.check_endgame_conditions()
+
 class TestKnightMoves(unittest.TestCase):
 
     def setUp(self):
@@ -109,6 +116,8 @@ class TestKnightMoves(unittest.TestCase):
             }}])
 
     def test_move_knight_on_top_of_own_pawn(self):
+        self.assertIsNotNone(self.chess_board[(1, 3)])
+        self.assertEqual(self.chess_board[(0, 1)].color, self.chess_board[(1, 3)].color)
         self.assertFalse(self.chess_board.is_valid_move((0, 1), (1, 3)))
         result = self.chess_board.move((0, 1), (1, 3))
 
