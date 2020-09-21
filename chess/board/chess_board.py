@@ -11,8 +11,6 @@ from ..move.manager import Manager
 from ..move.endgame_analyzer import EndgameAnalyzer
 from ..piece import Piece
 
-from ..move_pipeline import endgame
-
 
 class ChessBoard(Board):
     def __init__(self, existing_board=None):
@@ -115,37 +113,66 @@ class ChessBoard(Board):
     def get_all_piece_names(self):
         return [piece.kind for piece in self.pieces]
 
+    def get_endgame_piece_name(self):
+        return self.end_game.get('piece')
+
+    def get_endgame_piece_location(self, color):
+        piece_name = self.get_endgame_piece_name()
+        for location in self:
+            if self[location] and self[location].color == color and self[location].kind == piece_name:
+                return location
+        return None
+
     def get_location_for_piece(self, name, color):
         pieces = self.get_pieces_for_color(color)
         return pieces[name]
 
     def get_pieces_for_color(self, color):
         for player in self.players:
-            print(self.players[player])
             if self.players[player]['color'] == color:
                 return self.players[player]
         return None
 
     # validity checks
     def is_valid_move(self, start_location, end_location):
-        possible_moves = self.valid_moves(start_location).keys()
+        possible_moves = self.valid_moves(start_location)
         if end_location in possible_moves:
             return True
         return False
 
-    def valid_moves(self, start_location):
-        return self._calculator.get_destinations(self, start_location)
+    def valid_moves(self, start):
+        valid_moves = self._calculator.get_destinations(self, start)
+
+        if self._endgame_analyzer.is_check(self, self.current_players_turn):
+            check_path = self.get_check_path()
+            if not check_path:
+                # if there isn't a path for check ie: multiple paths to check, then remove all valid moves
+                valid_moves = {}
+            else:
+                for move in list(valid_moves.keys()):
+                    if move not in check_path:
+                        valid_moves.pop(move)
+
+        if self._endgame_analyzer.is_pinned(self, self.current_players_turn, start):
+            pinned_path = self._endgame_analyzer.get_pinned_path(self, self.current_players_turn, start)
+            for move in list(valid_moves.keys()):
+                if move not in pinned_path:
+                    valid_moves.pop(move)
+        return valid_moves
+
+    def is_check(self):
+        return self._endgame_analyzer.is_check(self, self.current_players_turn)
+
+    def get_check_path(self):
+        paths = self._endgame_analyzer.get_check_paths(self, self.current_players_turn)
+        return paths[0] if len(paths) == 1 else []
 
     # actually move stuff
     def move(self, start, end, save=True):
-        pinned_path = []
-        if self._endgame_analyzer.is_pinned(self, self._calculator, self.current_players_turn, start):
-            pinned_path = self._endgame_analyzer.get_pinned_path(self, self._calculator, self.current_players_turn, start)
-
-        success = self._manager.move(self, start, end, self._history, pinned_path, save)
+        success = self._manager.move(self, start, end, self._history, save)
         # self._endgame_analyzer.check_endgame_conditions()
-        if self._endgame_analyzer.is_check(self, self._calculator, self.current_players_turn):
-            pass
+        # if self._endgame_analyzer.is_check(self, self.current_players_turn):
+        #     pass
         return success
 
     def promote(self, location, new_piece_name):

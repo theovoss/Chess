@@ -18,4 +18,4 @@ class TestPreMoveChecksAboutMovement(unittest.TestCase):
         }
         move(self.chess_board, (1, 1), **kwargs)
         self.assertIsNone(self.chess_board[(1, 2)])
-        self.assertEquals(self.chess_board[(2, 2)].kind, 'pawn')
+        self.assertEqual(self.chess_board[(2, 2)].kind, 'pawn')

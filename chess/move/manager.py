@@ -12,11 +12,8 @@ class Manager():
 
             board[location] = promoted
 
-    def move(self, board, start, end, history, pinned_path, save=True):
+    def move(self, board, start, end, history, save=True):
         valid_moves = board.valid_moves(start)
-        if pinned_path:
-            pinned_path_set = set(pinned_path)
-            valid_moves = list(pinned_path_set.intersection(valid_moves))
 
         if end in valid_moves:
             if board[start].color != board.current_players_turn:
@@ -24,7 +21,6 @@ class Manager():
                 return False
 
             board._toggle_current_player()
-            print("is valid move")
 
             self._move_piece(board, start, end, valid_moves[end], history, save)
 

@@ -2,6 +2,7 @@ import unittest
 
 from chess.move.pathfinder import PathFinder
 
+
 class TestMovementHelpers(unittest.TestCase):
     def test_get_diagonal_unit_direction(self):
         unit = PathFinder.get_unit_direction((2, 2), (3, 3))

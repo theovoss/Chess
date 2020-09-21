@@ -46,3 +46,11 @@ class PathFinder():
         dividor = abs(gcd(direction[0], direction[1]))
         direction = tuple(map(_operator.floordiv, direction, (dividor, dividor)))
         return direction
+
+    @staticmethod
+    def get_path_between(board, start, end):
+        for move in board[start].moves:
+            for path in PathFinder.get_all_paths(start, move, board):
+                if end in path:
+                    return path
+        return None

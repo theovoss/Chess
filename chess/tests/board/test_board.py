@@ -89,12 +89,93 @@ class TestBoard(unittest.TestCase):
                     self.assertIn(location, piece_locations2)
 
 
-class TestEndgame(unittest.TestCase):
+class TestCheck(unittest.TestCase):
     def setUp(self):
         self.chess_board = ChessBoard()
 
-    def test_endgame(self):
-        self.chess_board.check_endgame_conditions()
+    def test_get_check_paths(self):
+        self.chess_board[(1, 4)] = None
+        self.chess_board[(6, 4)] = self.chess_board[(7, 3)]
+
+        check_path = [(0, 4), (1, 4), (2, 4), (3, 4), (4, 4), (5, 4), (6, 4)]
+
+        self.assertTrue(self.chess_board.is_check())
+        self.assertEqual(set(self.chess_board.get_check_path()), set(check_path))
+
+    def test_get_check_path_multiple_paths(self):
+        # king pawn and adjacent pawn removed
+        self.chess_board[(1, 4)] = None
+        self.chess_board[(1, 5)] = None
+
+        # check with bishop
+        self.chess_board[(3, 7)] = self.chess_board[(7, 2)]
+
+        # check with queen
+        self.chess_board[(5, 4)] = self.chess_board[(7, 3)]
+
+        # white king is in check
+        self.assertTrue(self.chess_board.is_check())
+
+        # no check path aka: can't block the check, since there's two paths. King would have to move.
+        self.assertEqual(self.chess_board.get_check_path(), [])
+
+
+class TestPinning(unittest.TestCase):
+    def setUp(self):
+        self.chess_board = ChessBoard()
+
+    def test_bishop_cant_move_if_pinned(self):
+        start = (1, 4)
+        self.chess_board[(start)] = self.chess_board[(0, 2)]
+
+        no_pin_moves = self.chess_board.valid_moves(start)
+
+        self.chess_board[(4, 4)] = self.chess_board[(7, 0)]
+        self.assertTrue(self.chess_board._calculator.is_threatened(self.chess_board, [start], 'black'))
+        self.assertEqual(self.chess_board[(0, 4)].kind, 'king')
+        self.assertEqual(self.chess_board[(4, 4)].kind, 'rook')
+
+        pin_moves = self.chess_board.valid_moves(start)
+
+        self.assertGreater(len(no_pin_moves), 0, str(no_pin_moves))
+        self.assertEqual(len(pin_moves), 0, str(pin_moves))
+
+    def test_rook_can_move_along_pinned_path_but_not_horizontally(self):
+        start = (2, 4)
+        self.chess_board[(start)] = self.chess_board[(0, 0)]  # white rook in front of white king
+        self.chess_board[(1, 4)] = None  # remove blocking pawn
+
+        no_pin_moves = self.chess_board.valid_moves(start)
+
+        self.chess_board[(5, 4)] = self.chess_board[(7, 0)]  # black
+
+        pinned_moves = self.chess_board.valid_moves(start)
+
+        self.assertNotEqual(no_pin_moves, pinned_moves)
+
+        expected_pinned_moves = [(5, 4), (4, 4), (3, 4), (1, 4)]
+
+        self.assertEqual(set(expected_pinned_moves), set(pinned_moves))
+
+    def test_pinned_cant_move_to_block_a_check(self):
+        # king pawn removed
+        self.chess_board[(1, 4)] = None
+
+        # block adjacent pawn with bishop (can either block check or take piece pinning it)
+        self.chess_board[(1, 5)] = self.chess_board[(0, 2)]
+
+        # pin bishop with enemy bishop
+        self.chess_board[(3, 7)] = self.chess_board[(7, 2)]
+
+        # put king in check
+        self.chess_board[(5, 4)] = self.chess_board[(7, 3)]
+
+        # white king is in check
+        self.assertTrue(self.chess_board.is_check())
+
+        # white bishop is pinned, but king is already in check, so it shouldn't be able to move
+        self.assertEqual(self.chess_board.valid_moves((1, 5)), {})
+
 
 class TestKnightMoves(unittest.TestCase):
 

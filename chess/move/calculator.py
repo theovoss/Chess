@@ -12,17 +12,20 @@ class Calculator():
     def get_destinations(self, board, start):
         return self._calculate_destinations(board, start)
 
-    # def get_threatened_path(self, board, location, threatened_by_color):
+    def get_threatening_piece_location(self, board, location, threatened_by_color):
+        return self._get_location_for_piece_threatening_location(board, location, threatened_by_color)
+
     def is_threatened(self, board, locations, threatened_by_color):
         for location in locations:
-            if self._location_is_threatened(board, location, threatened_by_color):
+            if self._get_location_for_piece_threatening_location(board, location, threatened_by_color):
                 return True
         return False
 
-    def _location_is_threatened(self, board, location, threatened_by_color):
+    def _get_location_for_piece_threatening_location(self, board, location, threatened_by_color):
         # concept: for each move in every piece, follow the path outward from the location we're checking for threats
         #          - ignore rules for checking is_threatened (to prevent recursion)
         #          - ignore rules for directionality (so we don't have to take player direction into account)
+        threatening_locations = []
         for piece in board.pieces:
             for move in piece.moves:
                 # TODO: paths is list of lists here from pathfinder, have to loop over each and see if we find piece.
@@ -32,19 +35,19 @@ class Calculator():
 
                     ends = self._reduce_paths_to_valid_end_locations(move, condition_args, ignore_conditions=['directional'])
 
-                    if self._path_has_specific_enemy_piece_targeting_location(board, piece, ends, location, threatened_by_color):
-                        return True
-        return False
+                    threatening_location = self._get_location_for_threatening_piece_in_path(board, piece, ends, location, threatened_by_color)
+                    if threatening_location is not None and threatening_location not in threatening_locations:
+                        threatening_locations.append(threatening_location)
+        return threatening_locations
 
-    def _path_has_specific_enemy_piece_targeting_location(self, board, piece, path, location, threatened_by_color):
+    def _get_location_for_threatening_piece_in_path(self, board, piece, path, location, threatened_by_color):
         for path_location in path:
             if self._location_has_enemy_piece(board, piece, path_location, threatened_by_color):
                 # there is an enemy piece along path. see if it's destinations includes the location we care about
                 destinations = self._calculate_destinations(board, path_location, include_threatened=False)
                 if location in destinations.keys():
-                    print("Piece {} at location {} is threatening {}".format(piece.kind, path_location, location))
-                    return True
-        return False
+                    return path_location
+        return None
 
     def _location_has_enemy_piece(self, board, piece, location, threatened_by_color):
         return board[location] and \
@@ -57,7 +60,6 @@ class Calculator():
 
         player_direction = self._get_player_direction(board.players, piece.color)
 
-        # handle mocked pieces that aren't needed for moving
         all_end_points = {}
 
         for move in piece.moves:
