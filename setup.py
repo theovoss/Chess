@@ -9,7 +9,7 @@ import setuptools
 
 
 PACKAGE_NAME = 'chess'
-MINIMUM_PYTHON_VERSION = '3.6'
+MINIMUM_PYTHON_VERSION = '3.7'
 
 
 def check_python_version():
@@ -63,7 +63,7 @@ setuptools.setup(
         'Development Status :: 3 - Alpha',
         'Natural Language :: English',
         'Operating System :: OS Independent',
-        'Programming Language :: Python :: 3.6',
+        'Programming Language :: Python :: 3.7',
     ],
     install_requires=[]
 )
