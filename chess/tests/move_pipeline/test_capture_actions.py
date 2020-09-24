@@ -71,6 +71,36 @@ class TestCaptureActions(unittest.TestCase):
 
         self.assertEqual(set(captures.keys()), set(expected_internal_captures))
 
+    def test_explode_right_edge_of_board(self):
+        self._populate_mock_board()
+        start = Chess.convert_to_internal_indexes('D1')
+        end = Chess.convert_to_internal_indexes('H7')
+
+        captures = explode(self.chess_board, start, end)
+
+        expected_captures = ['G6', 'G7', 'G8', 'H6', 'H7', 'H8']
+        expected_internal_captures = [Chess.convert_to_internal_indexes(empty) for empty in expected_captures]
+
+        print(expected_internal_captures)
+        print(captures)
+
+        self.assertEqual(set(captures.keys()), set(expected_internal_captures))
+
+    def test_explode_top_edge_of_board(self):
+        self._populate_mock_board()
+        start = Chess.convert_to_internal_indexes('D1')
+        end = Chess.convert_to_internal_indexes('D8')
+
+        captures = explode(self.chess_board, start, end)
+
+        expected_captures = ['C7', 'D7', 'E7', 'C8', 'D8', 'E8']
+        expected_internal_captures = [Chess.convert_to_internal_indexes(empty) for empty in expected_captures]
+
+        print(expected_internal_captures)
+        print(captures)
+
+        self.assertEqual(set(captures.keys()), set(expected_internal_captures))
+
     def test_explode_corner_of_board(self):
         self._populate_mock_board()
         start = Chess.convert_to_internal_indexes('A2')

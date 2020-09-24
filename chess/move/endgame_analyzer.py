@@ -11,7 +11,10 @@ class EndgameAnalyzer():
         self._calculator = Calculator()
 
     def _get_check_conditions(self, board):
-        return MovePipelineAccessor.get_attributes(endgame, board.end_game['check']['conditions'])
+        if 'check' in board.end_game:
+            return MovePipelineAccessor.get_attributes(endgame, board.end_game['check']['conditions'])
+        else:
+            return []
 
     def is_pinned(self, board, color, location):
         assert board[location] is not None, "Board location {} should have a piece to calculate pinning but doesn't".format(location)
