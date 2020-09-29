@@ -26,6 +26,7 @@ class ChessBoard(Board):
             existing_history = existing_board.get('history')
 
         self.end_game = existing_board['end_game']
+        print("Endgame is {}".format(self.end_game))
 
         self._history = History(existing_history)
 
@@ -121,6 +122,7 @@ class ChessBoard(Board):
         for location in self:
             if self[location] and self[location].color == color and self[location].kind == piece_name:
                 return location
+        print("Couldn't find endgame piece named {} for color {}".format(piece_name, color))
         return None
 
     def get_location_for_piece(self, name, color):
@@ -144,6 +146,7 @@ class ChessBoard(Board):
         valid_moves = self._calculator.get_destinations(self, start)
 
         if self._endgame_analyzer.is_check(self, self.current_players_turn):
+            print("In Check")
             check_path = self.get_check_path()
             if not check_path:
                 # if there isn't a path for check ie: multiple paths to check, then remove all valid moves
@@ -154,6 +157,7 @@ class ChessBoard(Board):
                         valid_moves.pop(move)
 
         if self._endgame_analyzer.is_pinned(self, self.current_players_turn, start):
+            print("Is pinned")
             pinned_path = self._endgame_analyzer.get_pinned_path(self, self.current_players_turn, start)
             for move in list(valid_moves.keys()):
                 if move not in pinned_path:

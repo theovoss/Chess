@@ -23,11 +23,16 @@ class EndgameAnalyzer():
             new_board = copy.deepcopy(board)
             new_board[location] = None
             assert board[location] is not None, "Deep copy didn't work"
-            paths = self.get_check_paths(new_board, color)
-            for path in paths:
-                if location in path:
-                    return True
-            return False
+
+            # Don't just call self.is_check --
+            #  we need to see if the location we're checking for being pinned is in the check paths
+            #  to account for check + pinned pieces.
+            if self.is_check(new_board, color):
+                paths = self.get_check_paths(new_board, color)
+                for path in paths:
+                    if location in path:
+                        return True
+                return False
         # moving endgame piece, so by definition it can't be pinning the endgame piece
         return False
 
@@ -51,9 +56,11 @@ class EndgameAnalyzer():
 
     def get_check_paths(self, board, color):
         endgame_piece_location = board.get_endgame_piece_location(color)
+
         threatened_by_color = 'white'
         if color == threatened_by_color:
             threatened_by_color = 'black'
+
         threat_locations = self._calculator.get_threatening_piece_location(board, endgame_piece_location, threatened_by_color)
 
         valid_threat_paths = []

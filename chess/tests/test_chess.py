@@ -14,6 +14,11 @@ class TestChess(unittest.TestCase):
     def test_init(self):
         self.assertTrue(isinstance(self.chess.board, dict))
 
+    def test_can_get_all_piece_names(self):
+        expected = ['pawn', 'rook', 'knight', 'bishop', 'queen', 'king']
+        actual = self.chess.get_all_piece_names()
+        self.assertEqual(actual, expected)
+
     def test_convert_to_internal_notation(self):
         expected = {
             "A1": (0, 0),
@@ -35,6 +40,15 @@ class TestChess(unittest.TestCase):
         }
         for key, value in expected.items():
             self.assertEqual(Chess.convert_to_internal_indexes(key), value, 'expected: {}\nactual: {}'.format(value, Chess.convert_to_internal_indexes(key)))
+
+    def test_chess_destinations(self):
+        actual = self.chess.destinations((1, 1))
+        self.assertEqual(actual, [(2, 1), (3, 1)])
+
+
+class TestChessMovements(unittest.TestCase):
+    def setUp(self):
+        self.chess = Chess()
 
     def test_move_pawn_forward_once(self):
         start = "A2"
@@ -68,8 +82,3 @@ class TestChess(unittest.TestCase):
 
         self.assertEqual(former_queen.color, "white")
         self.assertEqual(former_queen.kind, "pawn")
-
-    def test_can_get_all_piece_names(self):
-        expected = ['pawn', 'rook', 'knight', 'bishop', 'queen', 'king']
-        actual = self.chess.get_all_piece_names()
-        self.assertEqual(actual, expected)
