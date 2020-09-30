@@ -190,6 +190,9 @@ class TestPinning(unittest.TestCase):
         self.chess_board.move((1, 0), (2, 0))
         self.assertEqual(self.chess_board.valid_moves((6, 4)), {})
 
+        # empty position returns empty dict
+        self.assertEqual(self.chess_board.valid_moves((4, 4)), {})
+
 
 class TestKnightMoves(unittest.TestCase):
 

@@ -26,7 +26,6 @@ class ChessBoard(Board):
             existing_history = existing_board.get('history')
 
         self.end_game = existing_board['end_game']
-        print("Endgame is {}".format(self.end_game))
 
         self._history = History(existing_history)
 
@@ -143,6 +142,9 @@ class ChessBoard(Board):
         return False
 
     def valid_moves(self, start):
+        if self[start] is None:
+            return {}
+
         valid_moves = self._calculator.get_destinations(self, start)
 
         color = self[start].color
