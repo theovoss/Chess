@@ -100,7 +100,7 @@ class TestCheck(unittest.TestCase):
         check_path = [(0, 4), (1, 4), (2, 4), (3, 4), (4, 4), (5, 4), (6, 4)]
 
         self.assertTrue(self.chess_board.is_check())
-        self.assertEqual(set(self.chess_board.get_check_path()), set(check_path))
+        self.assertEqual(set(self.chess_board.get_check_path('white')), set(check_path))
 
     def test_get_check_path_multiple_paths(self):
         # king pawn and adjacent pawn removed
@@ -117,7 +117,7 @@ class TestCheck(unittest.TestCase):
         self.assertTrue(self.chess_board.is_check())
 
         # no check path aka: can't block the check, since there's two paths. King would have to move.
-        self.assertEqual(self.chess_board.get_check_path(), [])
+        self.assertEqual(self.chess_board.get_check_path('white'), [])
 
 
 class TestPinning(unittest.TestCase):
@@ -175,6 +175,20 @@ class TestPinning(unittest.TestCase):
 
         # white bishop is pinned, but king is already in check, so it shouldn't be able to move
         self.assertEqual(self.chess_board.valid_moves((1, 5)), {})
+
+    def test_pinned_valid_moves_are_empty_even_when_not_their_turn(self):
+        # put black bishop in front of black king
+        self.chess_board[(6, 4)] = self.chess_board[(7, 5)]
+
+        # put white queen in position to pin bishop
+        self.chess_board[(2, 4)] = self.chess_board[(0, 3)]
+
+        # whites turn, verify bishop can't move
+        self.assertEqual(self.chess_board.valid_moves((6, 4)), {})
+
+        # black's turn, verify bishop can't move
+        self.chess_board.move((1, 0), (2, 0))
+        self.assertEqual(self.chess_board.valid_moves((6, 4)), {})
 
 
 class TestKnightMoves(unittest.TestCase):

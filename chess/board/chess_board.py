@@ -145,9 +145,10 @@ class ChessBoard(Board):
     def valid_moves(self, start):
         valid_moves = self._calculator.get_destinations(self, start)
 
-        if self._endgame_analyzer.is_check(self, self.current_players_turn):
+        color = self[start].color
+        if self._endgame_analyzer.is_check(self, color):
             print("In Check")
-            check_path = self.get_check_path()
+            check_path = self.get_check_path(color)
             if not check_path:
                 # if there isn't a path for check ie: multiple paths to check, then remove all valid moves
                 valid_moves = {}
@@ -156,9 +157,9 @@ class ChessBoard(Board):
                     if move not in check_path:
                         valid_moves.pop(move)
 
-        if self._endgame_analyzer.is_pinned(self, self.current_players_turn, start):
+        if self._endgame_analyzer.is_pinned(self, color, start):
             print("Is pinned")
-            pinned_path = self._endgame_analyzer.get_pinned_path(self, self.current_players_turn, start)
+            pinned_path = self._endgame_analyzer.get_pinned_path(self, color, start)
             for move in list(valid_moves.keys()):
                 if move not in pinned_path:
                     valid_moves.pop(move)
@@ -167,8 +168,8 @@ class ChessBoard(Board):
     def is_check(self):
         return self._endgame_analyzer.is_check(self, self.current_players_turn)
 
-    def get_check_path(self):
-        paths = self._endgame_analyzer.get_check_paths(self, self.current_players_turn)
+    def get_check_path(self, color):
+        paths = self._endgame_analyzer.get_check_paths(self, color)
         return paths[0] if len(paths) == 1 else []
 
     # actually move stuff
