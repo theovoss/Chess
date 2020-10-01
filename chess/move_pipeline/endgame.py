@@ -4,7 +4,5 @@ def endgame_piece_is_threatened(board, calculator, color):
     location = board.get_endgame_piece_location(color)
     if not location:
         return False
-    other_color = "black"
-    if color == "black":
-        other_color = "white"
-    return calculator.is_threatened(board, [location], other_color)
+
+    return calculator.is_threatened(board, [location], board[location].opposite_color)

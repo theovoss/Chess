@@ -7,7 +7,7 @@ class Piece:
         self.kind = piece_name
         self.color = piece_color
         self.move_count = 0
-        self.moves = self._convert_moves(moves)
+        self.moves = Piece._convert_moves(moves)
         self.promote_me_daddy = False
 
     def __str__(self):
@@ -20,6 +20,13 @@ class Piece:
         if self.color == "white":
             character = character.upper()
         return character
+
+    @property
+    def opposite_color(self):
+        opposite = "white"
+        if opposite == self.color:
+            opposite = "black"
+        return opposite
 
     @staticmethod
     def _convert_moves(moves):

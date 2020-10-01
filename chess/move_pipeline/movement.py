@@ -27,7 +27,12 @@ def distance_of_one(args):
 
 
 def cant_move_onto_threatened_square(args):
-    pass
+    if args.board[args.start] is None:
+        return []
+
+    threat_color = args.board[args.start].opposite_color
+
+    return [end for end in args.ends if not args.calculator.is_threatened(args.board, [end], threat_color)]
 
 
 def _get_two_moves_away(start, directions):

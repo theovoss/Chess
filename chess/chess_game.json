@@ -65,7 +65,7 @@
         "king": {
             "moves": [{
                 "directions": ["diagonal", "horizontal", "vertical"],
-                "conditions": ["doesnt_land_on_own_piece", "distance_of_one", "doesnt_end_in_check"]
+                "conditions": ["doesnt_land_on_own_piece", "distance_of_one", "cant_move_onto_threatened_square"]
             },
             {
                 "directions": [[0, 1]],

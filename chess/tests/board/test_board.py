@@ -41,11 +41,13 @@ class TestBoard(unittest.TestCase):
         for location in white_positions:
             self.assertEqual(self.chess_board[location].kind, piece)
             self.assertEqual(self.chess_board[location].color, "white")
+            self.assertEqual(self.chess_board[location].opposite_color, "black")
 
         black_positions = self.convert_default_white_spaces_to_black(white_positions)
         for location in black_positions:
             self.assertEqual(self.chess_board[location].kind, piece)
             self.assertEqual(self.chess_board[location].color, "black")
+            self.assertEqual(self.chess_board[location].opposite_color, "white")
 
     def test_pawns_are_all_different_instances(self):
         self.assertIsNot(self.chess_board[(1, 0)], self.chess_board[(1, 1)])
@@ -92,6 +94,15 @@ class TestBoard(unittest.TestCase):
 class TestCheck(unittest.TestCase):
     def setUp(self):
         self.chess_board = ChessBoard()
+
+    def test_king_can_move_out_of_check(self):
+        self.chess_board[(0, 3)] = None
+        self.chess_board[(1, 4)] = None
+        self.chess_board[(5, 4)] = self.chess_board[(7, 3)]
+
+        destinations = list(self.chess_board.valid_moves((0, 4)).keys())
+
+        self.assertEqual(destinations, [(0, 3)])
 
     def test_get_check_paths(self):
         self.chess_board[(1, 4)] = None

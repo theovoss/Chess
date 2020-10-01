@@ -148,7 +148,9 @@ class ChessBoard(Board):
         valid_moves = self._calculator.get_destinations(self, start)
 
         color = self[start].color
-        if self._endgame_analyzer.is_check(self, color):
+        is_not_endgame_piece = self[start].kind != self.get_endgame_piece_name()
+
+        if self._endgame_analyzer.is_check(self, color) and is_not_endgame_piece:
             print("In Check")
             check_path = self.get_check_path(color)
             if not check_path:

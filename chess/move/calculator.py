@@ -33,7 +33,7 @@ class Calculator():
                 for path in possible_threat_paths:
                     condition_args = ConditionArgs.generate(board, move, location, path, (1, 0))
 
-                    ends = self._reduce_paths_to_valid_end_locations(move, condition_args, ignore_conditions=['directional'])
+                    ends = self._reduce_paths_to_valid_end_locations(move, condition_args, ignore_conditions=['directional', 'cant_move_onto_threatened_square'])
 
                     threatening_location = self._get_location_for_threatening_piece_in_path(board, piece, ends, location, threatened_by_color)
                     if threatening_location is not None and threatening_location not in threatening_locations:
@@ -44,7 +44,7 @@ class Calculator():
         for path_location in path:
             if self._location_has_enemy_piece(board, piece, path_location, threatened_by_color):
                 # there is an enemy piece along path. see if it's destinations includes the location we care about
-                destinations = self._calculate_destinations(board, path_location, include_threatened=False)
+                destinations = self._calculate_destinations(board, path_location, include_threatened=False, ignore_conditions=['cant_move_onto_threatened_square'])
                 if location in destinations.keys():
                     return path_location
         return None
@@ -55,7 +55,7 @@ class Calculator():
             board[location].color == threatened_by_color
 
     # private methods for calculating destinations
-    def _calculate_destinations(self, board, start, include_threatened=True):
+    def _calculate_destinations(self, board, start, include_threatened=True, ignore_conditions=[]):
         piece = board[start]
 
         player_direction = self._get_player_direction(board.players, piece.color)
@@ -72,7 +72,7 @@ class Calculator():
             paths = PathFinder.get_all_paths_flattened(start, move, board)
             condition_args = ConditionArgs.generate(board, move, start, paths, player_direction)
 
-            ends = self._reduce_paths_to_valid_end_locations(move, condition_args)
+            ends = self._reduce_paths_to_valid_end_locations(move, condition_args, ignore_conditions=ignore_conditions)
 
             for end in ends:
                 all_end_points[end] = move
