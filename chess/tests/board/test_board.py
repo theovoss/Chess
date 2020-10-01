@@ -104,6 +104,31 @@ class TestCheck(unittest.TestCase):
 
         self.assertEqual(destinations, [(0, 3)])
 
+    def test_king_cant_move_back_along_check_path(self):
+        # move king forward 1 square
+        self.chess_board[(1, 4)] = self.chess_board[(0, 4)]
+        self.chess_board[(0, 4)] = None
+
+        # move black queen in front of king to put it in check
+        self.chess_board[(3, 4)] = self.chess_board[(7, 3)]
+
+        actual = self.chess_board.valid_moves((1, 4))
+
+        print(actual.keys())
+        self.assertEqual(actual, {})
+
+    def test_king_cant_move_to_square_threatened_by_pawn(self):
+        # move king forward 1 square
+        self.chess_board[(1, 4)] = self.chess_board[(0, 4)]
+        self.chess_board[(0, 4)] = None
+
+        # move black pawn in front of king to limit the diagonal moves
+        self.chess_board[(3, 4)] = self.chess_board[(6, 4)]
+
+        actual = list(self.chess_board.valid_moves((1, 4)).keys())
+
+        self.assertEqual(actual, [(2, 4), (0, 4)])
+
     def test_get_check_paths(self):
         self.chess_board[(1, 4)] = None
         self.chess_board[(6, 4)] = self.chess_board[(7, 3)]

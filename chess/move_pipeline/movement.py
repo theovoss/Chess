@@ -1,6 +1,7 @@
 # pylint: disable=W0613
 # allow unused variables so all movement functions can have same parameter definition
 import operator as _operator
+import copy
 
 from chess.helpers import add_unit_direction
 from chess.move.pathfinder import PathFinder
@@ -32,7 +33,10 @@ def cant_move_onto_threatened_square(args):
 
     threat_color = args.board[args.start].opposite_color
 
-    return [end for end in args.ends if not args.calculator.is_threatened(args.board, [end], threat_color)]
+    board = copy.deepcopy(args.board)
+    board[args.start] = None
+
+    return [end for end in args.ends if not args.calculator.is_threatened(board, [end], threat_color)]
 
 
 def _get_two_moves_away(start, directions):
