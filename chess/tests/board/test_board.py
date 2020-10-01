@@ -117,6 +117,45 @@ class TestCheck(unittest.TestCase):
         print(actual.keys())
         self.assertEqual(actual, {})
 
+    def test_king_cant_move_in_front_of_pawn_row(self):
+        # move king to middle of board
+        self.chess_board[(3, 4)] = self.chess_board[(7, 4)]
+
+        # prevent king from moving sideways or backwards
+        self.chess_board[(4, 0)] = self.chess_board[(0, 0)]  # can't move back
+        self.chess_board[(3, 7)] = self.chess_board[(0, 7)]  # can't move sideways
+
+        actual = self.chess_board.valid_moves((3, 4))
+
+        for col in range(8):
+            self.assertEqual(self.chess_board[(1, col)].kind, 'pawn')
+            self.assertEqual(self.chess_board[(1, col)].color, 'white')
+        print(actual.keys())
+        self.assertEqual(actual, {})
+
+    def test_king_cant_capture_enemy_when_enemy_is_guarded(self):
+        # move king to middle of board
+        self.chess_board[(3, 4)] = self.chess_board[(7, 4)]
+
+        # set up several white pieces. 1 guarded by pawn. 1 guarded by bishop. 1 not guarded
+        self.chess_board[(2, 4)] = self.chess_board[(0, 5)]  # bishop guarded by pawn
+        self.chess_board[(3, 5)] = self.chess_board[(0, 7)]  # rook guarded by bishop
+        self.chess_board[(4, 4)] = self.chess_board[(1, 7)]  # pawn unguarded
+        self.chess_board[(2, 3)] = self.chess_board[(0, 2)]  # bishop unguarded
+
+        # clear out the pieces we just moved
+        self.chess_board[(0, 5)] = None
+        self.chess_board[(0, 7)] = None
+        self.chess_board[(1, 7)] = None
+
+        # remove some pawns so king can move in front of the pawn buarding the bishop
+        self.chess_board[(1, 2)] = None
+        self.chess_board[(1, 4)] = None
+
+        actual = list(self.chess_board.valid_moves((3, 4)).keys())
+
+        self.assertEqual(actual, [(2, 3), (4, 3), (4, 4)])
+
     def test_king_cant_move_to_square_threatened_by_pawn(self):
         # move king forward 1 square
         self.chess_board[(1, 4)] = self.chess_board[(0, 4)]

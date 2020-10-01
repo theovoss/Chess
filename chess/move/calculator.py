@@ -8,6 +8,9 @@ from chess.move.pathfinder import PathFinder
 
 
 class Calculator():
+    ignore_when_verifying_threats = ['cant_move_onto_threatened_square', 'ends_on_enemy', 'doesnt_land_on_own_piece']
+    ignore_when_finding_threats = ['cant_move_onto_threatened_square', 'ends_on_enemy', 'doesnt_land_on_own_piece', 'directional']
+
     # Public methods for after calling calculate all destinations
     def get_destinations(self, board, start):
         return self._calculate_destinations(board, start)
@@ -33,7 +36,7 @@ class Calculator():
                 for path in possible_threat_paths:
                     condition_args = ConditionArgs.generate(board, move, location, path, (1, 0))
 
-                    ends = self._reduce_paths_to_valid_end_locations(move, condition_args, ignore_conditions=['directional', 'cant_move_onto_threatened_square', 'ends_on_enemy'])
+                    ends = self._reduce_paths_to_valid_end_locations(move, condition_args, ignore_conditions=self.ignore_when_finding_threats)
 
                     threatening_location = self._get_location_for_threatening_piece_in_path(board, piece, ends, location, threatened_by_color)
                     if threatening_location is not None and threatening_location not in threatening_locations:
@@ -44,7 +47,7 @@ class Calculator():
         for path_location in path:
             if self._location_has_enemy_piece(board, piece, path_location, threatened_by_color):
                 # there is an enemy piece along path. see if it's destinations includes the location we care about
-                destinations = self._calculate_destinations(board, path_location, include_threatened=False, ignore_conditions=['cant_move_onto_threatened_square', 'ends_on_enemy'])
+                destinations = self._calculate_destinations(board, path_location, include_threatened=False, ignore_conditions=self.ignore_when_verifying_threats)
                 if location in destinations.keys():
                     return path_location
         return None
@@ -70,6 +73,7 @@ class Calculator():
 
             # Directions and limitations
             paths = PathFinder.get_all_paths_flattened(start, move, board)
+
             condition_args = ConditionArgs.generate(board, move, start, paths, player_direction)
 
             ends = self._reduce_paths_to_valid_end_locations(move, condition_args, ignore_conditions=ignore_conditions)
