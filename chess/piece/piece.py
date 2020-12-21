@@ -1,4 +1,4 @@
-from .directions import convert_shorthand_directions
+from chess.piece.directions import convert_shorthand_directions
 
 
 class Piece:

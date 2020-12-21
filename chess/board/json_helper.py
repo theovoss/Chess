@@ -1,7 +1,7 @@
-from ..move_pipeline import capture_actions, post_move_actions
+from chess.move_pipeline import capture_actions, post_move_actions
 
-from ..helpers import add_unit_direction
-from ..chess_configurations import get_standard_chess_pieces
+from chess.helpers import add_unit_direction
+from chess.chess_configurations import get_standard_chess_pieces
 
 default_capture_actions = ['captures_destination']
 default_post_move_actions = ['increment_move_count']

@@ -2,14 +2,14 @@
 # disabling too many instance attributes for now.
 # once I implement enpassant and castling,
 # I shouldn't need some of the FEN attributes.
-from .base import Board
-from .history import History
-from . import json_helper
+from chess.board.base import Board
+from chess.board.history import History
+from chess.board import json_helper
 
-from ..move.calculator import Calculator
-from ..move.manager import Manager
-from ..move.endgame_analyzer import EndgameAnalyzer
-from ..piece import Piece
+from chess.move.calculator import Calculator
+from chess.move.manager import Manager
+from chess.move.endgame_analyzer import EndgameAnalyzer
+from chess.piece import Piece
 
 
 class ChessBoard(Board):
