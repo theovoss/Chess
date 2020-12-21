@@ -14,7 +14,7 @@ from chess.move_pipeline.movement import (
     alternates_landing_on_enemy_and_empty_space
 )
 from chess.board.chess_board import ChessBoard
-from chess.move_pipeline.data.condition_args import ConditionArgs
+from chess.move_pipeline.data import ConditionArgs
 
 
 class TestMovements(unittest.TestCase):

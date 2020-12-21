@@ -3,7 +3,7 @@ from collections import defaultdict
 from chess.helpers import add_unit_direction
 from chess.move_pipeline import movement, pre_move_checks
 from chess.move_pipeline.move_pipeline_accessor import MovePipelineAccessor
-from chess.move_pipeline.data.condition_args import ConditionArgs
+from chess.move_pipeline.data import ConditionArgs
 from chess.move.pathfinder import PathFinder
 
 
