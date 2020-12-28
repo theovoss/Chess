@@ -39,8 +39,8 @@ class TestPreMoveChecksAboutMovement(unittest.TestCase):
 
 class TestPreMoveChecksAboutHistory(unittest.TestCase):
     def setUp(self):
-        self.start = [1, 1]
-        self.end = [2, 1]
+        self.start = (1, 1)
+        self.end = (2, 1)
 
         self.chess_board = ChessBoard()
         self.history = History()

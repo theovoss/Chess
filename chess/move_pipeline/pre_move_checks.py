@@ -24,6 +24,6 @@ def is_not_empty(board, locations, history, color):
 
 
 def moved_last(board, locations, history, color):
-    if history.all() and history.all()[-1]['end'] in locations:
+    if history.all() and tuple(history.all()[-1]['end']) in locations:
         return True
     return False

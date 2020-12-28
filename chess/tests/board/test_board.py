@@ -354,9 +354,7 @@ class TestPieceExplodes(unittest.TestCase):
 class TestEnPassant(unittest.TestCase):
 
     def setUp(self):
-        board = ChessBoard()
-        exported = board.export()
-        self.chess_board = ChessBoard(exported)
+        self.chess_board = ChessBoard()
 
     def test_en_passant_king_side_black_captures(self):
         # move black pawn in range of white row for en pessante
@@ -366,13 +364,16 @@ class TestEnPassant(unittest.TestCase):
         # move white pawn forward by two
         self.chess_board.move((1, 4), (3, 4))
 
-        # move en passant with black pawn
-        self.chess_board.move((3, 3), (2, 4))
+        exported = self.chess_board.export()
+        board = ChessBoard(exported)
 
-        self.assertEqual(self.chess_board[(2, 4)].kind, 'pawn')
-        self.assertEqual(self.chess_board[(2, 4)].color, 'black')
-        self.assertIsNone(self.chess_board[(3, 3)])
-        self.assertIsNone(self.chess_board[(3, 4)])
+        # move en passant with black pawn
+        board.move((3, 3), (2, 4))
+
+        self.assertEqual(board[(2, 4)].kind, 'pawn')
+        self.assertEqual(board[(2, 4)].color, 'black')
+        self.assertIsNone(board[(3, 3)])
+        self.assertIsNone(board[(3, 4)])
 
     def test_en_passant_queen_side_black_captures(self):
         # move black pawn in range of white row for en pessante
