@@ -354,7 +354,9 @@ class TestPieceExplodes(unittest.TestCase):
 class TestEnPassant(unittest.TestCase):
 
     def setUp(self):
-        self.chess_board = ChessBoard()
+        board = ChessBoard()
+        exported = board.export()
+        self.chess_board = ChessBoard(exported)
 
     def test_en_passant_king_side_black_captures(self):
         # move black pawn in range of white row for en pessante

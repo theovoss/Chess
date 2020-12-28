@@ -2,6 +2,7 @@ import json
 import inspect
 from chess.move_pipeline import movement
 from chess.move_pipeline import capture_actions
+from chess.move_pipeline import pre_move_checks
 from chess.move_pipeline import post_move_actions
 from chess import standard_chess_json
 from chess.piece.directions import get_direction_shorthands
@@ -24,6 +25,13 @@ def get_post_move_actions_rules():
 
 def get_movement_directions():
     return get_direction_shorthands()
+
+
+def get_pre_move_check_rules():
+    actions = inspect.getmembers(pre_move_checks)
+    actions = [rule[0] for rule in actions if rule[0][0] != '_']
+    actions.append('is_not_threatened')
+    return actions
 
 
 def get_standard_chess_pieces():
