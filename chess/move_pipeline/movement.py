@@ -1,21 +1,21 @@
 # pylint: disable=W0613
 # allow unused variables so all movement functions can have same parameter definition
 import operator as _operator
-import copy
+import copy as _copy
 
-from chess.helpers import add_unit_direction
-from chess.move.pathfinder import PathFinder
+from chess.helpers import add_unit_direction as _add_unit_direction
+from chess.move.pathfinder import PathFinder as _pathfinder
 
 
 def get_all_potential_end_locations(start, directions, board):
     ends = []
     for direction in directions:
         new_start = start
-        location = add_unit_direction(new_start, direction)
+        location = _add_unit_direction(new_start, direction)
         while location in board:
             ends.append(location)
             new_start = location
-            location = add_unit_direction(new_start, direction)
+            location = _add_unit_direction(new_start, direction)
     return ends
 
 
@@ -33,19 +33,19 @@ def cant_move_onto_threatened_square(args):
 
     threat_color = args.board[args.start].opposite_color
 
-    board = copy.deepcopy(args.board)
+    board = _copy.deepcopy(args.board)
     board[args.start] = None
 
     return [end for end in args.ends if not args.calculator.is_threatened(board, [end], threat_color)]
 
 
 def _get_two_moves_away(start, directions):
-    double_unit = [add_unit_direction(move, move) for move in directions]
-    return [add_unit_direction(start, move) for move in double_unit]
+    double_unit = [_add_unit_direction(move, move) for move in directions]
+    return [_add_unit_direction(start, move) for move in double_unit]
 
 
 def _get_one_move_away(start, directions):
-    ret_val = [add_unit_direction(move, start) for move in directions]
+    ret_val = [_add_unit_direction(move, start) for move in directions]
     return ret_val
 
 
@@ -54,10 +54,10 @@ def alternates_landing_on_enemy_and_empty_space(args):
     board = args.board
     for direction in args.directions:
         new_start = args.start
-        location = add_unit_direction(new_start, direction)
+        location = _add_unit_direction(new_start, direction)
         while location in board:
-            initial_move = add_unit_direction(direction, new_start)
-            new_start = add_unit_direction(direction, initial_move)
+            initial_move = _add_unit_direction(direction, new_start)
+            new_start = _add_unit_direction(direction, initial_move)
             if initial_move in args.ends and new_start in args.ends:
                 # enemy piece at first move and no pices at second move
                 if board[initial_move] and not board[new_start] and board[initial_move].color != board[args.start].color:
@@ -72,7 +72,7 @@ def alternates_landing_on_enemy_and_empty_space(args):
 def cant_jump_pieces(args):
     end_locations = args.ends
 
-    directions = [PathFinder.get_unit_direction(args.start, end) for end in end_locations]
+    directions = [_pathfinder.get_unit_direction(args.start, end) for end in end_locations]
 
     for direction in directions:
         location_to_remove = args.start
